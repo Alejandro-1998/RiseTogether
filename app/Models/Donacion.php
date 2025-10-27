@@ -22,4 +22,19 @@ class Donacion extends Model
         'importe',
         'estadoDonacion'
     ];
+
+    function proyectos()
+    {
+        return $this->belongsTo(Proyecto::class);
+    }
+
+    function users()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    function recompensas()
+    {
+        return $this->belongsTo(Recompensa::class);
+    }
 }

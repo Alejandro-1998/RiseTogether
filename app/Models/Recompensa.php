@@ -21,4 +21,14 @@ class Recompensa extends Model
         'descripcionRecompensa',
         'tipoEntrega'
     ];
+
+    function proyectos()
+    {
+        return $this->belongsTo(Proyecto::class);
+    }
+
+    function donaciones()
+    {
+        return $this->hasMany(Donacion::class);
+    }
 }

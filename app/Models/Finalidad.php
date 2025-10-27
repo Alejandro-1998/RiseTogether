@@ -17,4 +17,9 @@ class Finalidad extends Model
     protected $fillable = [
         'tipoFinalidad'
     ];
+
+    function eventos()
+    {
+        return $this->hasMany(Evento::class);
+    }
 }

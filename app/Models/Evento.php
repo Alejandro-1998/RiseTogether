@@ -21,4 +21,14 @@ class Evento extends Model
         'cantidadMaxParticipantes',
         'idFinalidad'
     ];
+
+    function finalidades()
+    {
+        return $this->belongsTo(Finalidad::class);
+    }
+
+    function proyectos()
+    {
+        return $this->belongsToMany(Proyecto::class, 'proyectos_eventos', 'idEvento', 'idProyecto');
+    }
 }

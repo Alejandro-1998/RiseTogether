@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('users_proyectos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('idusuario');
+            $table->unsignedBigInteger('idUsuario');
             $table->unsignedBigInteger('idProyecto');
             $table->timestamps();
             $table->unique(['idUsuario', 'idProyecto']);

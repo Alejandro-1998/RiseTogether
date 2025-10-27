@@ -16,7 +16,22 @@ class Voto extends Model
 
     protected $fillable = [
         'idUsuario',
-        'idProyetoEvento',
+        'idProyectoEvento',
         'fechaVoto'
     ];
+
+    function users()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    function proyectos()
+    {
+        return $this->belongsToMany(Proyecto::class, 'proyectos_eventos', 'id', 'idProyecto', 'idProyectoEvento', 'id')->withPivot('idEvento');
+    }
+
+    function evento()
+    {
+        return $this->belongsToMany(Evento::class,'proyectos_eventos','id','idEvento','idProyectoEvento','id')->withPivot('idProyecto');
+    }
 }

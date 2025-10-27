@@ -21,4 +21,34 @@ class Proyecto extends Model
         'fechaCreacion',
         'fechaFinalizacion'
     ];
+
+    function users()
+    {
+        return $this->belongsToMany(User::class, 'users_proyectos', 'idProyecto', 'idUsuario');
+    }
+
+    function comentarios()
+    {
+        return $this->belongsTo(Comentario::class);
+    }
+
+    function eventos()
+    {
+        return $this->belongsToMany(Evento::class, 'proyectos_eventos', 'idProyecto', 'idEvento');
+    }
+
+    function recompensas()
+    {
+        return $this->hasMany(Recompensa::class);
+    }
+
+    function facturas()
+    {
+        return $this->hasMany(Factura::class);
+    }
+
+    function donaciones()
+    {
+        return $this->hasMany(Donacion::class);
+    }
 }

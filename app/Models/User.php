@@ -11,7 +11,7 @@ use Illuminate\Notifications\Notifiable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes;      
+    use HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -54,5 +54,25 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    function proyectos()
+    {
+        return $this->belongsToMany(Proyecto::class, 'users_proyectos', 'idUsuario', 'idProyecto');
+    }
+
+    function comentarios()
+    {
+        return $this->hasMany(Comentario::class);
+    }
+
+    function votos()
+    {
+        return $this->hasMany(Voto::class);
+    }
+
+    function donaciones()
+    {
+        return $this->hasMany(Donacion::class);
     }
 }

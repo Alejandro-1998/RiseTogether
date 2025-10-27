@@ -23,4 +23,9 @@ class Factura extends Model
         'descripcionFiscal',
         'pdf'
     ];
+
+    function proyectos()
+    {
+        return $this->belongsTo(Proyecto::class);
+    }
 }

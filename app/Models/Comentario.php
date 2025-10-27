@@ -22,4 +22,24 @@ class Comentario extends Model
         'fechaHora',
         'estado'
     ];
+
+    function users()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    function comentariosRespuesta()
+    {
+        return $this->hasMany(Comentario::class, 'idComentario');
+    }
+
+    function comentariosPadre()
+    {
+        return $this->belongsTo(Comentario::class, 'idComentario');
+    }
+
+    function proyectos()
+    {
+        return $this->hasMany(Proyecto::class);
+    }
 }
