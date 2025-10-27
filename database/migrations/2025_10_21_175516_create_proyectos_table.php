@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombreProyecto')->unique();
             $table->text('descripcion');
-            $table->decimal('financionObjetivo');
+            $table->decimal('financiacionObjetivo');
             $table->date('fechaCreacion');
             $table->date('fechaFinalizacion');
             $table->timestamps();
