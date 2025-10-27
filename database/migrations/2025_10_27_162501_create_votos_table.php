@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('votos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('idUsuario');
-            $table->unsignedBigInteger('idProyecto_Evento');
-            $table->dateTime('fecha_voto');
+            $table->unsignedBigInteger('idProyectoEvento');
+            $table->dateTime('fechaVoto');
             $table->timestamps();
             $table->softDeletes();
-            $table->unique(['idUsuario', 'idProyecto_Evento']);
+            $table->unique(['idUsuario', 'idProyectoEvento']);
 
             $table->foreign('idUsuario')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('idProyecto_Evento')->references('id')->on('proyectos_eventos')->onDelete('cascade');
+            $table->foreign('idProyectoEvento')->references('id')->on('proyectos_eventos')->onDelete('cascade');
         });
     }
 

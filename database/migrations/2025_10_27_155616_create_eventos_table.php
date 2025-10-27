@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('eventos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->dateTime('fecha_inicio');
-            $table->dateTime('fecha_final');
-            $table->integer('cantidad_max_participantes')->nullable();
+            $table->dateTime('fechaInicio');
+            $table->dateTime('fechaFinal');
+            $table->integer('cantidadMaxParticipantes')->nullable();
             $table->unsignedBigInteger('idFinalidad');
             $table->timestamps();
             $table->softDeletes();
