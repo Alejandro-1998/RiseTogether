@@ -7,5 +7,3 @@ abstract class Controller
     //
 }
 
-//Hola
-
