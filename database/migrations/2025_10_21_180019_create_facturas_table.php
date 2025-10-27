@@ -19,7 +19,9 @@ return new class extends Migration
             $table->integer('costo');
             $table->string('descripcion');
             $table->string('direccionFiscal');
+            $table->string('pdf');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

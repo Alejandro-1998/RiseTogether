@@ -20,6 +20,7 @@ return new class extends Migration
             $table->decimal('importe');
             $table->enum('estadoDonacion', ['pendiente', 'pagada', 'fallida', 'reembolsada'])->default('pendiente');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('idRecompensa')->references('id')->on('recompensas');
             $table->foreign('idUsuario')->references('id')->on('users');

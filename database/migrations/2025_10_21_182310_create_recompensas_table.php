@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('descripcionRecompensa');
             $table->enum('tipoEntrega', ['digital', 'fisica', 'mixta', 'desbloqueo'])->default('fisica');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('idProyecto')->references('id')->on('proyectos')->onDelete('cascade');
         });

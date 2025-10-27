@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('proyectos', function (Blueprint $table) {
+        Schema::create('eventos', function (Blueprint $table) {
             $table->id();
-            $table->string('nombreProyecto')->unique();
-            $table->text('descripcion');
-            $table->decimal('financionObjetivo');
-            $table->date('fechaCreacion');
-            $table->date('fechaFinalizacion');
+            $table->string('nombre');
+            $table->dateTime('fecha_inicio');
+            $table->dateTime('fecha_final');
+            $table->number('cantidad_max_participantes')->nullable();
+            $table->unsignedBigInteger('idFinalidad');
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('proyectos');
+        Schema::dropIfExists('eventos');
     }
 };

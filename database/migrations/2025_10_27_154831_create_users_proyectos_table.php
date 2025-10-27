@@ -11,20 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('comentarios', function (Blueprint $table) {
+        Schema::create('users_proyectos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('idUsuario');
+            $table->unsignedBigInteger('idusuario');
             $table->unsignedBigInteger('idProyecto');
-            $table->unsignedBigInteger('idComentario')->nullable();
-            $table->text('mensaje');
-            $table->dateTime('fechaHora');
-            $table->enum('estado', ['pendiente', 'aprobado', 'rechazado'])->default('pendiente');
             $table->timestamps();
+            $table->unique(['idUsuario', 'idProyecto']);
             $table->softDeletes();
 
+            $table->foreign('idUsuario')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('idProyecto')->references('id')->on('proyectos')->onDelete('cascade');
-            $table->foreign('idUsuario')->references('id')->on('users');
-            $table->foreign('idComentario')->references('id')->on('comentarios');
         });
     }
 
@@ -33,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('comentarios');
+        Schema::dropIfExists('users_proyectos');
     }
 };
