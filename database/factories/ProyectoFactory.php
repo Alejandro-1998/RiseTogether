@@ -14,7 +14,7 @@ class ProyectoFactory extends Factory
         return [
             'nombreProyecto'    => $this->faker->unique()->sentence(3),
             'descripcion'       => $this->faker->paragraphs(3, true),
-            'financionObjetivo' => $this->faker->randomFloat(2, 500, 50000),
+            'financiacionObjetivo' => $this->faker->randomFloat(2, 500, 50000),
             'fechaCreacion'     => $fechaCreacion->format('Y-m-d'),
             'fechaFinalizacion' => $fechaFinal->format('Y-m-d'),
         ];
