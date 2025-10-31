@@ -5,11 +5,11 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class FinalidadSeeder extends Seeder   // 👈 nombre correcto
+class FinalidadSeeder extends Seeder
 {
     public function run(): void
     {
-        $tipos = ['recaudación', 'promoción', 'difusión', 'comunidad', 'presentación'];
+        $tipos = ['recaudación', 'promoción', 'comunidad'];
 
         foreach ($tipos as $tipo) {
             DB::table('finalidades')->insert([
