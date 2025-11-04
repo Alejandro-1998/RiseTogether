@@ -12,9 +12,12 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             FinalidadSeeder::class,
             ProyectoSeeder::class,
+            FacturaSeeder::class,
+            ComentarioSeeder::class,
+            RecompensaSeeder::class,
             EventoSeeder::class,
             ProyectoEventoSeeder::class,
-            VotoSeeder::class,
+            VotoSeeder::class
         ]);
     }
 }

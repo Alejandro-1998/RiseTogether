@@ -4,31 +4,37 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use App\Models\Proyecto;
+use App\Models\Evento;
 
 class ProyectoEventoSeeder extends Seeder
 {
     public function run(): void
     {
-        $proyectoIds = DB::table('proyectos')->pluck('id')->all();
-        $eventoIds   = DB::table('eventos')->pluck('id')->all();
+        $proyectos = Proyecto::all();
+        $eventos = Evento::all();
 
-        $rows = [];
-        foreach ($proyectoIds as $pid) {
-            // cada proyecto se asocia con 2–4 eventos
-            $asignados = collect($eventoIds)->shuffle()->take(mt_rand(2,4));
-            foreach ($asignados as $eid) {
-                $rows[] = [
-                    'idProyecto' => $pid,
-                    'idEvento'   => $eid,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ];
-            }
+        if ($proyectos->isEmpty() || $eventos->isEmpty()) {
+            $this->command->warn('⚠️ No hay proyectos o eventos disponibles para asociar.');
+            return;
         }
 
-        // evita duplicados (unique idProyecto-idEvento)
-        $rows = collect($rows)->unique(fn($r) => $r['idProyecto'].'-'.$r['idEvento'])->values()->all();
+        foreach ($proyectos as $proyecto) {
+            // Cada proyecto se asocia a entre 1 y 3 eventos aleatorios
+            $eventosSeleccionados = $eventos->random(rand(1, 3));
 
-        DB::table('proyectos_eventos')->insert($rows);
+            foreach ($eventosSeleccionados as $evento) {
+                DB::table('proyectos_eventos')->updateOrInsert(
+                    [
+                        'idProyecto' => $proyecto->id,
+                        'idEvento' => $evento->id,
+                    ],
+                    [
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+            }
+        }
     }
 }
