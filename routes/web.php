@@ -3,5 +3,6 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    // Apunta a 'resources/views/publico/home.blade.php'
+    return view('publico.home');
 });
