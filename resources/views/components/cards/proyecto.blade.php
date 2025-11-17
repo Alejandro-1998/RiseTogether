@@ -15,9 +15,9 @@
         </p>
         <div class="mt-5">
             <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div class="bg-primary h-2.5 rounded-full" style="width: 75%"></div>
+                <div class="bg-[#f2780d] h-2.5 rounded-full" style="width: 75%"></div>
             </div>
-            <p class="text-sm font-medium text-primary mt-2">75% funded</p>
+            <p class="text-sm font-medium text-[#f2780d] mt-2">75% funded</p>
         </div>
     </div>
 </div>

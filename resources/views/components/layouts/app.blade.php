@@ -23,31 +23,8 @@
         }
     </style>
 
-    <!-- Tailwind config  -->
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        primary: "#f2780d",
-                        "background-light": "#fcfaf8",
-                        "background-dark": "#1c140d",
-                        "text-light": "#1c140d",
-                        "text-dark": "#fcfaf8",
-                        "subtle-light": "#f4ede7",
-                        "subtle-dark": "#2a2017",
-                        "muted-light": "#9c7049",
-                        "muted-dark": "#a18a7a"
-                    },
-                    fontFamily: { display: ["Inter", "sans-serif"] },
-                    borderRadius: { DEFAULT: "0.5rem", lg: "1rem", xl: "1.5rem", full: "9999px" }
-                }
-            }
-        }
-    </script>
-</head>
-<body class="font-display bg-background-light text-text-light dark:bg-background-dark dark:text-text-dark">
+    </head>
+<body class="font-display bg-[#fcfaf8] text-[#1c140d] dark:bg-[#1c140d] dark:text-[#fcfaf8]">
     <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
         <div class="flex h-full grow flex-col">
 
