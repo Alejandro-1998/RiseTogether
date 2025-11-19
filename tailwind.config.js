@@ -1,22 +1,17 @@
-// Importa el plugin de formularios
 import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
 export default {
     content: [
-        // Apunta a todos tus archivos Blade
         './resources/views/**/*.blade.php',
-        // Apunta a tus archivos JS (por si usas clases de Tailwind en JS)
         './resources/js/**/*.js',
-        // Esto es para la paginación de Laravel, es bueno tenerlo
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
     ],
 
-    darkMode: "class", // Habilita el modo oscuro
+    darkMode: "class",
 
     theme: {
         extend: {
-            // ▼▼ TODA TU CONFIGURACIÓN PERSONALIZADA ▼▼
             colors: {
                 primary: "#f2780d",
                 "background-light": "#fcfaf8",
@@ -37,11 +32,10 @@ export default {
                 xl: "1.5rem",
                 full: "9999px"
             }
-            // ▲▲ FIN DE TU CONFIGURACIÓN ▲▲
         },
     },
 
     plugins: [
-        forms // Activa el plugin de formularios
+        forms
     ],
 };

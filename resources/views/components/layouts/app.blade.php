@@ -34,7 +34,9 @@
                 {{ $slot }}
             </main>
 
-            <x-layouts.footer />
+            @if (!Route::is('login'))
+                <x-layouts.footer />
+            @endif
 
         </div>
     </div>
