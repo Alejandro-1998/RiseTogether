@@ -34,7 +34,7 @@
                 {{ $slot }}
             </main>
 
-            @if (!Route::is('login'))
+            @if (!Route::is('login') && !Route::is('registro'))
                 <x-layouts.footer />
             @endif
 
