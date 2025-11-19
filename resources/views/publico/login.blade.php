@@ -102,8 +102,8 @@
             <div class="hidden md:flex relative rounded-2xl overflow-hidden">
                 <video autoplay loop muted playsinline
                     class="absolute inset-0 h-full w-full object-cover">
-                    <source src="{{ asset('media/reunion.mp4') }}" type="video/mp4"> 
-                    Tu navegador no soporta la etiqueta de video.
+                    <source src="media/reunion.mp4" type="video/mp4" />
+                    Tu navegador no soporta el vídeo.
                 </video>
                 
                 {{-- Overlay y Contenido encima del Video --}}

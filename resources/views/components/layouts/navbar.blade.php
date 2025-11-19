@@ -2,19 +2,30 @@
 <header
     class="sticky top-0 z-50 border-b border-[#f4ede7]/80 bg-[#fcfaf8]/80 px-4 py-3 backdrop-blur-sm dark:border-[#2a2017]/80 dark:bg-[#1c140d]/80 sm:px-6 lg:px-8">
     <nav class="flex items-center justify-between" aria-label="Primary">
-        <div class="flex items-center gap-8">
-            <a href="{{ route('home') }}" class="flex items-center gap-3 text-[#1c140d] dark:text-[#fcfaf8]">
-                <img src="img/logo.png" alt="Rise Together" class="max-h-24 w-auto object-contain">
-            </a>
-        </div>
-        <div class="w-full flex justify-center">
-            <label class="relative w-full max-w-md ">
-                <span
-                    class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9c7049] dark:text-[#a18a7a]">search</span>
-                <input type="search" placeholder="Buscar proyectos..."
-                    class="w-full rounded-lg border border-gray-300 bg-gray-100 py-2 pl-10 pr-4 text-sm text-gray-800 placeholder:text-gray-500 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400" />
-            </label>
-        </div>
+
+        @if (!Route::is('login'))
+            <div class="flex items-center gap-8">
+                <a href="{{ route('home') }}" class="flex items-center gap-3 text-[#1c140d] dark:text-[#fcfaf8]">
+                    <img src="img/logo.png" alt="Rise Together" class="max-h-24 w-auto object-contain">
+                </a>
+            </div>
+
+            <div class="w-full flex justify-center">
+                <label class="relative w-full max-w-md ">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9c7049] dark:text-[#a18a7a]">search</span>
+                    <input type="search" placeholder="Buscar proyectos..."
+                        class="w-full rounded-lg border border-gray-300 bg-gray-100 py-2 pl-10 pr-4 text-sm text-gray-800 placeholder:text-gray-500 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none dark:bg-gray-800 dark:text-gray-100 dark:placeholder:text-gray-400" />
+                </label>
+            </div>
+        @else
+            <div class="flex items-center gap-8">
+                <a href="{{ route('home') }}" class="flex items-center gap-3 text-[#1c140d] dark:text-[#fcfaf8]">
+                    <img src="img/logo.png" alt="Rise Together" class="max-h-14.5 w-auto object-contain">
+                </a>
+            </div>
+        @endif
+
         <div class="flex flex-1 items-center justify-end gap-2">
             <div class="hidden flex-1 items-center justify-end gap-2 md:flex">
 
