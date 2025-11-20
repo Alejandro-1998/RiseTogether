@@ -20,7 +20,7 @@
             </p>
 
             <div class="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-                <a href="/proyectos"
+                <a href="{{ route('proyectos') }}"
                     class="inline-flex h-11 items-center justify-center rounded-lg bg-orange-500 px-6 text-sm font-bold text-white transition hover:bg-orange-600">
                     Descubrir Proyectos
                 </a>

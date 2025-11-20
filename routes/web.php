@@ -13,3 +13,7 @@ Route::get('/login', function () {
 Route::get('/registro', function () {
     return view('publico.registro');
 })->name('registro');
+
+Route::get('/proyectos', function () {
+    return view('publico.proyectos');
+})->name('proyectos');

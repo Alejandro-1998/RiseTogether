@@ -1,23 +1,31 @@
 <div
-    class="flex flex-col gap-4 rounded-3xl border border-gray-200 bg-white/95 backdrop-blur-sm p-6 shadow-md hover:shadow-xl transition dark:border-gray-700 dark:bg-gray-900/80">
-    <div class="aspect-4/3 w-full bg-cover bg-center rounded-2xl" style="background-image:url('img/juego.png');">
+    class="flex flex-col gap-4 rounded-xl bg-[#fcfaf8] dark:bg-[#1F2937] overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 group">
+    <div class="w-full bg-center bg-no-repeat aspect-video bg-cover"
+        data-alt="An automated indoor garden with green plants" style="background-image:url('img/juego.png');">
     </div>
-    <div>
-        <h3 class="text-lg font-bold text-gray-900 dark:text-white">
-            Leyendas de Aetheria
-        </h3>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Un juego de mesa estratégico donde cada jugador construye su propio reino
-            mediante cartas, recursos y alianzas. Con un diseño cuidado y mecánicas
-            únicas, invita a combinar táctica y creatividad en cada partida.
-            Desarrollado por creadores independientes, busca financiación para producir
-            su primera edición completa con materiales premium.
-        </p>
-        <div class="mt-5">
-            <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                <div class="bg-[#f2780d] h-2.5 rounded-full" style="width: 75%"></div>
-            </div>
-            <p class="text-sm font-medium text-[#f2780d] mt-2">75% funded</p>
+    <div class="flex flex-col gap-4 px-4">
+        <div class="flex flex-col gap-1">
+            <h3 class="text-base font-bold leading-normal text-[#1c140d] dark:text-[#F3F4F6]">
+                Leyendas de Aetheria</h3>
+            <p class="text-sm font-normal leading-normal text-[#9c7049] dark:text-[#9CA3AF]">
+                Un juego de mesa estratégico donde cada jugador construye su propio reino
+                mediante cartas, recursos y alianzas. Con un diseño cuidado y mecánicas
+                únicas, invita a combinar táctica y creatividad en cada partida.
+                Desarrollado por creadores independientes, busca financiación para producir
+                su primera edición completa con materiales premium.</p>
         </div>
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            <div class="bg-[#f2780d] h-2 rounded-full" style="width: 75%"></div>
+        </div>
+        <div class="flex justify-between text-xs font-medium text-[#9c7049] dark:text-[#9CA3AF]">
+            <span>$15,000 Raised</span>
+            <span>75% Funded</span>
+            <span>12 Days Left</span>
+        </div>
+    </div>
+    <div class="px-4 pb-4 mt-auto">
+        <button
+            class="w-full flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f2780d]/20 dark:bg-[#f2780d]/30 text-[#f2780d] text-sm font-bold group-hover:bg-[#f2780d] group-hover:text-white dark:group-hover:text-[#F3F4F6] transition-colors duration-300">Ver proyecto
+        </button>
     </div>
 </div>
