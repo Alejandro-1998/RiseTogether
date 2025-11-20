@@ -15,7 +15,7 @@
         @endif
     </div>
 
-    <form method="post" action="{{ Route::is('login') ? route('login') : route('register') }}" class="space-y-5">
+    <form method="post" action="{{ Route::is('login') ? route('login') : route('registro') }}" class="space-y-5">
         @csrf
 
         @if (Route::is('registro'))
@@ -52,20 +52,46 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-between">
-            <label class="inline-flex items-center gap-2 text-sm">
-                <input type="checkbox" name="remember"
-                    class="border-[#9c7049] text-[#f2780d] focus:ring-[#f2780d] dark:border-[#a18a7a]" />
-                Recuérdame
-            </label>
-            <a href="/forgot-password"
-                class="text-sm font-semibold text-[#f2780d] hover:opacity-80">¿Olvidaste la
-                contraseña?</a>
-        </div>
+        @if (Route::is('registro'))
+            <div>
+                <label for="password_confirmation" class="block text-sm font-medium">Confirmar
+                    contraseña</label>
+                <div class="relative mt-1">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9c7049] dark:text-[#a18a7a]">password</span>
+                    <input id="password_confirmation" name="password_confirmation" type="password"
+                        autocomplete="new-password" minlength="6" required
+                        placeholder="Repite tu contraseña"
+                        class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
+                </div>
+            </div>
+        @endif
+
+        @if (Route::is('login'))
+            <div class="flex items-center justify-between">
+                <label class="inline-flex items-center gap-2 text-sm">
+                    <input type="checkbox" name="remember"
+                        class="border-[#9c7049] text-[#f2780d] focus:ring-[#f2780d] dark:border-[#a18a7a]" />
+                    Recuérdame
+                </label>
+                <a href="/forgot-password"
+                    class="text-sm font-semibold text-[#f2780d] hover:opacity-80">¿Olvidaste la
+                    contraseña?</a>
+            </div>
+        @else
+            <div class="flex items-start gap-2 text-sm">
+                <input id="terms" name="terms" type="checkbox" required
+                    class="mt-1 rounded border-[#9c7049] text-[#f2780d] focus:ring-[#f2780d] dark:border-[#a18a7a]" />
+                <label for="terms" class="text-[#9c7049] dark:text-[#a18a7a]">
+                    He leído y acepto los <a href="#"
+                        class="text-[#f2780d] font-semibold hover:opacity-80">Términos y Condiciones</a>.
+                </label>
+            </div>
+        @endif
 
         <button type="submit"
             class="inline-flex w-full items-center justify-center rounded-lg bg-[#f2780d] px-4 py-3 font-bold text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d]">
-            Entrar
+            {{ Route::is('login') ? "Entrar" : "Crear cuenta" }}
         </button>
 
         <div class="relative my-4">
@@ -104,9 +130,16 @@
             </button>
         </div>
 
-        <p class="text-center text-sm text-[#9c7049] dark:text-[#a18a7a]">
-            ¿Aún no tienes cuenta?
-            <a href="{{ route('registro') }}" class="font-bold text-[#f2780d] hover:opacity-80">Crea una</a>
-        </p>
+        @if (Route::is('login'))
+            <p class="text-center text-sm text-[#9c7049] dark:text-[#a18a7a]">
+                ¿Aún no tienes cuenta?
+                <a href="{{ route('registro') }}" class="font-bold text-[#f2780d] hover:opacity-80">Crea una</a>
+            </p>
+        @else
+            <p class="text-center text-sm text-[#9c7049] dark:text-[#a18a7a]">
+                ¿Ya tienes cuenta?
+                <a href="{{ route('login') }}" class="font-bold text-[#f2780d] hover:opacity-80">Inicia sesión</a>
+            </p>
+        @endif
     </form>
 </div>
