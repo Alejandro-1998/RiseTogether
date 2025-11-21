@@ -1,4 +1,4 @@
-<x-layouts.app>
+<x-layouts.body>
 
     <div class="px-4 sm:px-6 lg:px-8 flex flex-1 justify-center py-5">
         <div class="flex flex-col w-full max-w-7xl flex-1">
@@ -52,4 +52,4 @@
         </div>
     </div>
 
-</x-layouts.app>
+</x-layouts.body>

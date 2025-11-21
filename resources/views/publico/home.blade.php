@@ -1,4 +1,4 @@
-<x-layouts.app>
+<x-layouts.body>
     <!-- Hero: Banner Principal -->
     <section class="relative isolate overflow-hidden rounded-2xl my-8 h-[520px] sm:h-[560px] md:h-[600px]">
         <video autoplay muted loop playsinline
@@ -89,4 +89,4 @@
 
     <x-home.formulario-feedback />
 
-</x-layouts.app>
+</x-layouts.body>

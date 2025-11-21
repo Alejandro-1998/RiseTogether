@@ -1,4 +1,4 @@
-<x-layouts.app>
+<x-layouts.body>
 
         <section class="relative isolate">
             <div class="pointer-events-none absolute inset-0 -z-10">
@@ -16,4 +16,4 @@
             </div>
         </section>
 
-</x-layouts.app>
+</x-layouts.body>

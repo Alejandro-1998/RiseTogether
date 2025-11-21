@@ -24,21 +24,7 @@
     </style>
 
     </head>
-<body class="font-display bg-[#fcfaf8] text-[#1c140d] dark:bg-[#1c140d] dark:text-[#fcfaf8]">
-    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
-        <div class="flex h-full grow flex-col">
 
-            <x-layouts.navbar />
+    {{ $slot }}
 
-            <main class="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 lg:py-6">
-                {{ $slot }}
-            </main>
-
-            @if (!Route::is('login') && !Route::is('registro'))
-                <x-layouts.footer />
-            @endif
-
-        </div>
-    </div>
-</body>
 </html>
