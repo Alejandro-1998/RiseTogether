@@ -14,6 +14,10 @@ Route::get('/registro', function () {
     return view('publico.registro');
 })->name('registro');
 
+Route::get('/crear_proyecto', function () {
+    return view('privado.crear_proyecto');
+})->name('crear_proyecto');
+
 Route::get('/administrador', function () {
     return view('privado.administrador');
 })->name('administrador');
