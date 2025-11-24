@@ -24,7 +24,7 @@
                     class="inline-flex h-11 items-center justify-center rounded-lg bg-orange-500 px-6 text-sm font-bold text-white transition hover:bg-orange-600">
                     Descubrir Proyectos
                 </a>
-                <a href="/crear"
+                <a href="{{ route('crear_proyecto') }}"
                     class="inline-flex h-11 items-center justify-center rounded-lg bg-white/90 px-6 text-sm font-bold text-gray-900 hover:bg-white">
                     Crea tu Proyecto
                 </a>
