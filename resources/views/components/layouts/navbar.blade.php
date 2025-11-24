@@ -67,7 +67,7 @@
         </div>
     </nav>
 
-    @if (!Route::is('login') && !Route::is('registro'))
+    @if (!Route::is('login') && !Route::is('registro') && !Route::is('proyecto'))
         <nav class="mt-3 hidden md:block" aria-label="Categorías">
             <ul class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[17px] font-medium mt-5">
                 <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Arte</a></li>
