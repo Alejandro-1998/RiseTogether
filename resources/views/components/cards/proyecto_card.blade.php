@@ -24,8 +24,10 @@
         </div>
     </div>
     <div class="px-4 pb-4 mt-auto">
-        <button
-            class="w-full flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f2780d]/20 dark:bg-[#f2780d]/30 text-[#f2780d] text-sm font-bold group-hover:bg-[#f2780d] group-hover:text-white dark:group-hover:text-[#F3F4F6] transition-colors duration-300">Ver proyecto
-        </button>
+        <a
+            href="{{ route('proyecto') }}"
+            class="w-full flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f2780d]/20 dark:bg-[#f2780d]/30 text-[#f2780d] text-sm font-bold group-hover:bg-[#f2780d] group-hover:text-white dark:group-hover:text-[#F3F4F6] transition-colors duration-300">Ver
+            proyecto
+        </a>
     </div>
 </div>

@@ -42,9 +42,9 @@
                 </h2>
                 <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
 
-                    <x-cards.proyecto />
-                    <x-cards.proyecto />
-                    <x-cards.proyecto />
+                    <x-cards.proyecto_card />
+                    <x-cards.proyecto_card />
+                    <x-cards.proyecto_card />
 
                 </div>
             </div>

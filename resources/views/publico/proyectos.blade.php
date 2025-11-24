@@ -32,18 +32,18 @@
             </section>
             <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4">
 
-                <x-cards.proyecto />
-                <x-cards.proyecto />
-                <x-cards.proyecto />
-                <x-cards.proyecto />
-                <x-cards.proyecto />
-                <x-cards.proyecto />
-                <x-cards.proyecto />
-                <x-cards.proyecto />
-                <x-cards.proyecto />
-                <x-cards.proyecto />
-                <x-cards.proyecto />
-                <x-cards.proyecto />
+                <x-cards.proyecto_card />
+                <x-cards.proyecto_card />
+                <x-cards.proyecto_card />
+                <x-cards.proyecto_card />
+                <x-cards.proyecto_card />
+                <x-cards.proyecto_card />
+                <x-cards.proyecto_card />
+                <x-cards.proyecto_card />
+                <x-cards.proyecto_card />
+                <x-cards.proyecto_card />
+                <x-cards.proyecto_card />
+                <x-cards.proyecto_card />
                 
             </section>
 

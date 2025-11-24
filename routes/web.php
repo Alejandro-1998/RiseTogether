@@ -21,3 +21,7 @@ Route::get('/administrador', function () {
 Route::get('/proyectos', function () {
     return view('publico.proyectos');
 })->name('proyectos');
+
+Route::get('/proyecto', function () {
+    return view('publico.proyecto');
+})->name('proyecto');
