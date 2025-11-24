@@ -29,3 +29,7 @@ Route::get('/proyectos', function () {
 Route::get('/proyecto', function () {
     return view('publico.proyecto');
 })->name('proyecto');
+
+Route::get('/usuario', function () {
+    return view('publico.usuario');
+})->name('usuario');
