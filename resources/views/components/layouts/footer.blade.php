@@ -14,13 +14,13 @@
                 <h3 class="text-sm font-bold uppercase tracking-wider">Descubrir</h3>
                 <ul class="mt-4 space-y-2">
                     <li><a class="text-sm text-[#9c7049] transition-colors hover:text-[#f2780d] dark:text-[#a18a7a] dark:hover:text-[#f2780d]"
-                            href="#">Juegos</a></li>
+                            href="{{ route('proyectos') }}">Juegos</a></li>
                     <li><a class="text-sm text-[#9c7049] transition-colors hover:text-[#f2780d] dark:text-[#a18a7a] dark:hover:text-[#f2780d]"
-                            href="#">Diseño</a></li>
+                            href="{{ route('proyectos') }}">Diseño</a></li>
                     <li><a class="text-sm text-[#9c7049] transition-colors hover:text-[#f2780d] dark:text-[#a18a7a] dark:hover:text-[#f2780d]"
-                            href="#">Tecnología</a></li>
+                            href="{{ route('proyectos') }}">Tecnología</a></li>
                     <li><a class="text-sm text-[#9c7049] transition-colors hover:text-[#f2780d] dark:text-[#a18a7a] dark:hover:text-[#f2780d]"
-                            href="#">Publicaciones</a></li>
+                            href="{{ route('proyectos') }}">Publicaciones</a></li>
                 </ul>
             </div>
 
@@ -52,9 +52,9 @@
         <div class="mt-8 border-t border-[#9c7049]/20 pt-8 text-center dark:border-[#a18a7a]/20">
             <p
                 class="text-sm text-[#9c7049] dark:text-[#a18a7a] flex flex-wrap justify-center items-center gap-1">
-                <a href="https://example.com" class="hover:text-[#f2780d] font-semibold">Rise Together</a> ©
+                <a href="{{ route('home') }}" class="hover:text-[#f2780d] font-semibold">Rise Together</a> ©
                 2025 by
-                <a href="https://example.com" class="hover:text-[#f2780d] font-semibold">Rise Together</a> is
+                <a href="{{ route('home') }}" class="hover:text-[#f2780d] font-semibold">Rise Together</a> is
                 licensed under
                 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/"
                     class="hover:text-[#f2780d] font-semibold">CC BY-NC-ND 4.0</a>

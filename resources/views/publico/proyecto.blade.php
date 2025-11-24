@@ -119,120 +119,13 @@
                         <div class="space-y-4">
                             <h3 class="text-xl font-bold text-[#1c140d] dark:text-white">Elige tu recompensa</h3>
 
-                            <div
-                                class="rounded-2xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-5 hover:border-[#f2780d]/50 dark:hover:border-[#f2780d]/50 transition-all">
-                                <p class="text-2xl font-bold text-[#1c140d] dark:text-white">10 €</p>
-                                <p class="mt-1 font-bold text-[#1c140d] dark:text-white">Aportación de apoyo</p>
-                                <p class="mt-2 text-sm text-[#9c7049] dark:text-[#9c7049]/80">
-                                    Si te gusta el proyecto pero no puedes asumir el juego completo, esta es tu opción.
-                                    Aparecerás en los agradecimientos digitales.
-                                </p>
-                                <button
-                                    class="mt-4 px-4 h-10 w-full rounded-2xl bg-[#f4ede7] dark:bg-[#f4ede7]/10 text-[#1c140d] dark:text-white text-sm font-bold hover:bg-[#f4ede7] dark:hover:bg-[#f4ede7]/20 transition-colors">
-                                    Seleccionar esta recompensa
-                                </button>
-                            </div>
-
-                            <div
-                                class="rounded-2xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-5 hover:border-[#f2780d]/50 dark:hover:border-[#f2780d]/50 transition-all">
-                                <p class="text-2xl font-bold text-[#1c140d] dark:text-white">25 €</p>
-                                <p class="mt-1 font-bold text-[#1c140d] dark:text-white">Pack digital</p>
-                                <p class="mt-2 text-sm text-[#9c7049] dark:text-[#9c7049]/80">
-                                    Libro de reglas en PDF, pack de arte digital, tapete virtual y versión print & play
-                                    básica para probar el juego antes de recibirlo.
-                                </p>
-                                <button
-                                    class="mt-4 px-4 h-10 w-full rounded-2xl bg-[#f4ede7] dark:bg-[#f4ede7]/10 text-[#1c140d] dark:text-white text-sm font-bold hover:bg-[#f4ede7] dark:hover:bg-[#f4ede7]/20 transition-colors">
-                                    Seleccionar esta recompensa
-                                </button>
-                            </div>
-
-                            <div
-                                class="rounded-2xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-5 hover:border-[#f2780d]/50 dark:hover:border-[#f2780d]/50 transition-all">
-                                <p class="text-2xl font-bold text-[#1c140d] dark:text-white">40 €</p>
-                                <p class="mt-1 font-bold text-[#1c140d] dark:text-white">Edición estándar</p>
-                                <p class="mt-2 text-sm text-[#9c7049] dark:text-[#9c7049]/80">
-                                    Una copia física de Legendas de Aetheria en su edición estándar.
-                                    Incluye todos los componentes necesarios para jugar.
-                                </p>
-                                <div class="mt-3 text-xs text-[#9c7049] dark:text-[#9c7049]/80">
-                                    <span class="font-bold">ENTREGA ESTIMADA:</span> Ene 2026
-                                </div>
-                                <button
-                                    class="mt-4 px-4 h-10 w-full rounded-2xl bg-[#f4ede7] dark:bg-[#f4ede7]/10 text-[#1c140d] dark:text-white text-sm font-bold hover:bg-[#f4ede7] dark:hover:bg-[#f4ede7]/20 transition-colors">
-                                    Seleccionar esta recompensa
-                                </button>
-                            </div>
-
-                            <div class="rounded-2xl border-2 border-[#f2780d] p-5 relative shadow-lg">
-                                <div
-                                    class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#f2780d] text-white text-xs font-bold px-3 py-1 rounded-full">
-                                    Más popular
-                                </div>
-                                <p class="text-2xl font-bold text-[#1c140d] dark:text-white">55 €</p>
-                                <p class="mt-1 font-bold text-[#1c140d] dark:text-white">Legendas de Aetheria - Early
-                                    Bird</p>
-                                <p class="mt-2 text-sm text-[#9c7049] dark:text-[#9c7049]/80">
-                                    Copia física del juego base a precio reducido para los primeros mecenas.
-                                    Incluye todos los objetivos desbloqueados durante la campaña.
-                                </p>
-                                <div class="mt-3 text-xs text-[#9c7049] dark:text-[#9c7049]/80">
-                                    <span class="font-bold">ENTREGA ESTIMADA:</span> Dic 2025
-                                </div>
-                                <button
-                                    class="mt-4 px-4 h-10 w-full rounded-2xl bg-[#f2780d] text-white font-bold hover:bg-[#f2780d]/90 transition-colors">
-                                    Seleccionar esta recompensa
-                                </button>
-                            </div>
-
-                            <div
-                                class="rounded-2xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-5 hover:border-[#f2780d]/50 dark:hover:border-[#f2780d]/50 transition-all">
-                                <p class="text-2xl font-bold text-[#1c140d] dark:text-white">70 €</p>
-                                <p class="mt-1 font-bold text-[#1c140d] dark:text-white">Edición Deluxe</p>
-                                <p class="mt-2 text-sm text-[#9c7049] dark:text-[#9c7049]/80">
-                                    Componentes mejorados: cartas con acabado lino, marcadores de madera y ficha de
-                                    jugador inicial exclusiva.
-                                </p>
-                                <div class="mt-3 text-xs text-[#9c7049] dark:text-[#9c7049]/80">
-                                    <span class="font-bold">ENTREGA ESTIMADA:</span> Feb 2026
-                                </div>
-                                <button
-                                    class="mt-4 px-4 h-10 w-full rounded-2xl bg-[#f4ede7] dark:bg-[#f4ede7]/10 text-[#1c140d] dark:text-white text-sm font-bold hover:bg-[#f4ede7] dark:hover:bg-[#f4ede7]/20 transition-colors">
-                                    Seleccionar esta recompensa
-                                </button>
-                            </div>
-
-                            <div class="rounded-2xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-5 opacity-50">
-                                <p class="text-2xl font-bold text-[#1c140d] dark:text-white">95 €</p>
-                                <p class="mt-1 font-bold text-[#1c140d] dark:text-white">Edición coleccionista
-                                    (agotada)</p>
-                                <p class="mt-2 text-sm text-[#9c7049] dark:text-[#9c7049]/80">
-                                    Incluye el juego base, miniaturas exclusivas, arte alternativo y caja con acabado
-                                    especial numerada.
-                                </p>
-                                <button
-                                    class="mt-4 px-4 h-10 w-full rounded-2xl bg-[#f4ede7] dark:bg-[#f4ede7]/10 text-[#9c7049] dark:text-[#9c7049]/80 font-bold"
-                                    disabled>
-                                    Agotado
-                                </button>
-                            </div>
-
-                            <div
-                                class="rounded-2xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-5 hover:border-[#f2780d]/50 dark:hover:border-[#f2780d]/50 transition-all">
-                                <p class="text-2xl font-bold text-[#1c140d] dark:text-white">120 €</p>
-                                <p class="mt-1 font-bold text-[#1c140d] dark:text-white">Pack tiendas / clubes</p>
-                                <p class="mt-2 text-sm text-[#9c7049] dark:text-[#9c7049]/80">
-                                    Pensado para asociaciones y tiendas: 3 copias del juego con condiciones especiales
-                                    para demostraciones y eventos.
-                                </p>
-                                <div class="mt-3 text-xs text-[#9c7049] dark:text-[#9c7049]/80">
-                                    <span class="font-bold">ENTREGA ESTIMADA:</span> Mar 2026
-                                </div>
-                                <button
-                                    class="mt-4 px-4 h-10 w-full rounded-2xl bg-[#f4ede7] dark:bg-[#f4ede7]/10 text-[#1c140d] dark:text-white text-sm font-bold hover:bg-[#f4ede7] dark:hover:bg-[#f4ede7]/20 transition-colors">
-                                    Seleccionar esta recompensa
-                                </button>
-                            </div>
+                            <x-cards.recompensa />
+                            <x-cards.recompensa />
+                            <x-cards.recompensa />
+                            <x-cards.recompensa />
+                            <x-cards.recompensa />
+                            <x-cards.recompensa />
+                            <x-cards.recompensa />
 
                         </div>
                     </div>

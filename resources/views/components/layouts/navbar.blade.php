@@ -70,21 +70,21 @@
     @if (!Route::is('login') && !Route::is('registro'))
         <nav class="mt-3 hidden md:block" aria-label="Categorías">
             <ul class="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[17px] font-medium mt-5">
-                <li><a href="#" class="hover:text-[#f2780d]">Arte</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Cómics</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Artesanías</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Danza</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Diseño</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Moda</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Cine</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Comida</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Juegos</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Periodismo</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Música</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Fotografía</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Publicaciones</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Tecnología</a></li>
-                <li><a href="#" class="hover:text-[#f2780d]">Teatro</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Arte</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Cómics</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Artesanías</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Danza</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Diseño</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Moda</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Cine</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Comida</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Juegos</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Periodismo</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Música</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Fotografía</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Publicaciones</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Tecnología</a></li>
+                <li><a href="{{ route('proyectos') }}" class="hover:text-[#f2780d]">Teatro</a></li>
             </ul>
         </nav>
     @endif
