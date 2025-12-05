@@ -1,18 +1,17 @@
 <?php
 
+use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('publico.home');
 })->name('home');
 
-Route::get('/login', function () {
-    return view('publico.login');
-})->name('login');
+// LOGIN
+Route::get('/login', [LoginController::class, "index"])->name('login');
 
-Route::get('/registro', function () {
-    return view('publico.registro');
-})->name('registro');
+// REGISTRO
+Route::get('/registro', [LoginController::class, 'index'])->name('registro');
 
 Route::get('/crear_proyecto', function () {
     return view('privado.crear_proyecto');

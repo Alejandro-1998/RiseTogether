@@ -15,20 +15,30 @@
         @endif
     </div>
 
-    <form method="post" action="{{ Route::is('login') ? route('login') : route('registro') }}" class="space-y-5">
+    <form method="POST" action="{{ Route::is('login') ? route('login') : route('registro') }}" class="space-y-5">
         @csrf
 
         @if (Route::is('registro'))
             <div>
-                <label for="full_name" class="block text-sm font-medium">Nombre completo</label>
+                <label for="nombreUsuario" class="block text-sm font-medium">Nombre de usuario</label>
                 <div class="relative mt-1">
                     <span
                         class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9c7049] dark:text-[#a18a7a]">person</span>
-                    <input id="full_name" name="full_name" type="text" autocomplete="name" required
+                    <input id="nombreUsuario" name="nombreUsuario" type="text" autocomplete="name" required
+                        placeholder="El apodo que elijas"
+                        class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
+                </div>
+            </div> 
+            <div>
+                <label for="nombreCompleto" class="block text-sm font-medium">Nombre completo</label>
+                <div class="relative mt-1">
+                    <span
+                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9c7049] dark:text-[#a18a7a]">person</span>
+                    <input id="nombreCompleto" name="nombreCompleto" type="text" autocomplete="name"
                         placeholder="Tu nombre y apellidos"
                         class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
                 </div>
-            </div>     
+            </div> 
         @endif
 
         <div>
@@ -54,12 +64,12 @@
 
         @if (Route::is('registro'))
             <div>
-                <label for="password_confirmation" class="block text-sm font-medium">Confirmar
+                <label for="passwordConfirmacion" class="block text-sm font-medium">Confirmar
                     contraseña</label>
                 <div class="relative mt-1">
                     <span
                         class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9c7049] dark:text-[#a18a7a]">password</span>
-                    <input id="password_confirmation" name="password_confirmation" type="password"
+                    <input id="passwordConfirmacion" name="passwordConfirmacion" type="password"
                         autocomplete="new-password" minlength="6" required
                         placeholder="Repite tu contraseña"
                         class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
@@ -80,9 +90,9 @@
             </div>
         @else
             <div class="flex items-start gap-2 text-sm">
-                <input id="terms" name="terms" type="checkbox" required
+                <input id="terminos" name="terminos" type="checkbox" required
                     class="mt-1 rounded border-[#9c7049] text-[#f2780d] focus:ring-[#f2780d] dark:border-[#a18a7a]" />
-                <label for="terms" class="text-[#9c7049] dark:text-[#a18a7a]">
+                <label for="terminos" class="text-[#9c7049] dark:text-[#a18a7a]">
                     He leído y acepto los <a href="#"
                         class="text-[#f2780d] font-semibold hover:opacity-80">Términos y Condiciones</a>.
                 </label>
@@ -93,6 +103,10 @@
             class="inline-flex w-full items-center justify-center rounded-lg bg-[#f2780d] px-4 py-3 font-bold text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d]">
             {{ Route::is('login') ? "Entrar" : "Crear cuenta" }}
         </button>
+
+        @error('email')
+            <div class="error">{{ $message }}</div>
+        @enderror
 
         <div class="relative my-4">
             <div class="absolute inset-0 flex items-center">
