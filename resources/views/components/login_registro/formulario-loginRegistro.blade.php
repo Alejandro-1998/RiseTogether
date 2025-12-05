@@ -36,7 +36,7 @@
                         class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9c7049] dark:text-[#a18a7a]">person</span>
                     <input id="nombreCompleto" name="nombreCompleto" type="text" autocomplete="name"
                         placeholder="Tu nombre y apellidos"
-                        class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
+                        class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
                 </div>
             </div> 
         @endif
@@ -58,7 +58,7 @@
                     class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9c7049] dark:text-[#a18a7a]">lock</span>
                 <input id="password" name="password" type="password" autocomplete="current-password" placeholder="contraseña"
                     required
-                    class="form-input w-full h-8 rounded-lg border-none bg-[#120a02] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d]  dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
+                    class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d]  dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
             </div>
         </div>
 
@@ -72,7 +72,7 @@
                     <input id="passwordConfirmacion" name="passwordConfirmacion" type="password"
                         autocomplete="new-password" minlength="6" required
                         placeholder="Repite tu contraseña"
-                        class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
+                        class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
                 </div>
             </div>
         @endif
