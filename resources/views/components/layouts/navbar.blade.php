@@ -1,8 +1,8 @@
-<!-- Ton Navbar -->
 <header
     class="sticky top-0 z-50 border-b border-[#f4ede7]/80 bg-[#fcfaf8]/80 px-4 py-3 backdrop-blur-sm dark:border-[#2a2017]/80 dark:bg-[#1c140d]/80 sm:px-6 lg:px-8">
     <nav class="flex items-center justify-between" aria-label="Primary">
 
+        {{-- LÓGICA DEL LOGO Y BARRA DE BÚSQUEDA (Se mantiene igual) --}}
         @if (!Route::is('login') && !Route::is('registro'))
             <div class="flex items-center gap-8">
                 <a href="{{ route('home') }}" class="flex items-center gap-3 text-[#1c140d] dark:text-[#fcfaf8]">
@@ -26,37 +26,69 @@
             </div>
         @endif
 
+        {{-- SECCIÓN DE BOTONES --}}
         <div class="flex flex-1 items-center justify-end gap-2">
-            <div class="hidden flex-1 items-center justify-end gap-2 md:flex">
+            <div class="hidden flex-1 items-center justify-end gap-3 md:flex">
 
-                @if (!Route::is('login') && !Route::is('registro'))
-                    <a href="{{ route('login') }}"
-                        class="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#2a2017]/80 dark:focus-visible:ring-offset-[#1c140d]">
-                        Iniciar Sesión
-                    </a>
-                    <a  href="{{ route('crear_proyecto') }}"
+                @auth
+                    {{-- 🟢 USUARIO LOGUEADO --}}
+
+                    {{-- 1. Botón Crear Proyecto --}}
+                    <a href="{{ route('crear_proyecto') }}"
                         class="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:focus-visible:ring-offset-[#1c140d]">
                         Crear Proyecto
                     </a>
-                @elseif (Route::is('login'))
-                    <a href="{{ route('home') }}"
-                        class="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#2a2017]/80 dark:focus-visible:ring-offset-[#1c140d]">
-                        Volver a Inicio
+
+                    {{-- 2. Botón Redondo de Usuario --}}
+                    <a href="{{ route('usuario') }}" 
+                       title="Mi Perfil"
+                       class="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4ede7] text-[#1c140d] transition-colors hover:bg-[#e0d4cc] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#3a2c20]">
+                        <span class="material-symbols-outlined">person</span>
                     </a>
-                    <a href="{{ route('registro') }}"
-                        class="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:focus-visible:ring-offset-[#1c140d]">
-                        Registrarse
-                    </a>
+
+                    {{-- 3. Botón Logout --}}
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit"
+                            class="flex h-10 items-center justify-center rounded-lg border border-[#f2780d] px-4 text-sm font-bold text-[#f2780d] transition-colors hover:bg-[#f2780d] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d]">
+                            Salir
+                        </button>
+                    </form>
+
                 @else
-                    <a href="{{ route('home') }}"
-                        class="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#2a2017]/80 dark:focus-visible:ring-offset-[#1c140d]">
-                        Volver a Inicio
-                    </a>
-                    <a href="{{ route('login') }}"
-                        class="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:focus-visible:ring-offset-[#1c140d]">
-                        Iniciar Sesión
-                    </a>
-                @endif
+                    {{-- ⚪ USUARIO INVITADO (NO LOGUEADO) - Lógica original --}}
+                    
+                    @if (!Route::is('login') && !Route::is('registro'))
+                        <a href="{{ route('login') }}"
+                            class="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#2a2017]/80 dark:focus-visible:ring-offset-[#1c140d]">
+                            Iniciar Sesión
+                        </a>
+                        <a href="{{ route('crear_proyecto') }}"
+                            class="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:focus-visible:ring-offset-[#1c140d]">
+                            Crear Proyecto
+                        </a>
+                    @elseif (Route::is('login'))
+                        <a href="{{ route('home') }}"
+                            class="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#2a2017]/80 dark:focus-visible:ring-offset-[#1c140d]">
+                            Volver a Inicio
+                        </a>
+                        <a href="{{ route('registro') }}"
+                            class="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:focus-visible:ring-offset-[#1c140d]">
+                            Registrarse
+                        </a>
+                    @else
+                        <a href="{{ route('home') }}"
+                            class="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#2a2017]/80 dark:focus-visible:ring-offset-[#1c140d]">
+                            Volver a Inicio
+                        </a>
+                        <a href="{{ route('login') }}"
+                            class="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:focus-visible:ring-offset-[#1c140d]">
+                            Iniciar Sesión
+                        </a>
+                    @endif
+
+                @endauth
+
             </div>
 
             <button type="button"

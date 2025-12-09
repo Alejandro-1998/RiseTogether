@@ -24,20 +24,29 @@
                 <div class="relative mt-1">
                     <span
                         class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9c7049] dark:text-[#a18a7a]">person</span>
-                    <input id="nombreUsuario" name="nombreUsuario" type="text" autocomplete="name" required
+                    <input id="nombreUsuario" name="nombreUsuario" type="text" autocomplete="username" required
+                        value="{{ old('nombreUsuario') }}"
                         placeholder="El apodo que elijas"
                         class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
                 </div>
-            </div> 
+                @error('nombreUsuario')
+                    <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
+                @enderror
+            </div>
+            
             <div>
                 <label for="nombreCompleto" class="block text-sm font-medium">Nombre completo</label>
                 <div class="relative mt-1">
                     <span
                         class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9c7049] dark:text-[#a18a7a]">person</span>
                     <input id="nombreCompleto" name="nombreCompleto" type="text" autocomplete="name"
+                        value="{{ old('nombreCompleto') }}"
                         placeholder="Tu nombre y apellidos"
                         class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
                 </div>
+                @error('nombreCompleto')
+                    <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
+                @enderror
             </div> 
         @endif
 
@@ -47,8 +56,12 @@
                 <span
                     class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9c7049] dark:text-[#a18a7a]">mail</span>
                 <input id="email" name="email" type="email" autocomplete="email" required placeholder="correo"
+                    value="{{ old('email') }}"
                     class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#b28155] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
             </div>
+            @error('email')
+                <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
+            @enderror
         </div>
 
         <div>
@@ -60,16 +73,20 @@
                     required
                     class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d]  dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
             </div>
+            @error('password')
+                <p class="mt-1 text-xs text-red-500 font-medium">{{ $message }}</p>
+            @enderror
         </div>
 
         @if (Route::is('registro'))
             <div>
-                <label for="passwordConfirmacion" class="block text-sm font-medium">Confirmar
+                <label for="password_confirmation" class="block text-sm font-medium">Confirmar
                     contraseña</label>
                 <div class="relative mt-1">
                     <span
                         class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9c7049] dark:text-[#a18a7a]">password</span>
-                    <input id="passwordConfirmacion" name="passwordConfirmacion" type="password"
+                    {{-- Cambiado name="passwordConfirmacion" a "password_confirmation" para validación automática --}}
+                    <input id="password_confirmation" name="password_confirmation" type="password"
                         autocomplete="new-password" minlength="6" required
                         placeholder="Repite tu contraseña"
                         class="form-input w-full h-8 rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]" />
@@ -89,13 +106,18 @@
                     contraseña?</a>
             </div>
         @else
-            <div class="flex items-start gap-2 text-sm">
-                <input id="terminos" name="terminos" type="checkbox" required
-                    class="mt-1 rounded border-[#9c7049] text-[#f2780d] focus:ring-[#f2780d] dark:border-[#a18a7a]" />
-                <label for="terminos" class="text-[#9c7049] dark:text-[#a18a7a]">
-                    He leído y acepto los <a href="#"
-                        class="text-[#f2780d] font-semibold hover:opacity-80">Términos y Condiciones</a>.
-                </label>
+            <div class="flex flex-col gap-1">
+                <div class="flex items-start gap-2 text-sm">
+                    <input id="terminos" name="terminos" type="checkbox" required
+                        class="mt-1 rounded border-[#9c7049] text-[#f2780d] focus:ring-[#f2780d] dark:border-[#a18a7a]" />
+                    <label for="terminos" class="text-[#9c7049] dark:text-[#a18a7a]">
+                        He leído y acepto los <a href="#"
+                            class="text-[#f2780d] font-semibold hover:opacity-80">Términos y Condiciones</a>.
+                    </label>
+                </div>
+                @error('terminos')
+                    <p class="text-xs text-red-500 font-medium">{{ $message }}</p>
+                @enderror
             </div>
         @endif
 
@@ -103,10 +125,6 @@
             class="inline-flex w-full items-center justify-center rounded-lg bg-[#f2780d] px-4 py-3 font-bold text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d]">
             {{ Route::is('login') ? "Entrar" : "Crear cuenta" }}
         </button>
-
-        @error('email')
-            <div class="error">{{ $message }}</div>
-        @enderror
 
         <div class="relative my-4">
             <div class="absolute inset-0 flex items-center">
