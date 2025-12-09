@@ -9,19 +9,26 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('proyectos', function (Blueprint $table) {
-            $table->id();
-            $table->string('nombreProyecto')->unique();
-            $table->text('descripcion');
-            $table->decimal('financiacionObjetivo');
-            $table->date('fechaCreacion');
-            $table->date('fechaFinalizacion');
-            $table->timestamps();
-            $table->softDeletes();
-        });
-    }
+public function up(): void
+{
+    Schema::create('proyectos', function (Blueprint $table) {
+        $table->id();
+        $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+        $table->foreignId('categoria_id')->constrained('categorias')->restrictOnDelete();
+        $table->string('titulo');
+        $table->string('slug')->unique();
+        $table->text('resumen');
+        $table->longText('descripcion');
+        $table->string('imagen_portada')->nullable();
+        $table->string('video_url')->nullable();
+        $table->decimal('objetivo_financiacion', 12, 2); 
+        $table->decimal('cantidad_recaudada', 12, 2)->default(0);
+        $table->dateTime('fecha_limite');
+        $table->enum('estado', ['borrador', 'revision', 'publicado', 'exitoso', 'fallido', 'cancelado'])->default('borrador');
+        $table->timestamps();
+        $table->softDeletes();
+    });
+}
 
     /**
      * Reverse the migrations.

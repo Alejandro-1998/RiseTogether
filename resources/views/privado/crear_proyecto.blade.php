@@ -1,435 +1,331 @@
 <x-layouts.body>
     <div class="container mx-auto px-6 py-8">
-        <div class="max-w-5xl mx-auto mb-8">
-            <div class="flex flex-wrap justify-between gap-3">
-                <div class="flex min-w-72 flex-col gap-2">
-                    <h1 class="text-4xl font-black tracking-tight">Empecemos con tu proyecto</h1>
-                    <p class="text-base font-normal text-[#6B7280] dark:text-[#9CA3AF]">
-                        Cuéntanos
-                        lo básico. Siempre podrás guardar tu progreso y volver más tarde.</p>
+        <form method="POST" action="{{ route('proyectos.store') }}" enctype="multipart/form-data">
+            @csrf
+
+            {{-- CABECERA --}}
+            <div class="max-w-5xl mx-auto mb-8">
+                <div class="flex flex-wrap justify-between gap-3">
+                    <div class="flex min-w-72 flex-col gap-2">
+                        <h1 class="text-4xl font-black tracking-tight">Empecemos con tu proyecto</h1>
+                        <p class="text-base font-normal text-[#6B7280] dark:text-[#9CA3AF]">
+                            Cuéntanos lo básico. Verás los cambios en la tarjeta de la derecha.
+                        </p>
+                    </div>
+                    {{-- Botón de Guardar --}}
+                    <div class="flex items-center">
+                        <button type="submit"
+                            class="rounded-xl bg-[#F97316] px-6 py-3 text-base font-bold text-white shadow-lg hover:bg-[#ea580c] hover:shadow-xl transition-all focus:ring-4 focus:ring-[#F97316]/30">
+                            Guardar Proyecto
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="max-w-7xl mx-auto grid grid-cols-12 gap-8">
-            <div class="col-span-12 lg:col-span-8 space-y-6">
-                <div
-                    class="rounded-xl border border-[#E5E7EB] dark:border-[#374151] p-6 bg-[#FFFFFF] dark:bg-gray-800">
-                    <h3 class="text-xl font-bold mb-6">Información básica del proyecto</h3>
-                    <div class="space-y-6">
-                        <label class="flex flex-col">
-                            <p class="text-sm font-medium pb-2">Título del proyecto</p>
-                            <input
-                                class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-xl border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 text-[#1F2937] dark:text-[#F9FAFB] h-12 placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-3 text-base font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                placeholder="Ej.: La cafetera espresso portátil definitiva"
-                                value="La cafetera espresso portátil definitiva" />
-                        </label>
-                        <label class="flex flex-col">
-                            <p class="text-sm font-medium pb-2">Subtítulo</p>
-                            <textarea
-                                class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-xl border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 text-[#1F2937] dark:text-[#F9FAFB] h-24 placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-3 text-base font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                placeholder="Una descripción breve y llamativa de tu proyecto."></textarea>
-                        </label>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            {{-- GRID PRINCIPAL --}}
+            <div class="max-w-7xl mx-auto grid grid-cols-12 gap-8">
+                
+                {{-- COLUMNA IZQUIERDA (FORMULARIO) --}}
+                <div class="col-span-12 lg:col-span-8 space-y-6">
+                    
+                    {{-- 1. INFORMACIÓN BÁSICA --}}
+                    <div class="rounded-xl border border-[#E5E7EB] dark:border-[#374151] p-6 bg-[#FFFFFF] dark:bg-gray-800 shadow-sm">
+                        <h3 class="text-xl font-bold mb-6">Información básica</h3>
+                        <div class="space-y-6">
+                            
+                            {{-- Título --}}
                             <label class="flex flex-col">
-                                <p class="text-sm font-medium pb-2">Categoría</p>
-                                <select
-                                    class="form-select flex w-full min-w-0 flex-1 rounded-xl border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 text-[#1F2937] dark:text-[#F9FAFB] h-12 p-3 text-base font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]">
-                                    <option>Tecnología</option>
-                                    <option>Diseño</option>
-                                    <option>Juegos</option>
-                                    <option>Arte</option>
-                                    <option>Música</option>
-                                </select>
+                                <p class="text-sm font-medium pb-2">Título del proyecto</p>
+                                <input name="titulo" id="input_titulo" type="text" value="{{ old('titulo') }}" required
+                                    class="form-input w-full rounded-xl border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 h-12 p-3 focus:ring-[#F97316] focus:border-[#F97316] dark:text-white"
+                                    placeholder="Ej.: La cafetera espresso definitiva" />
+                                @error('titulo') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </label>
+
+                            {{-- Resumen (Subtítulo) --}}
                             <label class="flex flex-col">
-                                <p class="text-sm font-medium pb-2">Ubicación</p>
-                                <input
-                                    class="form-input flex w-full min-w-0 flex-1 rounded-xl border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 text-[#1F2937] dark:text-[#F9FAFB] h-12 placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-3 text-base font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                    placeholder="Ej.: Córdoba, España" value="" />
+                                <p class="text-sm font-medium pb-2">Subtítulo (Resumen corto)</p>
+                                <textarea name="resumen" id="input_resumen" required
+                                    class="form-textarea w-full rounded-xl border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 h-24 p-3 focus:ring-[#F97316] focus:border-[#F97316] dark:text-white"
+                                    placeholder="Una descripción breve para la tarjeta del proyecto.">{{ old('resumen') }}</textarea>
+                                @error('resumen') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </label>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium pb-2">Imagen de portada</p>
-                            <div class="flex items-center justify-center w-full">
-                                <label
-                                    class="flex flex-col items-center justify-center w-full h-48 border-2 border-[#E5E7EB] dark:border-[#374151] border-dashed rounded-xl cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-                                    for="dropzone-file">
-                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                        <span
-                                            class="material-symbols-outlined text-[#6B7280] dark:text-[#9CA3AF] mb-2 text-4xl">upload_file</span>
-                                        <p
-                                            class="mb-2 text-sm text-[#6B7280] dark:text-[#9CA3AF]">
-                                            <span class="font-semibold">Haz clic para subir</span> o arrastra y
-                                            suelta
-                                        </p>
-                                        <p class="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
-                                            PNG, JPG o GIF (recomendado 1200x675px)</p>
-                                    </div>
-                                    <input class="hidden" id="dropzone-file" type="file" />
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {{-- Categoría Dinámica --}}
+                                <label class="flex flex-col">
+                                    <p class="text-sm font-medium pb-2">Categoría</p>
+                                    <select name="categoria_id" id="input_categoria" required
+                                        class="form-select w-full rounded-xl border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 h-12 p-3 focus:ring-[#F97316] focus:border-[#F97316] dark:text-white">
+                                        <option value="" disabled selected>Selecciona una...</option>
+                                        @foreach($categorias as $cat)
+                                            <option value="{{ $cat->id }}" {{ old('categoria_id') == $cat->id ? 'selected' : '' }}>
+                                                {{ $cat->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('categoria_id') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                                 </label>
+                                
+                                {{-- Ubicación (Decorativo por ahora) --}}
+                                <label class="flex flex-col">
+                                    <p class="text-sm font-medium pb-2">Ubicación</p>
+                                    <input disabled title="Próximamente"
+                                        class="form-input w-full rounded-xl border-[#E5E7EB] dark:border-[#374151] bg-gray-100 dark:bg-gray-600 h-12 p-3 cursor-not-allowed opacity-70"
+                                        placeholder="España (Automático)" />
+                                </label>
+                            </div>
+
+                            {{-- Imagen de Portada --}}
+                            <div>
+                                <p class="text-sm font-medium pb-2">Imagen de portada</p>
+                                <div class="flex items-center justify-center w-full">
+                                    <label for="imagen_portada"
+                                        class="flex flex-col items-center justify-center w-full h-48 border-2 border-[#E5E7EB] dark:border-[#374151] border-dashed rounded-xl cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                            <span class="material-symbols-outlined text-[#6B7280] text-4xl mb-2">image</span>
+                                            <p class="mb-2 text-sm text-[#6B7280] dark:text-[#9CA3AF]"><span class="font-bold">Clic para subir imagen</span></p>
+                                            <p class="text-xs text-[#6B7280] dark:text-[#9CA3AF]">JPG, PNG (Max 2MB)</p>
+                                        </div>
+                                        <input id="imagen_portada" name="imagen_portada" type="file" class="hidden" accept="image/*" />
+                                    </label>
+                                </div>
+                                @error('imagen_portada') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
                         </div>
                     </div>
+
+                    {{-- 2. FINANCIACIÓN --}}
+                    <div class="space-y-3">
+                        <details class="flex flex-col rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-800 px-6 py-2 group shadow-sm" open>
+                            <summary class="flex cursor-pointer items-center justify-between gap-6 py-2 list-none text-[#1c140d] dark:text-[#fcfaf8]">
+                                <p class="text-lg font-bold">Financiación</p>
+                                <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                            </summary>
+                            
+                            <div class="py-6 space-y-6 border-t border-gray-100 dark:border-gray-700 mt-2">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {{-- Objetivo --}}
+                                    <label class="flex flex-col">
+                                        <p class="text-sm font-medium pb-2">Objetivo (€)</p>
+                                        <input name="objetivo_financiacion" id="input_objetivo" type="number" min="100" step="0.01" required
+                                            value="{{ old('objetivo_financiacion') }}"
+                                            class="form-input w-full rounded-xl border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 h-12 p-3 focus:ring-[#F97316] focus:border-[#F97316] dark:text-white"
+                                            placeholder="Ej: 10000" />
+                                         @error('objetivo_financiacion') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                                    </label>
+
+                                    {{-- Duración --}}
+                                    <label class="flex flex-col">
+                                        <p class="text-sm font-medium pb-2">Duración (Días)</p>
+                                        <input name="duracion_dias" id="input_dias" type="number" min="1" max="90" required
+                                            value="{{ old('duracion_dias', 30) }}"
+                                            class="form-input w-full rounded-xl border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 h-12 p-3 focus:ring-[#F97316] focus:border-[#F97316] dark:text-white"
+                                            placeholder="30" />
+                                        @error('duracion_dias') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                                    </label>
+                                </div>
+                            </div>
+                        </details>
+
+                        {{-- 3. HISTORIA --}}
+                        <details class="flex flex-col rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-800 px-6 py-2 group shadow-sm">
+                            <summary class="flex cursor-pointer items-center justify-between gap-6 py-2 list-none text-[#1c140d] dark:text-[#fcfaf8]">
+                                <p class="text-lg font-bold">Historia y detalles</p>
+                                <span class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
+                            </summary>
+                            
+                            <div class="py-6 space-y-6 border-t border-gray-100 dark:border-gray-700 mt-2">
+                                {{-- Descripción Completa --}}
+                                <label class="flex flex-col">
+                                    <p class="text-sm font-medium pb-2">Historia completa</p>
+                                    <textarea name="descripcion" rows="8" required
+                                        class="form-textarea w-full rounded-xl border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 p-3 focus:ring-[#F97316] focus:border-[#F97316] dark:text-white"
+                                        placeholder="Cuenta todo sobre tu proyecto: ¿Quién eres? ¿Qué quieres crear?">{{ old('descripcion') }}</textarea>
+                                     @error('descripcion') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                                </label>
+
+                                {{-- Video URL --}}
+                                <label class="flex flex-col">
+                                    <p class="text-sm font-medium pb-2">Video (YouTube/Vimeo) - Opcional</p>
+                                    <input name="video_url" type="url" value="{{ old('video_url') }}"
+                                        class="form-input w-full rounded-xl border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 h-12 p-3 focus:ring-[#F97316] focus:border-[#F97316] dark:text-white"
+                                        placeholder="https://..." />
+                                </label>
+                            </div>
+                        </details>
+                    </div>
+
+                    {{-- AVISO SOBRE RECOMPENSAS --}}
+                    <div class="rounded-xl bg-orange-50 border border-orange-200 p-4 text-orange-800 text-sm dark:bg-orange-900/20 dark:border-orange-900/50 dark:text-orange-200">
+                        <p class="font-bold flex items-center gap-2">
+                            <span class="material-symbols-outlined">info</span>
+                            Nota sobre recompensas
+                        </p>
+                        <p class="mt-1">
+                            Podrás configurar las recompensas (Precios, envíos, etc.) en el siguiente paso, una vez hayas guardado el borrador.
+                        </p>
+                    </div>
+
                 </div>
-                <div class="space-y-3">
-                    <details
-                        class="flex flex-col rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-800 px-6 py-2 group">
-                        <summary class="flex cursor-pointer items-center justify-between gap-6 py-2 list-none">
-                            <p class="text-lg font-bold">Financiación</p>
-                            <span
-                                class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                        </summary>
-                        <div class="col-span-12 lg:col-span-8 space-y-6">
-                            <div
-                                class="rounded-xl border border-[#E5E7EB] dark:border-[#374151] p-6 bg-[#FFFFFF] dark:bg-gray-800">
-                                <h3 class="text-xl font-bold mb-6">Ajustes de financiación</h3>
 
-                                <div class="space-y-6">
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                        <label class="flex flex-col md:col-span-2">
-                                            <p class="text-sm font-medium pb-2">Objetivo de financiación</p>
-                                            <div
-                                                class="flex items-center rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 px-3">
-                                                <span
-                                                    class="mr-2 text-sm font-medium text-[#6B7280] dark:text-[#9CA3AF]">
-                                                    €
-                                                </span>
-                                                <input type="number" min="1"
-                                                    class="form-input flex w-full min-w-0 flex-1 rounded-xl border-0 bg-transparent text-[#1F2937] dark:text-[#F9FAFB] h-12 placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-0 text-base font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                                    placeholder="Ej.: 10.000" />
-                                            </div>
-                                            <p
-                                                class="text-xs font-normal text-[#6B7280] dark:text-[#9CA3AF] mt-1">
-                                                La cantidad mínima que necesitas para hacer realidad tu
-                                                proyecto.
-                                            </p>
-                                        </label>
+                {{-- COLUMNA DERECHA (VISTA PREVIA EN VIVO) --}}
+                <div class="col-span-12 lg:col-span-4">
+                    <div class="sticky top-24">
+                        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">Vista previa en vivo</h3>
+                        
+                        {{-- CARD START --}}
+                        <div class="group flex w-full flex-col overflow-hidden rounded-xl border border-[#E5E7EB] bg-white shadow-sm transition-all hover:shadow-md dark:border-[#2a2017] dark:bg-[#1c140d]">
+                            
+                            {{-- Imagen --}}
+                            <div class="relative aspect-video w-full overflow-hidden bg-gray-100 dark:bg-gray-800">
+                                <img id="card_image" 
+                                     src="https://via.placeholder.com/640x360?text=Sube+tu+imagen" 
+                                     alt="Portada del proyecto" 
+                                     class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                            </div>
 
-                                        <label class="flex flex-col">
-                                            <p class="text-sm font-medium pb-2">Moneda</p>
-                                            <select
-                                                class="form-select flex w-full min-w-0 flex-1 rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 text-[#1F2937] dark:text-[#F9FAFB] h-12 p-3 text-base font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]">
-                                                <option value="EUR" selected>EUR — Euro</option>
-                                                <option value="USD">USD — Dólar estadounidense</option>
-                                                <option value="GBP">GBP — Libra esterlina</option>
-                                            </select>
-                                            <p
-                                                class="text-xs font-normal text-[#6B7280] dark:text-[#9CA3AF] mt-1">
-                                                Recibirás el dinero en esta moneda si la campaña tiene éxito.
-                                            </p>
-                                        </label>
+                            {{-- Contenido --}}
+                            <div class="flex flex-1 flex-col p-5">
+                                {{-- Categoría --}}
+                                <div class="mb-3 flex items-center justify-between">
+                                    <span id="card_category" class="text-xs font-bold uppercase tracking-wider text-[#f2780d]">
+                                        Categoría
+                                    </span>
+                                    <span class="flex items-center text-xs font-medium text-[#6B7280] dark:text-[#9CA3AF]">
+                                        <span class="material-symbols-outlined mr-1 text-[16px]">schedule</span>
+                                        <span id="card_days">30</span> días
+                                    </span>
+                                </div>
+
+                                {{-- Título --}}
+                                <h3 id="card_title" class="mb-2 text-xl font-bold leading-tight text-[#1c140d] dark:text-[#fcfaf8]">
+                                    Título de tu proyecto
+                                </h3>
+
+                                {{-- Resumen --}}
+                                <p id="card_resume" class="mb-4 line-clamp-2 text-sm text-[#6B7280] dark:text-[#a18a7a]">
+                                    Aquí aparecerá el resumen breve de tu proyecto mientras escribes...
+                                </p>
+
+                                {{-- Barra de Progreso (Estática en 0% para creación) --}}
+                                <div class="mt-auto pt-4">
+                                    <div class="mb-2 h-1.5 w-full overflow-hidden rounded-full bg-[#f4ede7] dark:bg-[#2a2017]">
+                                        <div class="h-full w-0 bg-[#f2780d]"></div>
                                     </div>
-
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <label class="flex flex-col">
-                                            <p class="text-sm font-medium pb-2">Duración de la campaña (días)
-                                            </p>
-                                            <input type="number" min="1" max="60"
-                                                class="form-input flex w-full min-w-0 flex-1 rounded-xl border-border-light dark:border-border-dark bg-[#FFFFFF] dark:bg-gray-700 text-[#1F2937] dark:text-[#F9FAFB] h-12 placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-3 text-base font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                                placeholder="Ej.: 30" />
-                                            <p
-                                                class="text-xs font-normal text-[#6B7280] dark:text-[#9CA3AF] mt-1">
-                                                La mayoría de campañas exitosas duran entre 25 y 35 días.
-                                            </p>
-                                        </label>
-
-                                        <label class="flex flex-col">
-                                            <p class="text-sm font-medium pb-2">Fecha de finalización (opcional)
-                                            </p>
-                                            <input type="date"
-                                                class="form-input flex w-full min-w-0 flex-1 rounded-xl border-border-light dark:border-border-dark bg-[#FFFFFF] dark:bg-gray-700 text-[#1F2937] dark:text-[#F9FAFB] h-12 placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-3 text-base font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]" />
-                                            <p
-                                                class="text-xs font-normal text-[#6B7280] dark:text-[#9CA3AF] mt-1">
-                                                Si la estableces, la campaña terminará exactamente ese día.
-                                            </p>
-                                        </label>
-                                    </div>
-
-                                    <label class="flex flex-col">
-                                        <p class="text-sm font-medium pb-2">Aportación mínima (opcional)</p>
-                                        <div
-                                            class="flex items-center rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 px-3">
-                                            <span
-                                                class="mr-2 text-sm font-medium text-[#6B7280] dark:text-[#9CA3AF]">
-                                                €
-                                            </span>
-                                            <input type="number" min="1"
-                                                class="form-input flex w-full min-w-0 flex-1 rounded-xl border-0 bg-transparent text-[#1F2937] dark:text-[#F9FAFB] h-12 placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-0 text-base font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                                placeholder="Ej.: 5" />
+                                    <div class="flex items-end justify-between">
+                                        <div class="flex flex-col">
+                                            <span class="text-base font-bold text-[#1c140d] dark:text-[#fcfaf8]">0 €</span>
+                                            <span class="text-xs text-[#6B7280] dark:text-[#9CA3AF]">recaudados</span>
                                         </div>
-                                        <p
-                                            class="text-xs font-normal text-[#6B7280] dark:text-[#9CA3AF] mt-1">
-                                            Si lo dejas vacío, los mecenas podrán aportar cualquier cantidad.
-                                        </p>
-                                    </label>
-
-                                    <label class="flex flex-col">
-                                        <p class="text-sm font-medium pb-2">Notas internas (opcional)</p>
-                                        <textarea rows="3"
-                                            class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 text-[#1F2937] dark:text-[#F9FAFB] placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-3 text-sm font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                            placeholder="Añade notas internas sobre tu presupuesto o estrategia de financiación. Solo las verás tú."></textarea>
-                                    </label>
+                                        <div class="flex flex-col items-end">
+                                            <span class="text-sm font-bold text-[#6B7280] dark:text-[#9CA3AF]">0%</span>
+                                            {{-- Objetivo Dinámico --}}
+                                            <span class="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
+                                                meta: <span id="card_goal">10.000</span> €
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                {{-- Footer del Autor --}}
+                                <div class="mt-4 flex items-center gap-2 border-t border-[#f4ede7] pt-4 dark:border-[#2a2017]">
+                                    <div class="h-6 w-6 rounded-full bg-[#f2780d]/20 flex items-center justify-center text-[10px] font-bold text-[#f2780d] uppercase">
+                                        {{ substr(Auth::user()->nombreUsuario, 0, 1) }}
+                                    </div>
+                                    <span class="text-xs font-medium text-[#6B7280] dark:text-[#9CA3AF]">
+                                        por <span class="text-[#1c140d] dark:text-[#fcfaf8] font-bold">{{ Auth::user()->nombreUsuario }}</span>
+                                    </span>
                                 </div>
                             </div>
                         </div>
-                        <div class="pb-4">
-                            <p
-                                class="text-[#6B7280] dark:text-[#9CA3AF] text-sm font-normal mb-6">
-                                Define tu objetivo de financiación y la duración de la campaña.</p>
-                            </div>
-                    </details>
-                    <details
-                        class="flex flex-col rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-800 px-6 py-2 group">
-                        <summary class="flex cursor-pointer items-center justify-between gap-6 py-2 list-none">
-                            <p class="text-lg font-bold">Historia y medios</p>
-                            <span
-                                class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                        </summary>
-                        <div class="col-span-12 lg:col-span-8 space-y-6">
-                            <div
-                                class="rounded-xl border border-[#E5E7EB] dark:border-[#374151] p-6 bg-[#FFFFFF] dark:bg-gray-800">
-                                <h3 class="text-xl font-bold mb-6">Historia y medios</h3>
+                        {{-- CARD END --}}
 
-                                <div class="space-y-6">
-                                    <label class="flex flex-col">
-                                        <p class="text-sm font-medium pb-2">Resumen del proyecto</p>
-                                        <textarea
-                                            class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 text-[#1F2937] dark:text-[#F9FAFB] placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-3 text-sm font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                            rows="3"
-                                            placeholder="Escribe un resumen breve que aparecerá al principio de la página del proyecto."></textarea>
-                                        <p
-                                            class="text-xs font-normal text-[#6B7280] dark:text-[#9CA3AF] mt-1">
-                                            Entre 100 y 200 caracteres funciona muy bien como introducción.
-                                        </p>
-                                    </label>
-
-                                    <label class="flex flex-col">
-                                        <p class="text-sm font-medium pb-2">Historia completa</p>
-                                        <textarea
-                                            class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 text-[#1F2937] dark:text-[#F9FAFB] placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-3 text-sm font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                            rows="7"
-                                            placeholder="Cuenta la historia detrás de tu proyecto: de dónde nace la idea, qué problema resuelve, cómo lo vas a producir y qué recibirán los mecenas."></textarea>
-                                        <p
-                                            class="text-xs font-normal text-[#6B7280] dark:text-[#9CA3AF] mt-1">
-                                            Sé transparente y concreto. Explica el qué, el cómo y el por qué de
-                                            tu proyecto.
-                                        </p>
-                                    </label>
-
-                                    <label class="flex flex-col">
-                                        <p class="text-sm font-medium pb-2">Enlace de vídeo de presentación
-                                            (opcional)</p>
-                                        <input type="url"
-                                            class="form-input flex w-full min-w-0 flex-1 rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 text-[#1F2937] dark:text-[#F9FAFB] h-12 placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-3 text-base font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                            placeholder="Ej.: https://www.youtube.com/watch?v=tu-video" />
-                                        <p
-                                            class="text-xs font-normal text-[#6B7280] dark:text-[#9CA3AF] mt-1">
-                                            Puedes usar un enlace de YouTube, Vimeo u otra plataforma
-                                            compatible.
-                                        </p>
-                                    </label>
-
-                                    <div>
-                                        <p class="text-sm font-medium pb-2">Imágenes adicionales (opcional)</p>
-                                        <div class="flex items-center justify-center w-full">
-                                            <label for="dropzone-gallery"
-                                                class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-[#E5E7EB] dark:border-[#374151] rounded-xl cursor-pointer bg-[#FFFFFF] dark:bg-gray-700 hover:bg-gray-50 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                                <div
-                                                    class="flex flex-col items-center justify-center pt-5 pb-6">
-                                                    <span
-                                                        class="material-symbols-outlined mb-2 text-4xl text-[#6B7280] dark:text-[#9CA3AF]">
-                                                        upload_file
-                                                    </span>
-                                                    <p
-                                                        class="mb-2 text-sm text-[#6B7280] dark:text-[#9CA3AF]">
-                                                        <span class="font-semibold">Haz clic para subir</span> o
-                                                        arrastra y
-                                                        suelta
-                                                    </p>
-                                                    <p
-                                                        class="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
-                                                        Añade renders, fotos de prototipo o cualquier imagen que
-                                                        ayude a
-                                                        explicar tu proyecto.
-                                                    </p>
-                                                </div>
-                                                <input id="dropzone-gallery" type="file" multiple
-                                                    class="hidden" />
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <label class="flex flex-col">
-                                        <p class="text-sm font-medium pb-2">Preguntas frecuentes (opcional)</p>
-                                        <textarea
-                                            class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 text-[#1F2937] dark:text-[#F9FAFB] placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-3 text-sm font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                            rows="4"
-                                            placeholder="Escribe posibles dudas que puedan tener los mecenas (envíos, plazos, tallas, compatibilidad, etc.). Puedes separarlas por líneas o guiones."></textarea>
-                                        <p
-                                            class="text-xs font-normal text-[#6B7280] dark:text-[#9CA3AF] mt-1">
-                                            Tener una sección de FAQ clara reduce mensajes repetidos y genera
-                                            confianza.
-                                        </p>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pb-4">
-                            <p
-                                class="text-[#6B7280] dark:text-[#9CA3AF] text-sm font-normal mb-6">
-                                Cuenta la historia de tu proyecto y añade medios para darle vida.</p>
-                            </div>
-                    </details>
-                    <details
-                        class="flex flex-col rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-800 px-6 py-2 group">
-                        <summary class="flex cursor-pointer items-center justify-between gap-6 py-2 list-none">
-                            <p class="text-lg font-bold">Recompensas</p>
-                            <span
-                                class="material-symbols-outlined transition-transform duration-300 group-open:rotate-180">expand_more</span>
-                        </summary>
-                        <div class="col-span-12 lg:col-span-8 space-y-6">
-                            <div
-                                class="rounded-xl border border-[#E5E7EB] dark:border-[#374151] p-6 bg-[#FFFFFF] dark:bg-gray-800">
-                                <h3 class="text-xl font-bold mb-6">Recompensas</h3>
-
-                                <div class="space-y-6">
-                                    <div
-                                        class="rounded-xl border border-[#E5E7EB] dark:border-[#374151] p-4 bg-[#FFFFFF] dark:bg-gray-700 space-y-4">
-                                        <div class="flex items-center justify-between">
-                                            <p class="text-sm font-semibold">Recompensa 1</p>
-                                            <span
-                                                class="text-xs text-[#6B7280] dark:text-[#9CA3AF]">
-                                                Plantilla básica de recompensa
-                                            </span>
-                                        </div>
-
-                                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                            <label class="flex flex-col md:col-span-2">
-                                                <p class="text-sm font-medium pb-1">Título de la recompensa</p>
-                                                <input type="text"
-                                                    class="form-input flex w-full min-w-0 flex-1 rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-800 text-[#1F2937] dark:text-[#F9FAFB] h-11 placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] px-3 text-sm font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                                    placeholder="Ej.: Pack early bird – Cafetera + filtro extra" />
-                                            </label>
-                                            <label class="flex flex-col">
-                                                <p class="text-sm font-medium pb-1">Precio</p>
-                                                <div
-                                                    class="flex items-center rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-800 px-3 h-11">
-                                                    <span
-                                                        class="mr-2 text-sm font-medium text-[#6B7280] dark:text-[#9CA3AF]">
-                                                        €
-                                                    </span>
-                                                    <input type="number" min="1"
-                                                        class="form-input flex w-full min-w-0 flex-1 border-0 bg-transparent text-[#1F2937] dark:text-[#F9FAFB] h-10 placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-0 text-sm font-normal focus:ring-0 focus:border-0"
-                                                        placeholder="Ej.: 79" />
-                                                </div>
-                                            </label>
-                                        </div>
-
-                                        <label class="flex flex-col">
-                                            <p class="text-sm font-medium pb-1">Descripción corta</p>
-                                            <textarea
-                                                class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-800 text-[#1F2937] dark:text-[#F9FAFB] placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-3 text-sm font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                                rows="3"
-                                                placeholder="Describe de forma rápida qué incluye esta recompensa y por qué es especial."></textarea>
-                                        </label>
-
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                            <label class="flex flex-col">
-                                                <p class="text-sm font-medium pb-1">Fecha estimada de entrega
-                                                </p>
-                                                <input type="month"
-                                                    class="form-input flex w-full min-w-0 flex-1 rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-800 text-[#1F2937] dark:text-[#F9FAFB] h-11 placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] px-3 text-sm font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]" />
-                                                <p
-                                                    class="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-1">
-                                                    Indica en qué mes esperas enviar esta recompensa.
-                                                </p>
-                                            </label>
-                                            <label class="flex flex-col">
-                                                <p class="text-sm font-medium pb-1">Límite de unidades
-                                                    (opcional)</p>
-                                                <input type="number" min="1"
-                                                    class="form-input flex w-full min-w-0 flex-1 rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-800 text-[#1F2937] dark:text-[#F9FAFB] h-11 placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] px-3 text-sm font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                                    placeholder="Ej.: 50" />
-                                                <p
-                                                    class="text-xs text-[#6B7280] dark:text-[#9CA3AF] mt-1">
-                                                    Deja el campo vacío si no quieres limitar las unidades.
-                                                </p>
-                                            </label>
-                                        </div>
-                                    </div>
-
-                                    <button type="button"
-                                        class="flex items-center justify-center rounded-xl h-10 px-4 border border-dashed border-[#E5E7EB] dark:border-[#374151] text-sm font-medium text-[#6B7280] dark:text-[#9CA3AF] hover:bg-gray-50 dark:hover:bg-gray-700">
-                                        <span class="material-symbols-outlined text-base mr-1">
-                                            add
-                                        </span>
-                                        Añadir otra recompensa (más adelante podrás gestionarlas)
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div
-                                class="rounded-xl border border-[#E5E7EB] dark:border-[#374151] p-6 bg-[#FFFFFF] dark:bg-gray-800">
-                                <h3 class="text-xl font-bold mb-6">Riesgos y compromisos</h3>
-
-                                <div class="space-y-6">
-                                    <label class="flex flex-col">
-                                        <p class="text-sm font-medium pb-2">Riesgos y desafíos</p>
-                                        <textarea
-                                            class="form-textarea flex w-full min-w-0 flex-1 resize-y overflow-hidden rounded-xl border border-[#E5E7EB] dark:border-[#374151] bg-[#FFFFFF] dark:bg-gray-700 text-[#1F2937] dark:text-[#F9FAFB] placeholder:text-[#6B7280] dark:placeholder:text-[#9CA3AF] p-3 text-sm font-normal focus:ring-2 focus:ring-[#F97316]/50 focus:border-[#F97316]"
-                                            rows="6"
-                                            placeholder="Explica posibles retrasos, problemas de producción, logística o certificaciones, y cómo piensas gestionarlos. La transparencia genera confianza."></textarea>
-                                        <p
-                                            class="text-xs font-normal text-[#6B7280] dark:text-[#9CA3AF] mt-1">
-                                            Sé honesto: ningún proyecto está libre de riesgos, pero sí puedes
-                                            demostrar que
-                                            tienes un plan.
-                                        </p>
-                                    </label>
-
-                                    <div class="space-y-3">
-                                        <label class="flex items-start gap-2">
-                                            <input type="checkbox"
-                                                class="mt-1 rounded border-[#E5E7EB] dark:border-[#374151] text-[#F97316] focus:ring-[#F97316]/60" />
-                                            <span class="text-sm">
-                                                Confirmo que he explicado de forma clara y sincera los riesgos y
-                                                desafíos
-                                                asociados a este proyecto.
-                                            </span>
-                                        </label>
-                                        <label class="flex items-start gap-2">
-                                            <input type="checkbox"
-                                                class="mt-1 rounded border-[#E5E7EB] dark:border-[#374151] text-[#F97316] focus:ring-[#F97316]/60" />
-                                            <span class="text-sm">
-                                                Declaro que este proyecto respeta los derechos de autor, marcas
-                                                registradas
-                                                y las normas de la plataforma.
-                                            </span>
-                                        </label>
-                                        <label class="flex items-start gap-2">
-                                            <input type="checkbox"
-                                                class="mt-1 rounded border-[#E5E7EB] dark:border-[#374151] text-[#F97316] focus:ring-[#F97316]/60" />
-                                            <span class="text-sm">
-                                                Acepto los términos y condiciones para publicar un proyecto en
-                                                Rise
-                                                Together.
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="pb-4">
-                            <p
-                                class="text-[#6B7280] dark:text-[#9CA3AF] text-sm font-normal mb-6">
-                                Crea niveles de recompensas para tus mecenas.</p>
-                            </div>
-                    </details>
+                        <p class="text-xs text-gray-400 mt-4 text-center">
+                            Así verán los mecenas tu proyecto en la página principal.
+                        </p>
+                    </div>
                 </div>
+
             </div>
-            <div class="col-span-12 lg:col-span-4">
-                <x-cards.proyecto_card />
-            </div>
-        </div>
+        </form>
     </div>
+
+    {{-- SCRIPT PARA LA VISTA PREVIA --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ELEMENTOS INPUTS
+            const inTitulo = document.getElementById('input_titulo');
+            const inResumen = document.getElementById('input_resumen');
+            const inCategoria = document.getElementById('input_categoria');
+            const inObjetivo = document.getElementById('input_objetivo');
+            const inDias = document.getElementById('input_dias');
+            const inImagen = document.getElementById('imagen_portada');
+
+            // ELEMENTOS TARJETA
+            const cardTitle = document.getElementById('card_title');
+            const cardResume = document.getElementById('card_resume');
+            const cardCategory = document.getElementById('card_category');
+            const cardGoal = document.getElementById('card_goal');
+            const cardDays = document.getElementById('card_days');
+            const cardImage = document.getElementById('card_image');
+
+            // EVENT LISTENERS
+            
+            // 1. Título
+            if(inTitulo) {
+                inTitulo.addEventListener('input', (e) => {
+                    cardTitle.textContent = e.target.value || 'Título de tu proyecto';
+                });
+            }
+
+            // 2. Resumen
+            if(inResumen) {
+                inResumen.addEventListener('input', (e) => {
+                    cardResume.textContent = e.target.value || 'Aquí aparecerá el resumen breve de tu proyecto mientras escribes...';
+                });
+            }
+
+            // 3. Objetivo (Formato Moneda)
+            if(inObjetivo) {
+                inObjetivo.addEventListener('input', (e) => {
+                    const val = parseFloat(e.target.value);
+                    if(!isNaN(val)) {
+                        cardGoal.textContent = val.toLocaleString('es-ES');
+                    } else {
+                        cardGoal.textContent = '0';
+                    }
+                });
+            }
+
+            // 4. Días
+            if(inDias) {
+                inDias.addEventListener('input', (e) => {
+                    cardDays.textContent = e.target.value || '30';
+                });
+            }
+
+            // 5. Categoría (Texto del Select)
+            if(inCategoria) {
+                inCategoria.addEventListener('change', (e) => {
+                    const selectedOption = e.target.options[e.target.selectedIndex];
+                    cardCategory.textContent = selectedOption.text;
+                });
+            }
+
+            // 6. Imagen (FileReader)
+            if(inImagen) {
+                inImagen.addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(evt) {
+                            cardImage.src = evt.target.result;
+                        }
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+    </script>
 </x-layouts.body>

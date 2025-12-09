@@ -14,12 +14,19 @@ class Proyecto extends Model
     protected $table = "proyectos";
     protected $primaryKey = "id";
 
-    protected $fillable = [
-        'nombreProyecto',
+protected $fillable = [
+        'user_id',
+        'categoria_id',
+        'titulo',
+        'slug',
+        'resumen',
         'descripcion',
-        'financiacionObjetivo',
-        'fechaCreacion',
-        'fechaFinalizacion'
+        'imagen_portada',
+        'video_url',
+        'objetivo_financiacion',
+        'cantidad_recaudada',
+        'fecha_limite',
+        'estado',
     ];
 
     function users()
@@ -50,5 +57,23 @@ class Proyecto extends Model
     function donaciones()
     {
         return $this->hasMany(Donacion::class);
+    }
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class);
+    }
+
+    public function getPorcentajeFinanciadoAttribute()
+    {
+        // Evitar división por cero
+        if ((float) $this->objetivo_financiacion <= 0) {
+            return 0;
+        }
+        
+        // Calculamos el porcentaje real (puede ser mayor a 100)
+        $porcentaje = ($this->cantidad_recaudada / $this->objetivo_financiacion) * 100;
+        
+        return $porcentaje; // Quitamos el min(..., 100) de aquí
     }
 }

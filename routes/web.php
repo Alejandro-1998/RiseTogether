@@ -1,12 +1,12 @@
 <?php
 
-use App\Http\Controllers\LoginController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ProyectoController;
 
 // HOME
-Route::get('/', function () {
-    return view('publico.home');
-})->name('home');
+Route::get('/', [HomeController::class, "index"])->name('home');
 
 // LOGIN - REGISTRO
 Route::get('/login', [LoginController::class, "index"])->name('login');
@@ -17,9 +17,8 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // RUTAS PROTEGIDAS SESIÓN INICIADA
 Route::middleware('auth')->group(function () {
-    Route::get('/crear_proyecto', function () {
-        return view('privado.crear_proyecto');
-    })->name('crear_proyecto');
+    Route::get('/crear-proyecto', [ProyectoController::class, 'create'])->name('proyectos.create');
+    Route::post('/crear-proyecto', [ProyectoController::class, 'store'])->name('proyectos.store');
     
     Route::get('/administrador', function () {
         return view('privado.administrador');

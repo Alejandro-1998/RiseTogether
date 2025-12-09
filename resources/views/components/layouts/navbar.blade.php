@@ -34,7 +34,7 @@
                     {{-- 🟢 USUARIO LOGUEADO --}}
 
                     {{-- 1. Botón Crear Proyecto --}}
-                    <a href="{{ route('crear_proyecto') }}"
+                    <a href="{{ route('proyectos.store') }}"
                         class="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:focus-visible:ring-offset-[#1c140d]">
                         Crear Proyecto
                     </a>
@@ -63,7 +63,7 @@
                             class="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#2a2017]/80 dark:focus-visible:ring-offset-[#1c140d]">
                             Iniciar Sesión
                         </a>
-                        <a href="{{ route('crear_proyecto') }}"
+                        <a href="{{ route('proyectos.store') }}"
                             class="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:focus-visible:ring-offset-[#1c140d]">
                             Crear Proyecto
                         </a>

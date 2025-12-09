@@ -24,7 +24,7 @@
                     class="inline-flex h-11 items-center justify-center rounded-lg bg-orange-500 px-6 text-sm font-bold text-white transition hover:bg-orange-600">
                     Descubrir Proyectos
                 </a>
-                <a href="{{ route('crear_proyecto') }}"
+                <a href="{{ route('proyectos.store') }}"
                     class="inline-flex h-11 items-center justify-center rounded-lg bg-white/90 px-6 text-sm font-bold text-gray-900 hover:bg-white">
                     Crea tu Proyecto
                 </a>
@@ -34,19 +34,21 @@
 
     <hr class="my-20 border-t border-gray-300/70 dark:border-gray-700/40">
 
-    <section class="px-4 sm:px-6 lg:px-8">
-        <div class="max-w-7xl mx-auto">
-            <div class="bg-gray-100 dark:bg-gray-800 rounded-3xl p-10 sm:p-14 shadow-sm">
-                <h2 class="text-3xl md:text-4xl font-bold leading-tight tracking-tight mb-14 text-center text-gray-900 dark:text-gray-100">
-                    Top proyectos del mes
-                </h2>
-                <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
+    <section class="py-12 bg-gray-50 dark:bg-gray-900">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-black text-center mb-10 text-[#1c140d] dark:text-[#fcfaf8]">
+                Top proyectos del mes
+            </h2>
 
-                    <x-cards.proyecto_card />
-                    <x-cards.proyecto_card />
-                    <x-cards.proyecto_card />
+            {{-- AQUÍ ESTÁ LA CLAVE: grid-cols-1 para móvil, grid-cols-3 para escritorio --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
+                
+                @forelse($proyectos as $proyecto)
+                    <x-cards.proyecto_card :proyecto="$proyecto" />
+                @empty
+                    <p class="col-span-3 text-center text-gray-500">No hay proyectos destacados aún.</p>
+                @endforelse
 
-                </div>
             </div>
         </div>
     </section>
