@@ -3,12 +3,14 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\ComentarioController;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
 // Rutas Públicas de API
+Route::get('/comentarios/relevantes', [ComentarioController::class, 'comentariosRelevantes']);
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/registro', [LoginController::class, 'registro']);
 

@@ -20,12 +20,13 @@ class Comentario extends Model
         'idComentario',
         'mensaje',
         'fechaHora',
-        'estado'
+        'estado',
+        'estrellas'
     ];
 
-    function users()
+    function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'idUsuario');
     }
 
     function comentariosRespuesta()

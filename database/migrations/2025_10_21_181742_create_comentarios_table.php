@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('idComentario')->nullable();
             $table->text('mensaje');
             $table->dateTime('fechaHora');
+            $table->integer('estrellas')->nullable();
             $table->enum('estado', ['pendiente', 'aprobado', 'rechazado'])->default('pendiente');
             $table->timestamps();
             $table->softDeletes();
