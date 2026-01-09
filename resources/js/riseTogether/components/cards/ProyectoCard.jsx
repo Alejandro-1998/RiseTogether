@@ -117,8 +117,4 @@ export default function ProyectoCard({ proyecto }) {
             </div>
         </div>
     );
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 5f228a1 (modificacion top_proyectos)
