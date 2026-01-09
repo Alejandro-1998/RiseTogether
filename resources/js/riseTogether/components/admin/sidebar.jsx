@@ -1,0 +1,87 @@
+// src/components/admin/sidebar.jsx
+export default function Sidebar() {
+  // Estilo base para los enlaces NO activos
+  const itemBase =
+    "flex items-center gap-3 px-3 py-2 rounded-2xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800/50";
+
+  // Estilo del enlace ACTIVO (ahora mismo marcamos el panel)
+  const itemActive =
+    "flex items-center gap-3 px-3 py-2 rounded-2xl text-sm font-bold bg-[#f2780d]/20 text-[#f2780d]";
+
+  return (
+    <aside className="w-64 shrink-0 bg-white dark:bg-gray-900/50 border-r border-gray-200 dark:border-gray-800 flex flex-col fixed h-full">
+      {/* Logo */}
+      <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-800 h-16">
+        <img
+          src="/img/logo.png"
+          className="h-9 w-auto object-contain"
+          alt="RiseTogether"
+        />
+      </div>
+
+      {/* Menú 1*/}
+      <nav className="flex-1 px-2 py-4 space-y-2 text-sm">
+        {/* Activo */}
+        <a className={itemActive} href="#panel">
+          <span
+            className="material-symbols-outlined text-2xl"
+            style={{ fontVariationSettings: "'FILL' 1" }}
+          >
+            dashboard
+          </span>
+          Panel de administración
+        </a>
+
+        {/* Secciones futuras (enlaces) */}
+        <a className={itemBase} href="#gestion-proyectos">
+          <span className="material-symbols-outlined">folder</span>
+          Gestión de proyectos
+        </a>
+
+        <a className={itemBase} href="#usuarios">
+          <span className="material-symbols-outlined">group</span>
+          Usuarios
+        </a>
+
+        <a className={itemBase} href="#categorias">
+          <span className="material-symbols-outlined">sell</span>
+          Categorías
+        </a>
+
+        <a className={itemBase} href="#informes">
+          <span className="material-symbols-outlined">bar_chart</span>
+          Informes
+        </a>
+
+        <a className={itemBase} href="#pagos">
+          <span className="material-symbols-outlined">payments</span>
+          Pagos y facturación
+        </a>
+
+        {/* EXTRA (muy típico en admin) */}
+        <a className={itemBase} href="#moderacion">
+          <span className="material-symbols-outlined">gavel</span>
+          Moderación
+        </a>
+
+        <a className={itemBase} href="#configuracion">
+          <span className="material-symbols-outlined">settings</span>
+          Configuración del sistema
+        </a>
+
+        <a className={itemBase} href="#soporte">
+          <span className="material-symbols-outlined">support_agent</span>
+          Soporte
+        </a>
+      </nav>
+
+      {/* Footer (acciones) */}
+      <div className="px-2 py-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
+        <a className={itemBase} href="#cerrar-sesion">
+          <span className="material-symbols-outlined">logout</span>
+          Cerrar sesión
+        </a>
+      </div>
+    </aside>
+  );
+}
