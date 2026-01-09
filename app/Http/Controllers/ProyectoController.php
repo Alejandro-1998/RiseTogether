@@ -11,6 +11,15 @@ use Illuminate\Support\Facades\Auth;
 class ProyectoController extends Controller
 {
     /**
+     * Obtiene todos los proyectos.
+     */
+    public function index()
+    {
+        $proyectos = Proyecto::all();
+        return view('publico.proyectos', compact('proyectos'));
+    }
+
+    /**
      * Muestra el formulario.
      */
     public function create()
@@ -62,5 +71,38 @@ class ProyectoController extends Controller
         ]);
 
         return redirect()->route('home')->with('success', '¡Proyecto creado con éxito!');
+    }
+
+    /**
+     * Obtiene un único proyecto.
+     */
+    public function show(string $id)
+    {
+        $proyecto = Proyecto::where('id', $id)->first();
+        return view('publico.proyecto', compact('proyecto'));
+    }
+
+    /**
+     * Muestra el formulario de edición.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Actualiza un proyecto.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Elimina un proyecto
+     */
+    public function destroy(string $id)
+    {
+        Proyecto::where('id', $id)->first()->delete();
     }
 }

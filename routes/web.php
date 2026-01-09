@@ -26,9 +26,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // RUTAS PÚBLICAS
-Route::get('/proyectos', function () {
-    return view('publico.proyectos');
-})->name('proyectos');
+Route::get('/proyectos', [ProyectoController::class, 'index'])->name('proyectos');
 
 Route::get('/proyecto', function () {
     return view('publico.proyecto');

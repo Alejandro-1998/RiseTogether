@@ -11,7 +11,7 @@ class HomeController extends Controller
     {
         // Obtener proyectos publicados, con su categoría para evitar consultas N+1
         $proyectos = Proyecto::with('categoria')
-                        ->where('estado', 'borrador',) // O 'borrador' si estás probando
+                        ->where('estado', 'borrador',)
                         ->latest()
                         ->take(3)
                         ->get();
