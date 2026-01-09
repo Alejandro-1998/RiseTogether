@@ -54,13 +54,12 @@ class LoginController extends Controller
 
         if (Auth::attempt($credenciales, $remember)) {
             $request->session()->regenerate();
-
-            return redirect()->intended(route('home'));
+            // RESPUESTA JSON:
+            return response()->json(['message' => 'Login exitoso', 'user' => Auth::user()], 200);
         }
 
-        throw ValidationException::withMessages([
-            'email' => 'El nombre y/o la contraseña no coinciden.',
-        ]);
+        // ERROR JSON:
+        return response()->json(['message' => 'Credenciales incorrectas'], 401);
     }
 
     public function logout(Request $request)

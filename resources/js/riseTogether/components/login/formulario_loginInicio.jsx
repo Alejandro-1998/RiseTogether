@@ -1,6 +1,37 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function FormularioLoginInicio() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+
+    try {
+      // 1. Iniciamos sesión en la API (usando la cookie de sesión gracias a statefulApi)
+      await window.axios.post("/api/login", { email, password });
+
+      // 2. Si es exitoso, redirigimos
+      // Opción A: Recargar la página completa para que Laravel reconozca la sesión en nuevas vistas blade si las hubiera
+      // window.location.href = "/";
+
+      // Opción B: Navegación SPA (más rápida)
+      navigate("/");
+
+    } catch (err) {
+      if (err.response && err.response.status === 401) {
+        setError("Credenciales incorrectas.");
+      } else {
+        setError("Ocurrió un error al iniciar sesión.");
+      }
+      console.error(err);
+    }
+  };
+
   return (
     <div className="p-8 sm:p-10">
       <div className="mb-6">
@@ -15,7 +46,13 @@ export default function FormularioLoginInicio() {
         </p>
       </div>
 
-      <form className="space-y-5">
+      <form className="space-y-5" onSubmit={handleSubmit}>
+        {error && (
+          <div className="p-3 text-sm text-red-600 bg-red-100 rounded-lg">
+            {error}
+          </div>
+        )}
+
         {/* EMAIL */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium">
@@ -34,6 +71,8 @@ export default function FormularioLoginInicio() {
               autoComplete="email"
               required
               placeholder="correo"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="h-8 w-full rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#b28155] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]"
             />
           </div>
@@ -57,6 +96,8 @@ export default function FormularioLoginInicio() {
               autoComplete="current-password"
               required
               placeholder="contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="h-8 w-full rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]"
             />
           </div>
