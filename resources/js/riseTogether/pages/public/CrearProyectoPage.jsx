@@ -99,6 +99,7 @@ export default function CrearProyectoPage() {
                 window.location.href = '/proyectos';
             }
         } catch (error) {
+            console.log(error);
             console.error("Error creating project:", error);
             alert("Hubo un error al guardar el proyecto. Revisa los datos.");
         }
