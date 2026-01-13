@@ -18,6 +18,7 @@ Route::get('/comentarios/relevantes', [ComentarioController::class, 'comentarios
 
 // Proyectos
 Route::get('/proyectos', [ProyectoController::class, 'index']);
+Route::post('/proyectos', [ProyectoController::class, 'store']);
 
 /// RUTAS PROTEGIDAS DE API ///
 
@@ -26,5 +27,4 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
     Route::post('/logout', [LoginController::class, 'logout']);
-    Route::post('/proyectos', [ProyectoController::class, 'store']);
 });
