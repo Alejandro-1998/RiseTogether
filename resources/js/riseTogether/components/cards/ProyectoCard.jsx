@@ -4,7 +4,7 @@ export default function ProyectoCard({ proyecto }) {
     const { pathname } = useLocation();
 
     // Verificamos si estamos en la ruta de crear (ajustar según tus rutas reales)
-    const isCrearProyecto = pathname.includes("/proyectos/crear");
+    const isCrearProyecto = pathname.includes("/crear-proyecto");
 
     const titulo = proyecto?.titulo ?? "Proyecto sin título";
     const resumen = proyecto?.resumen ?? "";
