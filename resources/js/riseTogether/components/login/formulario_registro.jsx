@@ -32,28 +32,12 @@ export default function FormularioRegistro() {
     setGeneralError("");
 
     try {
-      const res = await fetch("/api/registro", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(csrf ? { "X-CSRF-TOKEN": csrf } : {}),
-          Accept: "application/json",
-        },
-        credentials: "same-origin",
-        body: JSON.stringify(form),
-      });
+      await window.axios.get('/sanctum/csrf-cookie');
 
-      const data = await res.json().catch(() => ({}));
+      const res = await window.axios.post("/api/registro", form);
+      const data = res.data;
 
-      if (!res.ok) {
-        if (data?.errors) setErrors(data.errors);
-        setGeneralError(
-          data?.message || "No se pudo crear la cuenta. Revisa los datos."
-        );
-        return;
-      }
-
-      // Success
+      // Success logic adapted for axios response structure
       if (data.redirect) {
         window.location.href = data.redirect;
       } else {
@@ -61,7 +45,14 @@ export default function FormularioRegistro() {
       }
 
     } catch (err) {
-      setGeneralError("Error de conexión. Inténtalo de nuevo.");
+      if (err.response) {
+        if (err.response.data && err.response.data.errors) {
+          setErrors(err.response.data.errors);
+        }
+        setGeneralError(err.response.data?.message || "No se pudo crear la cuenta.");
+      } else {
+        setGeneralError("Error de conexión. Inténtalo de nuevo.");
+      }
     } finally {
       setLoading(false);
     }
