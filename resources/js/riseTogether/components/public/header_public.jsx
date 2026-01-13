@@ -67,7 +67,7 @@ export default function HeaderPublic({ isAuth = false }) {
             {isAuth ? (
               <>
                 <Link
-                  to="/proyectos/crear"
+                  to="/crear-proyecto"
                   className="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
                 >
                   Crear Proyecto
@@ -101,7 +101,7 @@ export default function HeaderPublic({ isAuth = false }) {
                     </Link>
 
                     <Link
-                      to="/proyectos/crear"
+                      to="/crear-proyecto"
                       className="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
                     >
                       Crear Proyecto

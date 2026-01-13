@@ -35,7 +35,7 @@ export default function Hero() {
               </a>
 
               <a
-                href="/proyectos/crear"
+                href="/crer-proyecto"
                 className="inline-flex h-11 items-center justify-center rounded-lg bg-white/90 px-6 text-sm font-bold text-gray-900 hover:bg-white"
               >
                 Crea tu Proyecto
