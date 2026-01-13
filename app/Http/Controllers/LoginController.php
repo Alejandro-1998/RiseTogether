@@ -33,14 +33,18 @@ class LoginController extends Controller
 
         $user = User::create([
             'nombreUsuario' => $atributos['nombreUsuario'],
-            'nombreCompleto' => $atributos['nombreCompleto'],
+            'nombreCompleto' => $atributos['nombreCompleto'] ?? null,
             'email' => $atributos['email'],
             'password' => $atributos['password']
         ]);
 
         Auth::login($user);
 
-        return redirect()->route('home');
+        return response()->json([
+            'message' => 'Usuario registrado exitosamente',
+            'user' => $user,
+            'redirect' => route('home')
+        ], 201);
     }
 
     public function login(Request $request)
