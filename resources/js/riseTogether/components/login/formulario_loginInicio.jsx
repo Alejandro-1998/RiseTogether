@@ -13,6 +13,10 @@ export default function FormularioLoginInicio() {
 
     try {
       // 1. Iniciamos sesión en la API (usando la cookie de sesión gracias a statefulApi)
+      // Primero inicializamos el CSRF protection cookie para Sanctum
+      await window.axios.get('/sanctum/csrf-cookie');
+      
+      // Luego hacemos el login
       await window.axios.post("/api/login", { email, password });
 
       // 2. Si es exitoso, redirigimos
