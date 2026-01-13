@@ -24,7 +24,7 @@ export default function RelevantesComunidad() {
         <div className="mx-auto max-w-[1200px]">
           <div className="rounded-3xl bg-gray-100 p-10 shadow-sm dark:bg-[#2a2017] sm:p-14">
             <h2 className="text-center text-3xl font-bold leading-tight tracking-tight text-[#1c140d] dark:text-[#fcfaf8]">
-              Relevantes de la comunidad
+              Comentarios Destacados
             </h2>
 
             <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">

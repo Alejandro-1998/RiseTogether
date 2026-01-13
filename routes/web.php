@@ -8,8 +8,7 @@ use App\Http\Controllers\ProyectoController;
 // HOME
 Route::get('/{any?}', function () {
     return view('riseTogether');
-})->where('any', '.*');
-// Route::get('/', [HomeController::class, "index"])->name('home');
+})->where('any', '.*')->name('home');
 
 // LOGIN - REGISTRO
 // Route::get('/login', [LoginController::class, "index"])->name('login');

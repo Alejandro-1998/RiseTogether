@@ -16,7 +16,7 @@ class ProyectoController extends Controller
     public function index()
     {
         $proyectos = Proyecto::all();
-        return view('publico.proyectos', compact('proyectos'));
+        return response()->json($proyectos);
     }
 
     /**
@@ -39,7 +39,7 @@ class ProyectoController extends Controller
             'categoria_id' => 'required|exists:categorias,id',
             'imagen_portada' => 'required|image|max:2048',
             'objetivo_financiacion' => 'required|numeric|min:1',
-            'duracion_dias' => 'required|integer|min:1|max:90',
+            'fecha_limite' => 'required|date|after:today',
             'descripcion' => 'required',
         ], [
             'titulo.required' => 'El proyecto necesita un nombre.',
@@ -52,10 +52,7 @@ class ProyectoController extends Controller
             $rutaImagen = $request->file('imagen_portada')->store('proyectos', 'public');
         }
 
-        $dias = (int) $request->duracion_dias; 
-        $fechaLimite = now()->addDays($dias);
-
-        Proyecto::create([
+        $proyecto = Proyecto::create([
             'user_id' => Auth::id(),
             'categoria_id' => $request->categoria_id,
             'titulo' => $request->titulo,
@@ -65,12 +62,33 @@ class ProyectoController extends Controller
             'imagen_portada' => $rutaImagen,
             'video_url' => $request->video_url,
             'objetivo_financiacion' => $request->objetivo_financiacion,
-            'fecha_limite' => $fechaLimite,
-            'estado' => 'borrador',
+            'fecha_limite' => $request->fecha_limite,
+            'estado' => $request->estado ?? 'borrador', // Permitir estado desde request o default borrador
             'cantidad_recaudada' => 0,
         ]);
 
-        return redirect()->route('home')->with('success', '¡Proyecto creado con éxito!');
+        // Guardar recompensas si vienen
+        if ($request->has('recompensas')) {
+            $recompensasData = json_decode($request->recompensas, true);
+            if (is_array($recompensasData)) {
+                foreach ($recompensasData as $r) {
+                    // Validar un poco campos mínimos
+                    if (!empty($r['titulo']) && !empty($r['cantidad'])) {
+                        $proyecto->recompensas()->create([
+                            'nombreRecompensa' => $r['titulo'],
+                            'descripcionRecompensa' => $r['descripcion'] ?? '',
+                            'costoRecompensa' => $r['cantidad'],
+                            'tipoEntrega' => 'fisica', // Default o lo que venga
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'message' => 'Proyecto creado con éxito',
+            'proyecto' => $proyecto
+        ], 201);
     }
 
     /**
@@ -79,7 +97,7 @@ class ProyectoController extends Controller
     public function show(string $id)
     {
         $proyecto = Proyecto::where('id', $id)->first();
-        return view('publico.proyecto', compact('proyecto'));
+        return response()->json($proyecto);
     }
 
     /**
@@ -104,5 +122,16 @@ class ProyectoController extends Controller
     public function destroy(string $id)
     {
         Proyecto::where('id', $id)->first()->delete();
+    }
+
+    public function proyectosDestacados()
+    {
+        $proyectos = Proyecto::with('categoria')
+            ->where('estado', 'publicado')
+            ->where('ganadorEvento', true)
+            ->limit(3)
+            ->get();
+
+        return response()->json($proyectos);
     }
 }

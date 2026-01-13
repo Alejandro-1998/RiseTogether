@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Comentario;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ComentarioController extends Controller
 {
@@ -12,7 +13,8 @@ class ComentarioController extends Controller
      */
     public function index()
     {
-        //
+        $comentarios = Comentario::all();
+        return response()->json($comentarios);
     }
 
     /**
@@ -28,7 +30,15 @@ class ComentarioController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        Comentario::create([
+            'idUsuario' => Auth::id(),
+            'idProyecto' => '',  // Falta modificar
+            'idComentario' => '', // Falta modificar
+            'mensaje' => $request->mensaje,
+            'fechaHora' => $request->fechaHora,
+            'estrellas' => $request->estrellas,
+            'estado' => 'pendiente',
+        ]);
     }
 
     /**
@@ -36,7 +46,8 @@ class ComentarioController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $comentario = Comentario::where('id', $id)->first();
+        return response()->json($comentario);
     }
 
     /**
@@ -60,7 +71,7 @@ class ComentarioController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Comentario::where('id', $id)->first()->delete();
     }
 
     /**

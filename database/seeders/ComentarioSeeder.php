@@ -15,29 +15,37 @@ class ComentarioSeeder extends Seeder
             'idProyecto' => 1,
             'mensaje' => 'Este proyecto me parece muy interesante y con mucho potencial.',
             'fechaHora' => now(),
+            'estrellas' => 10,
             'estado' => 'aprobado',
         ]);
 
         // Respuesta al comentario principal
         Comentario::create([
-            'idUsuario' => 1,
-            'idProyecto' => 1,
+            'idUsuario' => 3,
+            'idProyecto' => 2,
             'idComentario' => $comentarioPrincipal->id,
             'mensaje' => 'Gracias por tu comentario, estamos trabajando duro en ello.',
             'fechaHora' => now(),
+            'estrellas' => 6,
             'estado' => 'aprobado',
         ]);
 
-        // Comentarios aleatorios
-        Comentario::factory(10)->create();
+        Comentario::create([
+            'idUsuario' => 2,
+            'idProyecto' => 2,
+            'mensaje' => 'Me parece decepcionante este proyecto.',
+            'fechaHora' => now(),
+            'estrellas' => 2,
+            'estado' => 'aprobado',
+        ]);
 
-        // Algunos comentarios aleatorios con respuestas
-        Comentario::factory(5)->create()->each(function ($comentario) {
-            Comentario::factory(1)->create([
-                'idComentario' => $comentario->id,
-                'idProyecto' => $comentario->idProyecto,
-                'idUsuario' => $comentario->idUsuario,
-            ]);
-        });
+        Comentario::create([
+            'idUsuario' => 4,
+            'idProyecto' => 3,
+            'mensaje' => 'No me gusta :(',
+            'fechaHora' => now(),
+            'estrellas' => 1,
+            'estado' => 'aprobado',
+        ]);
     }
 }

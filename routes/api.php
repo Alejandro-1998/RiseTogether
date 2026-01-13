@@ -4,17 +4,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ComentarioController;
+use App\Http\Controllers\ProyectoController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+/// RUTAS PÚBLICAS DE API ///
 
-// Rutas Públicas de API
-Route::get('/comentarios/relevantes', [ComentarioController::class, 'comentariosRelevantes']);
+// Login y Registro
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/registro', [LoginController::class, 'registro']);
 
-// Rutas Protegidas (requieren token/sesión)
+// Página de Inicio
+Route::get('/proyectos/destacados', [ProyectoController::class, 'proyectosDestacados']);
+Route::get('/comentarios/relevantes', [ComentarioController::class, 'comentariosRelevantes']);
+
+// Proyectos
+Route::get('/proyectos', [ProyectoController::class, 'index']);
+Route::post('/proyectos', [ProyectoController::class, 'store']);
+
+/// RUTAS PROTEGIDAS DE API ///
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();

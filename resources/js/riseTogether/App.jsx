@@ -4,6 +4,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/public/HomePage";
 import LoginInicioPage from "./pages/public/LoginInicioPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import RegistroPage from "./pages/public/RegistroPage";
+import CrearProyectoPage from "./pages/public/CrearProyectoPage";
+import ProyectosPage from "./pages/public/ProyectosPage";
 
 function App() {
   return (
@@ -15,8 +18,17 @@ function App() {
         {/* Login */}
         <Route path="/login" element={<LoginInicioPage />} />
 
+        {/* Registro */}
+        <Route path="/registro" element={<RegistroPage />} />
+
         {/* Admin */}
         <Route path="/administrador" element={<AdminDashboard />} />
+
+        {/* Crear Proyecto */}
+        <Route path="/crear-proyecto" element={<CrearProyectoPage />} />
+
+        {/* Descubrir Proyectos */}
+        <Route path="/proyectos" element={<ProyectosPage />} />
 
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />

@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
+use App\Models\Categoria;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -11,15 +14,35 @@ class ProyectoFactory extends Factory
 {
     public function definition(): array
     {
-        $fechaCreacion = $this->faker->dateTimeBetween('-2 years', 'now');
-        $fechaFinalizacion = (clone $fechaCreacion)->modify('+' . rand(1, 12) . ' months');
+        $titulo = $this->faker->unique()->sentence(4);
+        $objetivo = $this->faker->randomFloat(2, 1000, 100000);
 
         return [
-            'nombreProyecto' => $this->faker->unique()->sentence(3),
-            'descripcion' => $this->faker->paragraph(3),
-            'financiacionObjetivo' => $this->faker->randomFloat(2, 1000, 100000),
-            'fechaCreacion' => $fechaCreacion->format('Y-m-d'),
-            'fechaFinalizacion' => $fechaFinalizacion->format('Y-m-d'),
+            // Relaciones
+            'user_id'               => User::factory(),
+            'categoria_id'          => Categoria::factory(),
+            
+            // Textos
+            'titulo'                => $titulo,
+            'slug'                  => Str::slug($titulo),
+            'resumen'               => $this->faker->sentence(10), // Corregido: eliminado ->italic()
+            'descripcion'           => $this->faker->paragraphs(5, true),
+            
+            // Multimedia
+            'imagen_portada'        => $this->faker->imageUrl(1280, 720, 'business'),
+            'video_url'             => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+            
+            // Finanzas
+            'objetivo_financiacion' => $objetivo,
+            'cantidad_recaudada'    => $this->faker->randomFloat(2, 0, $objetivo),
+            
+            // Fechas
+            'fecha_limite'          => $this->faker->dateTimeBetween('now', '+1 year'),
+            
+            // Estado
+            'estado'                => $this->faker->randomElement([
+                'borrador', 'revision', 'publicado', 'exitoso', 'fallido', 'cancelado'
+            ]),
         ];
     }
 }

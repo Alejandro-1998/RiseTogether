@@ -27,6 +27,7 @@ protected $fillable = [
         'cantidad_recaudada',
         'fecha_limite',
         'estado',
+        'ganadorEvento',
     ];
 
     function users()
@@ -46,7 +47,7 @@ protected $fillable = [
 
     function recompensas()
     {
-        return $this->hasMany(Recompensa::class);
+        return $this->hasMany(Recompensa::class, 'idProyecto');
     }
 
     function facturas()
