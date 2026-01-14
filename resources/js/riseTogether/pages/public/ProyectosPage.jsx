@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
-import ProyectoCard from "../../components/proyecto/proyecto_card";
+import ProyectoCard from "../../components/cards/ProyectoCard";
 
 
 export default function ProyectosPage() {
@@ -10,7 +10,7 @@ export default function ProyectosPage() {
   const [proyectos, setProyectos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  
+
   useEffect(() => {
     let mounted = true;
 

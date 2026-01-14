@@ -14,6 +14,7 @@ Route::post('/registro', [LoginController::class, 'registro']);
 
 // Página de Inicio
 Route::get('/proyectos/destacados', [ProyectoController::class, 'proyectosDestacados']);
+Route::get('/proyectos/historias-exito', [ProyectoController::class, 'historiasExito']);
 Route::get('/comentarios/relevantes', [ComentarioController::class, 'comentariosRelevantes']);
 
 // Proyectos

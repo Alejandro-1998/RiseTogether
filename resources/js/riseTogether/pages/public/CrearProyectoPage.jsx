@@ -3,7 +3,7 @@ import axios from 'axios';
 import HeaderPublic from "../../components/public/header_public";
 import RecompensaItem from "../../components/proyecto/recompensa_item";
 import ObjetivoItem from "../../components/proyecto/objetivo_item";
-import ProyectoCard from "../../components/proyecto/proyecto_card";
+import ProyectoCard from "../../components/cards/ProyectoCard";
 
 export default function CrearProyectoPage() {
     const [form, setForm] = useState({

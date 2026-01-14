@@ -24,7 +24,7 @@ public function up(): void
         $table->decimal('objetivo_financiacion', 12, 2); 
         $table->decimal('cantidad_recaudada', 12, 2)->default(0);
         $table->dateTime('fecha_limite');
-        $table->enum('estado', ['borrador', 'revision', 'publicado', 'exitoso', 'fallido', 'cancelado'])->default('borrador');
+        $table->enum('estado', ['borrador', 'revision', 'publicado', 'completado', 'fallido', 'cancelado'])->default('borrador');
         $table->boolean('ganadorEvento')->default(false);
         $table->timestamps();
         $table->softDeletes();

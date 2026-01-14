@@ -16,11 +16,11 @@ export default function ProyectoCard({ proyecto }) {
     // Soporta URLs externas (Faker) y rutas locales (storage)
     let imagen = "/img/default-project.png"; // Imagen por defecto
     if (proyecto?.imagen_portada) {
-        if (proyecto.imagen_portada.startsWith('http')) {
+        if (proyecto.imagen_portada.startsWith('http') || proyecto.imagen_portada.startsWith('blob')) {
             imagen = proyecto.imagen_portada;
         } else {
             // Asegúrate de correr: php artisan storage:link
-            imagen = `/storage/${ proyecto.imagen_portada}`;
+            imagen = `/storage/${proyecto.imagen_portada}`;
         }
     }
 
@@ -62,7 +62,7 @@ export default function ProyectoCard({ proyecto }) {
                 aria-label={`Imagen del proyecto ${titulo}`}
             >
                 {/* Badge opcional si es ganador */}
-                {proyecto?.ganadorEvento && (
+                {!!proyecto?.ganadorEvento && (
                     <div className="m-2 inline-block rounded-md bg-yellow-500 px-2 py-1 text-xs font-bold text-white shadow-sm">
                         ⭐ Destacado
                     </div>
@@ -120,17 +120,17 @@ export default function ProyectoCard({ proyecto }) {
                 </div>
             </div>
 
-            {/* BOTÓN VER PROYECTO */ }
-    <div className="px-4 pb-4">
-        {!isCrearProyecto && (
-            <Link
-                to={toDetalle}
-                className="flex h-10 w-full min-w-[84px] items-center justify-center overflow-hidden rounded-lg bg-[#f2780d]/20 px-4 text-sm font-bold text-[#f2780d] transition-colors duration-300 group-hover:bg-[#f2780d] group-hover:text-white dark:bg-[#f2780d]/25 dark:group-hover:text-[#f3f4f6]"
-            >
-                Ver proyecto
-            </Link>
-        )}
-    </div>
+            {/* BOTÓN VER PROYECTO */}
+            <div className="px-4 pb-4">
+                {!isCrearProyecto && (
+                    <Link
+                        to={toDetalle}
+                        className="flex h-10 w-full min-w-[84px] items-center justify-center overflow-hidden rounded-lg bg-[#f2780d]/20 px-4 text-sm font-bold text-[#f2780d] transition-colors duration-300 group-hover:bg-[#f2780d] group-hover:text-white dark:bg-[#f2780d]/25 dark:group-hover:text-[#f3f4f6]"
+                    >
+                        Ver proyecto
+                    </Link>
+                )}
+            </div>
         </div >
     );
 }

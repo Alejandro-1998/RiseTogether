@@ -134,4 +134,16 @@ class ProyectoController extends Controller
 
         return response()->json($proyectos);
     }
+
+    public function historiasExito()
+    {
+        $proyectos = Proyecto::with('categoria')
+            ->where('estado', 'completado')
+            ->whereRaw('cantidad_recaudada >= (objetivo_financiacion * 2)')
+            ->orderBy('updated_at', 'desc')
+            ->limit(3)
+            ->get();
+
+        return response()->json($proyectos);
+    }
 }

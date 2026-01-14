@@ -5,7 +5,6 @@ export default function TopProyectos() {
   const [proyectos, setProyectos] = useState([]);
 
   useEffect(() => {
-    // Llamamos a la ruta que acabamos de descomentar en api.php
     fetch("/api/proyectos/destacados")
       .then((res) => {
         if (!res.ok) throw new Error("Error fetching projects");
