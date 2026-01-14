@@ -75,8 +75,8 @@ class ProyectoSeeder extends Seeder
             'resumen'               => 'Carga tus dispositivos mientras caminas. 100% recicable.',
             'descripcion'           => 'La mochila que revolucionó el mercado de accesorios sostenibles...',
             'objetivo_financiacion' => 5000.00,
-            'cantidad_recaudada'    => 12000.00, // > 10,000 (Doble)
-            'fecha_limite'          => now()->subDays(10), // Ya terminó
+            'cantidad_recaudada'    => 12000.00,
+            'fecha_limite'          => now()->subDays(10),
             'estado'                => 'completado',
             'ganadorEvento'         => false,
             'imagen_portada'        => null,
@@ -91,12 +91,12 @@ class ProyectoSeeder extends Seeder
             'resumen'               => 'Un RPG de acción que superó todas las expectativas.',
             'descripcion'           => 'Gracias a la comunidad pudimos añadir 3 expansiones gratuitas...',
             'objetivo_financiacion' => 10000.00,
-            'cantidad_recaudada'    => 25000.00, // > 20,000
+            'cantidad_recaudada'    => 25000.00,
             'fecha_limite'          => now()->subDays(60),
             'estado'                => 'completado',
             'ganadorEvento'         => false,
             'imagen_portada'        => null,
-            'updated_at'            => now()->subMinutes(5), // Un poco antes
+            'updated_at'            => now()->subMinutes(5),
         ]);
 
         Proyecto::create([
@@ -107,7 +107,7 @@ class ProyectoSeeder extends Seeder
             'resumen'               => 'Agua potable accesible para comunidades rurales.',
             'descripcion'           => 'Desarrollamos una solución de bajo costo que ya está en uso...',
             'objetivo_financiacion' => 2000.00,
-            'cantidad_recaudada'    => 5000.00, // > 4,000
+            'cantidad_recaudada'    => 5000.00,
             'fecha_limite'          => now()->subDays(100),
             'estado'                => 'completado',
             'ganadorEvento'         => false,
