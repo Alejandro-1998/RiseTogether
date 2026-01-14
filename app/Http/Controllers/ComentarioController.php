@@ -81,8 +81,10 @@ class ComentarioController extends Controller
     {
          $comentarios = Comentario::with('user')
             ->where('estado', 'aprobado')
-            ->where('fechaHora', '>=', now()->subDays(7))
-            ->orderBy('estrellas', 'desc')
+            ->withCount(['estrellasRecibidas as estrellas_recientes' => function ($query) {
+                $query->where('created_at', '>=', now()->subDays(7));
+            }])
+            ->orderBy('estrellas_recientes', 'desc')
             ->limit(3)
             ->get();
 

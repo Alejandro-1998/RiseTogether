@@ -43,4 +43,9 @@ class Comentario extends Model
     {
         return $this->hasMany(Proyecto::class);
     }
+
+    public function estrellasRecibidas()
+    {
+        return $this->hasMany(ComentarioEstrella::class, 'comentario_id');
+    }
 }

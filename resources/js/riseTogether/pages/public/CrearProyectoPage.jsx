@@ -73,7 +73,7 @@ export default function CrearProyectoPage() {
         const formData = new FormData();
         formData.append('titulo', form.titulo);
         formData.append('resumen', form.resumen);
-        formData.append('categoria_id', 1); // TODO: Dynamic Category ID
+        formData.append('categoria_id', 1);
         formData.append('objetivo_financiacion', form.objetivo);
         formData.append('fecha_limite', form.fecha_limite);
         formData.append('descripcion', form.historia || form.resumen);
@@ -122,10 +122,10 @@ export default function CrearProyectoPage() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* LEFT COLUMN: FORM (8 cols) */}
+                    {/* COLUMNA IZQUIERDA: FORMULARIO (8 cols) */}
                     <div className="lg:col-span-8 space-y-8">
 
-                        {/* BLOQUE 1: Datos básicos */}
+                        {/* BLOQUE 1: DATOS BÁSICOS */}
                         <section className="rounded-3xl border border-[#f4ede7] dark:border-[#2a2017] bg-white dark:bg-[#1a120d] p-6 shadow-sm">
                             <h3 className="text-xl font-bold">Datos básicos</h3>
                             <p className="mt-1 text-sm text-[#9c7049] dark:text-[#9c7049]/80">
@@ -210,7 +210,7 @@ export default function CrearProyectoPage() {
                                 </div>
                             </div>
                         </section>
-                        {/* BLOQUE 2: Historia */}
+                        {/* BLOQUE 2: HISTORIA DEL PROYECTO */}
                         <section className="rounded-3xl border border-[#f4ede7] dark:border-[#2a2017] bg-white dark:bg-[#1a120d] p-6 shadow-sm">
                             <h3 className="text-xl font-bold">Historia del proyecto</h3>
                             <p className="mt-1 text-sm text-[#9c7049] dark:text-[#9c7049]/80">
@@ -227,7 +227,7 @@ export default function CrearProyectoPage() {
                             />
                         </section>
 
-                        {/* BLOQUE 3: Recompensas */}
+                        {/* BLOQUE 3: RECOMPENSAS */}
                         <section className="rounded-3xl border border-[#f4ede7] dark:border-[#2a2017] bg-white dark:bg-[#1a120d] p-6 shadow-sm">
                             <div className="flex items-center justify-between gap-4">
                                 <div>
@@ -263,7 +263,7 @@ export default function CrearProyectoPage() {
                             </div>
                         </section>
 
-                        {/* BLOQUE 4: Objetivos */}
+                        {/* BLOQUE 4: OBJETIVOS */}
                         <section className="rounded-3xl border border-[#f4ede7] dark:border-[#2a2017] bg-white dark:bg-[#1a120d] p-6 shadow-sm">
                             <div className="flex items-center justify-between gap-4">
                                 <div>
@@ -297,7 +297,7 @@ export default function CrearProyectoPage() {
                             </div>
                         </section>
 
-                        {/* ACTIONS MOBILE (visible only on small) */}
+                        {/* ACCIONES MOBILE (visible solo en pequeñas pantallas) */}
                         <div className="flex lg:hidden flex-col sm:flex-row gap-3">
                             <button
                                 onClick={submit("draft")}
@@ -316,7 +316,7 @@ export default function CrearProyectoPage() {
 
                     </div>
 
-                    {/* RIGHT COLUMN: PREVIEW + ACTIONS (4 cols) */}
+                    {/* COLUMNA DERECHA: PREVIEW + ACCIONES (4 cols) */}
                     <div className="lg:col-span-4">
                         <div className="sticky top-6 space-y-6">
                             <div className="rounded-3xl border border-[#f4ede7] dark:border-[#2a2017] bg-white dark:bg-[#1a120d] p-6 shadow-sm">
@@ -327,7 +327,7 @@ export default function CrearProyectoPage() {
                                 </p>
                             </div>
 
-                            {/* ACTIONS DESKTOP (visible on lg) */}
+                            {/* ACCIONES DESKTOP (visible en pantallas grandes) */}
                             <div className="hidden lg:flex flex-col gap-3">
                                 <button
                                     onClick={submit("draft")}

@@ -5,8 +5,8 @@ import ProyectoCard from "../../components/cards/ProyectoCard";
 
 
 export default function ProyectosPage() {
-  const [filtro, setFiltro] = useState("casi"); // tendencia | novedades | casi
-  const [orden, setOrden] = useState("financiados"); // financiados | recientes | ...
+  const [filtro, setFiltro] = useState("casi");
+  const [orden, setOrden] = useState("financiados");
   const [proyectos, setProyectos] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -16,7 +16,6 @@ export default function ProyectosPage() {
 
     const cargar = async () => {
       try {
-        // Si no tienes endpoint todavía, esto fallará y usamos fallback.
         const res = await fetch("/api/proyectos", {
           headers: { Accept: "application/json" },
           credentials: "same-origin",
@@ -27,11 +26,9 @@ export default function ProyectosPage() {
         const data = await res.json();
         if (!mounted) return;
 
-        // Soporta {data: []} o [] directamente
         const lista = Array.isArray(data) ? data : data?.data ?? [];
         setProyectos(lista);
       } catch (e) {
-        // Fallback para que se vea la página sin back
         if (!mounted) return;
         setProyectos([
           {
@@ -74,7 +71,6 @@ export default function ProyectosPage() {
     // Filtros de ejemplo (hasta que el back los haga)
     if (filtro === "novedades") {
       // si tuvieras created_at aquí ordenarías por fecha
-      // lo dejamos tal cual
     } else if (filtro === "tendencia") {
       // podrías ordenar por visitas/likes si existieran
     } else if (filtro === "casi") {
@@ -114,7 +110,7 @@ export default function ProyectosPage() {
             </div>
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-              {/* filtros */}
+              {/* FILTROS */}
               <div className="flex gap-2 flex-wrap">
                 <button
                   type="button"
@@ -141,7 +137,7 @@ export default function ProyectosPage() {
                 </button>
               </div>
 
-              {/* ordenar */}
+              {/* ORDENAR */}
               <button
                 type="button"
                 onClick={() =>

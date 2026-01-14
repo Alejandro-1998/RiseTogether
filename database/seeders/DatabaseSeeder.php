@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             ProyectoSeeder::class,
             FacturaSeeder::class,
             ComentarioSeeder::class,
+            ComentarioEstrellaSeeder::class,
             RecompensaSeeder::class,
             DonacionSeeder::class,
             UserProyectoSeeder::class,

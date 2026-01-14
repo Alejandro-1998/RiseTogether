@@ -25,7 +25,7 @@ class CategoriaSeeder extends Seeder
         foreach ($categorias as $categoria) {
             Categoria::create([
                 'nombre' => $categoria['nombre'],
-                'slug'   => Str::slug($categoria['nombre']), // Genera el slug único
+                'slug'   => Str::slug($categoria['nombre']),
                 'icono'  => $categoria['icono'],
             ]);
         }

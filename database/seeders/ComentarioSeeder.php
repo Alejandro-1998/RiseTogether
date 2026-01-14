@@ -9,42 +9,48 @@ class ComentarioSeeder extends Seeder
 {
     public function run(): void
     {
-        // Comentario principal de ejemplo
-        $comentarioPrincipal = Comentario::create([
-            'idUsuario' => 1,
-            'idProyecto' => 1,
-            'mensaje' => 'Este proyecto me parece muy interesante y con mucho potencial.',
+        // Asegurarnos de tener ID de usuario y proyecto validos
+        // Usamos el usuario 1 y proyecto 1 como base, o fallbacks
+        $userId = \App\Models\User::first()->id ?? 1;
+        $proyectoId = \App\Models\Proyecto::first()->id ?? 1;
+
+        // 1. Comentario TENDENCIA (Tendrá muchas estrellas recientes)
+        Comentario::create([
+            'idUsuario' => $userId,
+            'idProyecto' => $proyectoId,
+            'mensaje' => '¡TENDENCIA! Este comentario debe salir PRIMERO. Tiene muchas estrellas de HOY.',
             'fechaHora' => now(),
-            'estrellas' => 10,
+            'estrellas' => 0, // Campo legacy
             'estado' => 'aprobado',
         ]);
 
-        // Respuesta al comentario principal
+        // 2. Comentario POPULAR (Tendrá bastantes estrellas recientes)
         Comentario::create([
-            'idUsuario' => 3,
-            'idProyecto' => 2,
-            'idComentario' => $comentarioPrincipal->id,
-            'mensaje' => 'Gracias por tu comentario, estamos trabajando duro en ello.',
-            'fechaHora' => now(),
-            'estrellas' => 6,
+            'idUsuario' => $userId,
+            'idProyecto' => $proyectoId,
+            'mensaje' => '¡POPULAR! Este comentario debe salir SEGUNDO. Estrellas de hace 2 días.',
+            'fechaHora' => now()->subDays(2),
+            'estrellas' => 0,
             'estado' => 'aprobado',
         ]);
 
+        // 3. Comentario RELEVANTE (Tendrá algunas estrellas recientes)
         Comentario::create([
-            'idUsuario' => 2,
-            'idProyecto' => 2,
-            'mensaje' => 'Me parece decepcionante este proyecto.',
-            'fechaHora' => now(),
-            'estrellas' => 2,
+            'idUsuario' => $userId,
+            'idProyecto' => $proyectoId,
+            'mensaje' => '¡RELEVANTE! Este comentario debe salir TERCERO. Estrellas de hace 6 días.',
+            'fechaHora' => now()->subDays(6),
+            'estrellas' => 0,
             'estado' => 'aprobado',
         ]);
 
+        // 4. Comentario ANTIGUO (Tendrá muchísimas estrellas, pero VIEJAS)
         Comentario::create([
-            'idUsuario' => 4,
-            'idProyecto' => 3,
-            'mensaje' => 'No me gusta :(',
-            'fechaHora' => now(),
-            'estrellas' => 1,
+            'idUsuario' => $userId,
+            'idProyecto' => $proyectoId,
+            'mensaje' => '¡IGNORADO! Este tiene muchas estrellas pero son del mes pasado. No debería salir.',
+            'fechaHora' => now()->subMonths(2),
+            'estrellas' => 0,
             'estado' => 'aprobado',
         ]);
     }
