@@ -15,7 +15,7 @@ class ProyectoController extends Controller
      */
     public function index()
     {
-        $proyectos = Proyecto::all();
+        $proyectos = Proyecto::with('categoria')->get();
         return response()->json($proyectos);
     }
 
@@ -63,7 +63,7 @@ class ProyectoController extends Controller
             'video_url' => $request->video_url,
             'objetivo_financiacion' => $request->objetivo_financiacion,
             'fecha_limite' => $request->fecha_limite,
-            'estado' => $request->estado ?? 'borrador', // Permitir estado desde request o default borrador
+            'estado' => $request->estado ?? 'borrador',
             'cantidad_recaudada' => 0,
         ]);
 
@@ -78,12 +78,15 @@ class ProyectoController extends Controller
                             'nombreRecompensa' => $r['titulo'],
                             'descripcionRecompensa' => $r['descripcion'] ?? '',
                             'costoRecompensa' => $r['cantidad'],
-                            'tipoEntrega' => 'fisica', // Default o lo que venga
+                            'tipoEntrega' => 'fisica',
                         ]);
                     }
                 }
             }
         }
+
+        // Cargar la relación para devolverla en la respuesta
+        $proyecto->load('categoria');
 
         return response()->json([
             'message' => 'Proyecto creado con éxito',
@@ -96,7 +99,7 @@ class ProyectoController extends Controller
      */
     public function show(string $id)
     {
-        $proyecto = Proyecto::where('id', $id)->first();
+        $proyecto = Proyecto::with('categoria')->where('id', $id)->first();
         return response()->json($proyecto);
     }
 

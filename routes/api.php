@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\ProyectoController;
+use App\Http\Controllers\CategoriaController;
 
 /// RUTAS PÚBLICAS DE API ///
 
@@ -16,6 +17,7 @@ Route::post('/registro', [LoginController::class, 'registro']);
 Route::get('/proyectos/destacados', [ProyectoController::class, 'proyectosDestacados']);
 Route::get('/proyectos/historias-exito', [ProyectoController::class, 'historiasExito']);
 Route::get('/comentarios/relevantes', [ComentarioController::class, 'comentariosRelevantes']);
+Route::get('/categorias', [CategoriaController::class, 'index']);
 
 // Proyectos
 Route::get('/proyectos', [ProyectoController::class, 'index']);

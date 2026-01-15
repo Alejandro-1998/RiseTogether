@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import axios from 'axios';
 import HeaderPublic from "../../components/public/header_public";
 import RecompensaItem from "../../components/proyecto/recompensa_item";
@@ -6,16 +6,29 @@ import ObjetivoItem from "../../components/proyecto/objetivo_item";
 import ProyectoCard from "../../components/cards/ProyectoCard";
 
 export default function CrearProyectoPage() {
+    const [categoriasdB, setCategoriasdB] = useState([]);
     const [form, setForm] = useState({
         titulo: "",
         resumen: "",
-        categoria: "General",
+        categoria: "", // ID de la categoría
         objetivo: 20000,
         fecha_limite: "",
         imagen_portada: null, // de momento string url o null
         historia: "",
         descripcion: "",
     });
+
+    useEffect(() => {
+        axios.get('/api/categorias')
+            .then(res => {
+                setCategoriasdB(res.data);
+                // Si hay categorías, seleccionar la primera por defecto
+                if (res.data.length > 0) {
+                    setForm(f => ({ ...f, categoria: res.data[0].id }));
+                }
+            })
+            .catch(err => console.error(err));
+    }, []);
 
     const [formFile, setFormFile] = useState(null);
 
@@ -28,16 +41,17 @@ export default function CrearProyectoPage() {
     ]);
 
     const previewProyecto = useMemo(() => {
+        const catObj = categoriasdB.find(c => c.id == form.categoria);
         return {
             titulo: form.titulo || "Tu título aparecerá aquí",
             resumen: form.resumen || "Tu resumen aparecerá aquí.",
-            categoria: { nombre: form.categoria || "General" },
+            categoria: { nombre: catObj ? catObj.nombre : "General" },
             imagen_portada: form.imagen_portada,
             cantidad_recaudada: 0,
             porcentaje_financiado: 0,
             fecha_limite: form.fecha_limite ? new Date(form.fecha_limite) : null,
         };
-    }, [form]);
+    }, [form, categoriasdB]);
 
     const onChange = (e) => {
         const { name, value } = e.target;
@@ -73,10 +87,10 @@ export default function CrearProyectoPage() {
         const formData = new FormData();
         formData.append('titulo', form.titulo);
         formData.append('resumen', form.resumen);
-        formData.append('categoria_id', 1);
+        formData.append('categoria_id', form.categoria);
         formData.append('objetivo_financiacion', form.objetivo);
         formData.append('fecha_limite', form.fecha_limite);
-        formData.append('descripcion', form.historia || form.resumen);
+        formData.append('descripcion', form.historia || form.resumen); // Usar historia como descripción larga
         formData.append('estado', type === 'publish' ? 'publicado' : 'borrador');
 
         if (formFile) {
@@ -165,12 +179,9 @@ export default function CrearProyectoPage() {
                                             onChange={onChange}
                                             className="mt-2 w-full rounded-2xl border border-[#ead8ce] dark:border-[#3a2d24] bg-[#fffaf7] dark:bg-[#120b07] px-4 py-3 text-sm outline-none focus:border-[#f2780d]"
                                         >
-                                            <option>General</option>
-                                            <option>Arte</option>
-                                            <option>Tecnología</option>
-                                            <option>Juegos</option>
-                                            <option>Música</option>
-                                            <option>Sostenibilidad</option>
+                                            {categoriasdB.map(cat => (
+                                                <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+                                            ))}
                                         </select>
                                     </div>
 
