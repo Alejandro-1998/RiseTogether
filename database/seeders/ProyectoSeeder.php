@@ -14,14 +14,13 @@ class ProyectoSeeder extends Seeder
     {
         // Aseguramos que existan al menos un usuario y una categoría
         $user = User::first() ?? User::factory()->create();
-        $categoria = Categoria::first() ?? Categoria::factory()->create();
 
         // --- 3 PROYECTOS DESTACADOS (Top Proyectos) ---
         // Deben ser 'publicado' y 'ganadorEvento' => true
 
         Proyecto::create([
             'user_id'               => $user->id,
-            'categoria_id'          => $categoria->id,
+            'categoria_id'          => 6,
             'titulo'                => 'Eco-City Garden: Jardines Urbanos',
             'slug'                  => Str::slug('eco-city-garden-jardines-urbanos'),
             'resumen'               => 'Transformando techos grises en oasis verdes para la comunidad.',
@@ -36,7 +35,7 @@ class ProyectoSeeder extends Seeder
 
         Proyecto::create([
             'user_id'               => $user->id,
-            'categoria_id'          => $categoria->id,
+            'categoria_id'          => 7,
             'titulo'                => 'NextGen Drone: Exploración Autónoma',
             'slug'                  => Str::slug('nextgen-drone-exploracion-autonoma'),
             'resumen'               => 'Drones con IA para mapeo y rescate en zonas de difícil acceso.',
@@ -51,7 +50,7 @@ class ProyectoSeeder extends Seeder
 
         Proyecto::create([
             'user_id'               => $user->id,
-            'categoria_id'          => $categoria->id,
+            'categoria_id'          => 3,
             'titulo'                => 'Festival de Arte Comunitario 2026',
             'slug'                  => Str::slug('festival-de-arte-comunitario-2026'),
             'resumen'               => 'Un fin de semana lleno de música, pintura y teatro local.',
@@ -69,7 +68,7 @@ class ProyectoSeeder extends Seeder
 
         Proyecto::create([
             'user_id'               => $user->id,
-            'categoria_id'          => $categoria->id,
+            'categoria_id'          => 6,
             'titulo'                => 'Mochila Solar "SunPack"',
             'slug'                  => Str::slug('mochila-solar-sunpack'),
             'resumen'               => 'Carga tus dispositivos mientras caminas. 100% recicable.',
@@ -85,7 +84,7 @@ class ProyectoSeeder extends Seeder
 
         Proyecto::create([
             'user_id'               => $user->id,
-            'categoria_id'          => $categoria->id,
+            'categoria_id'          => 1,
             'titulo'                => 'Indie Game: The Lost World',
             'slug'                  => Str::slug('indie-game-the-lost-world'),
             'resumen'               => 'Un RPG de acción que superó todas las expectativas.',
@@ -101,7 +100,7 @@ class ProyectoSeeder extends Seeder
 
         Proyecto::create([
             'user_id'               => $user->id,
-            'categoria_id'          => $categoria->id,
+            'categoria_id'          => 6,
             'titulo'                => 'Filtro de Agua Inteligente',
             'slug'                  => Str::slug('filtro-de-agua-inteligente'),
             'resumen'               => 'Agua potable accesible para comunidades rurales.',

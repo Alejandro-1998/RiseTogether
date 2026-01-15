@@ -13,20 +13,12 @@ class CategoriaSeeder extends Seeder
      */
     public function run(): void
     {
-        $categorias = [
-            ['nombre' => 'Tecnología', 'icono' => 'cpu-chip'],
-            ['nombre' => 'Arte', 'icono' => 'paint-brush'],
-            ['nombre' => 'Medio Ambiente', 'icono' => 'leaf'],
-            ['nombre' => 'Educación', 'icono' => 'academic-cap'],
-            ['nombre' => 'Salud', 'icono' => 'heart'],
-            ['nombre' => 'Cine y Video', 'icono' => 'video-camera'],
-        ];
+        $categorias = ['Juegos', 'Educación', 'Arte', 'Libros', 'Música', 'Medio Ambiente', 'Tecnología'];
 
         foreach ($categorias as $categoria) {
             Categoria::create([
-                'nombre' => $categoria['nombre'],
-                'slug'   => Str::slug($categoria['nombre']),
-                'icono'  => $categoria['icono'],
+                'nombre' => $categoria,
+                'slug'   => Str::slug($categoria)
             ]);
         }
     }
