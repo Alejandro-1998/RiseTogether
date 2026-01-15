@@ -3,11 +3,11 @@ import FooterPublic from "../../components/public/footer_public";
 import Home from "../../components/public/home";
 
 export default function HomePage() {
-  const isAuth = false;
+
 
   return (
     <div className="bg-[#fcfaf8] text-[#1c140d] dark:bg-[#120b07] dark:text-[#fcfaf8]">
-      <HeaderPublic isAuth={isAuth} />
+      <HeaderPublic />
       <Home />
       <FooterPublic />
     </div>

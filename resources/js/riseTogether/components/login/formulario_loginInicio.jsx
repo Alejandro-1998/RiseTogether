@@ -1,32 +1,32 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import useAuth from "../../hooks/useAuth";
 
 export default function FormularioLoginInicio() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const { login, errors: authErrors } = useAuth();
+
+  // Combine local error state if needed, or just use authErrors
+  // For simplicity, let's defer to the hook's handling but keep local check logic if we want custom UI messages
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
 
     try {
-      // 1. Iniciamos sesión en la API (usando la cookie de sesión gracias a statefulApi)
-      // Primero inicializamos el CSRF protection cookie para Sanctum
-      await window.axios.get('/sanctum/csrf-cookie');
-      
-      // Luego hacemos el login
-      await window.axios.post("/api/login", { email, password });
+      await login({ email, password });
 
-      // 2. Si es exitoso, redirigimos
-      // Opción A: Recargar la página completa para que Laravel reconozca la sesión en nuevas vistas blade si las hubiera
-      // window.location.href = "/";
-
-      // Opción B: Navegación SPA (más rápida)
-      navigate("/");
+      // Si es exitoso, redirigimos logic is handled by awaiting login success
+      const from = location.state?.from || "/";
+      navigate(from);
 
     } catch (err) {
+      // Errors are set in context, but we can also set local generic error or read from hook
       if (err.response && err.response.status === 401) {
         setError("Credenciales incorrectas.");
       } else {

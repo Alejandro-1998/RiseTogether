@@ -1,5 +1,6 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
 
 import HomePage from "./pages/public/HomePage";
 import LoginInicioPage from "./pages/public/LoginInicioPage";
@@ -11,28 +12,30 @@ import ProyectosPage from "./pages/public/ProyectosPage";
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Home */}
-        <Route path="/" element={<HomePage />} />
+      <AuthProvider>
+        <Routes>
+          {/* Home */}
+          <Route path="/" element={<HomePage />} />
 
-        {/* Login */}
-        <Route path="/login" element={<LoginInicioPage />} />
+          {/* Login */}
+          <Route path="/login" element={<LoginInicioPage />} />
 
-        {/* Registro */}
-        <Route path="/registro" element={<RegistroPage />} />
+          {/* Registro */}
+          <Route path="/registro" element={<RegistroPage />} />
 
-        {/* Admin */}
-        <Route path="/administrador" element={<AdminDashboard />} />
+          {/* Admin */}
+          <Route path="/administrador" element={<AdminDashboard />} />
 
-        {/* Crear Proyecto */}
-        <Route path="/crear-proyecto" element={<CrearProyectoPage />} />
+          {/* Crear Proyecto */}
+          <Route path="/crear-proyecto" element={<CrearProyectoPage />} />
 
-        {/* Descubrir Proyectos */}
-        <Route path="/proyectos" element={<ProyectosPage />} />
+          {/* Descubrir Proyectos */}
+          <Route path="/proyectos" element={<ProyectosPage />} />
 
-        {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
