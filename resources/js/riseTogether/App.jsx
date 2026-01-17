@@ -11,6 +11,7 @@ import ProyectosPage from "./pages/public/ProyectosPage";
 import UsuarioPage from "./pages/public/UsuarioPage";
 import ProyectoPage from "./pages/public/ProyectoPage";
 
+// RUTAS //
 function App() {
   return (
     <BrowserRouter>
