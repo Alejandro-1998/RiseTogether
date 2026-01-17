@@ -8,6 +8,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import RegistroPage from "./pages/public/RegistroPage";
 import CrearProyectoPage from "./pages/public/CrearProyectoPage";
 import ProyectosPage from "./pages/public/ProyectosPage";
+import UsuarioPage from "./pages/public/UsuarioPage";
+import ProyectoPage from "./pages/public/ProyectoPage";
 
 function App() {
   return (
@@ -31,6 +33,12 @@ function App() {
 
           {/* Descubrir Proyectos */}
           <Route path="/proyectos" element={<ProyectosPage />} />
+
+          {/* Usuario */}
+          <Route path="/usuario" element={<UsuarioPage />} />
+          
+          {/* Proyecto */}
+          <Route path="/proyecto" element={<ProyectoPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
