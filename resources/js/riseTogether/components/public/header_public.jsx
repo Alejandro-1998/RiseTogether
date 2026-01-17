@@ -85,7 +85,11 @@ export default function HeaderPublic({ isAuth }) {
                   className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4ede7] text-[#1c140d] cursor-default dark:bg-[#2a2017] dark:text-[#fcfaf8]"
                   title="Sesión Iniciada"
                 >
-                  <span className="material-symbols-outlined">person</span>
+                  <Link
+                    to="/usuario"
+                  >
+                    <span className="material-symbols-outlined">person</span>
+                  </Link>
                 </div>
 
                 <button
