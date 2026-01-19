@@ -1,22 +1,66 @@
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
 import ProyectoCard from "../../components/cards/ProyectoCard";
 
 
 export default function ProyectosPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const categoriaIdParam = searchParams.get("categoria");
+
   const [filtro, setFiltro] = useState("casi");
   const [orden, setOrden] = useState("financiados");
   const [proyectos, setProyectos] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Advanced Filters State
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(categoriaIdParam || "");
+  const [searchTerm, setSearchTerm] = useState("");
 
+  // Fetch Categories on Mount
+  useEffect(() => {
+    let mounted = true;
+    import("axios").then((axios) => {
+      axios.default.get("/api/categorias")
+        .then((res) => {
+          if (mounted) setCategories(res.data);
+        })
+        .catch((err) => console.error("Error fetching categories:", err));
+    });
+    return () => { mounted = false; };
+  }, []);
+
+  // Sync state if URL param changes externally (e.g. from header)
+  useEffect(() => {
+    if (categoriaIdParam && categoriaIdParam !== selectedCategory) {
+      setSelectedCategory(categoriaIdParam);
+    }
+  }, [categoriaIdParam]);
+
+  // Fetch Proyectos when filters change
   useEffect(() => {
     let mounted = true;
 
     const cargar = async () => {
+      setLoading(true);
       try {
-        const res = await fetch("/api/proyectos", {
+        let url = "/api/proyectos";
+        const params = new URLSearchParams();
+
+        if (selectedCategory) {
+          params.append("categoria_id", selectedCategory);
+        }
+        if (searchTerm) {
+          params.append("titulo", searchTerm);
+        }
+
+        if (params.toString()) {
+          url += `?${params.toString()}`;
+        }
+
+        const res = await fetch(url, {
           headers: { Accept: "application/json" },
           credentials: "same-origin",
         });
@@ -29,40 +73,39 @@ export default function ProyectosPage() {
         const lista = Array.isArray(data) ? data : data?.data ?? [];
         setProyectos(lista);
       } catch (e) {
+        console.error("Error fetching projects", e);
         if (!mounted) return;
-        setProyectos([
-          {
-            id: 1,
-            titulo: "Proyecto demo 1",
-            resumen: "Esto es una tarjeta de ejemplo hasta conectar con Laravel.",
-            categoria: { nombre: "General" },
-            imagen_portada: null,
-            cantidad_recaudada: 1200,
-            porcentaje_financiado: 24,
-            fecha_limite: new Date(Date.now() + 1000 * 60 * 60 * 24 * 15),
-          },
-          {
-            id: 2,
-            titulo: "Proyecto demo 2",
-            resumen: "Grid responsive igual que en Blade (1/2/3/4 columnas).",
-            categoria: { nombre: "Arte" },
-            imagen_portada: null,
-            cantidad_recaudada: 9800,
-            porcentaje_financiado: 80,
-            fecha_limite: new Date(Date.now() + 1000 * 60 * 60 * 24 * 35),
-          },
-        ]);
+        setProyectos([]);
       } finally {
         if (!mounted) return;
         setLoading(false);
       }
     };
 
-    cargar();
+    // Debounce search a bit? or just separate effect? 
+    // For simplicity, we trigger on any change. 
+    // In production, debounce searchTerm is better.
+    const timeoutId = setTimeout(() => {
+      cargar();
+    }, 300);
+
     return () => {
       mounted = false;
+      clearTimeout(timeoutId);
     };
-  }, []);
+  }, [selectedCategory, searchTerm]);
+
+  // Update URL params when filters change (UX)
+  useEffect(() => {
+    const newParams = new URLSearchParams(searchParams);
+    if (selectedCategory) {
+      newParams.set("categoria", selectedCategory);
+    } else {
+      newParams.delete("categoria");
+    }
+    setSearchParams(newParams);
+  }, [selectedCategory, setSearchParams]);
+
 
   // Si quieres filtrar/ordenar en frontend (temporal)
   const proyectosFiltrados = useMemo(() => {
@@ -109,8 +152,41 @@ export default function ProyectosPage() {
               </p>
             </div>
 
+            {/* SEARCH & FILTERS BAR */}
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between py-2">
+              <div className="relative w-full md:w-1/3 group">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#9c7049] group-focus-within:text-[#f2780d] transition-colors">search</span>
+                <input
+                  type="text"
+                  placeholder="Buscar por nombre..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] text-sm text-[#1c140d] dark:text-white placeholder-[#9c7049]/70 focus:border-[#f2780d] focus:ring-2 focus:ring-[#f2780d]/20 outline-none transition-all shadow-sm group-hover:border-[#f2780d]/50"
+                />
+              </div>
+
+              <div className="relative w-full md:w-1/3">
+                <div className="relative">
+                  <select
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                    className="w-full pl-4 pr-10 py-3 rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] text-sm text-[#1c140d] dark:text-white appearance-none focus:border-[#f2780d] focus:ring-2 focus:ring-[#f2780d]/20 outline-none transition-all shadow-sm hover:border-[#f2780d]/50 cursor-pointer"
+                  >
+                    <option value="">Todas las categorías</option>
+                    {categories.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.nombre}</option>
+                    ))}
+                  </select>
+                  <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-[#f2780d] pointer-events-none">
+                    filter_list
+                  </span>
+                </div>
+              </div>
+            </div>
+
+
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-              {/* FILTROS */}
+              {/* FILTROS (Frontend Quick Sorts) */}
               <div className="flex gap-2 flex-wrap">
                 <button
                   type="button"
@@ -167,10 +243,10 @@ export default function ProyectosPage() {
                 <ProyectoCard key={p.id ?? p.titulo} proyecto={p} />
               ))
             ) : (
-              <div className="col-span-full rounded-2xl border border-[#f4ede7] dark:border-[#2a2017] bg-white dark:bg-[#1a120d] p-6">
-                <p className="font-bold">No hay proyectos para mostrar.</p>
+              <div className="col-span-full rounded-2xl border border-[#f4ede7] dark:border-[#2a2017] bg-white dark:bg-[#1a120d] p-6 text-center">
+                <p className="font-bold text-lg">No hay proyectos para mostrar.</p>
                 <p className="mt-1 text-sm text-[#9c7049] dark:text-[#9CA3AF]">
-                  Prueba con otro filtro o vuelve más tarde.
+                  Intenta cambiar los filtros de búsqueda.
                 </p>
               </div>
             )}

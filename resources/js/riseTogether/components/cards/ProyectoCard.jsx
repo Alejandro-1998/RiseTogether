@@ -51,7 +51,7 @@ export default function ProyectoCard({ proyecto }) {
     }
 
     // Ruta del enlace
-    const toDetalle = proyecto?.slug ? `/proyecto/${proyecto.slug}` : "#";
+    const toDetalle = proyecto?.id ? `/proyecto/${proyecto.id}` : "#";
 
     return (
         <div className="group flex h-full flex-col gap-4 overflow-hidden rounded-2xl bg-white shadow-sm transition-shadow duration-300 hover:shadow-lg dark:bg-[#1a120c] dark:ring-1 dark:ring-[#3a2c20]/70">

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
@@ -7,22 +8,47 @@ import UsuarioBanner from "../../components/usuario/usuario_banner";
 import EstadisticasUsuario from "../../components/cards/estadisticas_usuario";
 import UsuarioTabs from "../../components/usuario/usuario_tabs";
 import UsuarioSidebar from "../../components/usuario/usuario_sidebar";
+import UsuarioAjustes from "../../components/usuario/usuario_ajustes";
 
 import ProyectoCard from "../../components/proyecto/proyecto_card";
 import ActividadReciente from "../../components/cards/actividad_reciente";
 
 export default function UsuarioPage() {
   const [tab, setTab] = useState("resumen"); // resumen | creados | apoyados | actividad | ajustes
+  const [usuario, setUsuario] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // ⚠️ Mock data temporal (igual que hicimos con proyectos). Luego lo conectas al back.
-  const usuario = {
-    nombre: "Alex Doe",
-    username: "@alexdoe",
-    ubicacion: "San Francisco, CA",
-    bannerUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuBy9Wss6EBRoR7h3QbFmEUvv8yYqAkAHJvQHJolGdmXUU6eXj62XpZQgfUVzCZc_WAkapFJSxbovCIb8D6h1bJuSDKxqfJ4V_yk2h8nqIHtI9nLhgyOcT53RH09ZVWxNLRGtdS2oSMEiBHj80gbB_GA0-YUwB0eHspnjYbceQyZkw4youOQoQbZVoFUDclCl2oYNu4YiR7rSoGVBeJ_qZmW7JTnrRzGW1VoYcG0_ujIk9svn-s5mIUa7t86AR_qaPxqgKf3BmSvolw",
-    avatarUrl:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAwEbSTOFIZFktpB4uQ9wkgVgm1FHWTJGJlmEo1BAQcRlSTEAO0PgIU5vdw-gEqAAVE-_pXNfGYGtBW1aCjUlYkMFRwkyEWJrATqoTqeQpkcl2BtOUklo_9cDlw7Hok_IuK-_FHaGGSBBrU9zUIeyy4qILrxeJIbhQst1dCo39DWRzQd7DubZdv9otAhmsJQfjsWtZ-aDvEBMjKIKcOoP0t6iEW_vpEXt2a-oOpZ4Hj7OmMw8Z-KhrlNBAyBLCKUlZEyW4Fyb-44dw",
+  useEffect(() => {
+    fetchUser();
+  }, []);
+
+  const fetchUser = async () => {
+    try {
+      const response = await axios.get('/api/user/profile');
+      setUsuario(response.data);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUserUpdate = (updatedUser) => {
+    setUsuario(updatedUser);
+  };
+
+  if (loading) return <div className="flex h-screen items-center justify-center">Cargando...</div>;
+  if (!usuario) return <div className="flex h-screen items-center justify-center">Usuario no encontrado. <a href="/login" className="ml-2 text-blue-500">Iniciar Sesión</a></div>;
+
+  // Map API data to component expectations
+  const usuarioMapped = {
+    ...usuario,
+    nombre: usuario.nombreCompleto || usuario.nombreUsuario,
+    username: `@${usuario.nombreUsuario}`,
+    ubicacion: usuario.direccion || 'Ubicación no disponible',
+    // Use placeholders if no image (can be improved later with real uploads)
+    avatarUrl: usuario.foto_perfil || "https://lh3.googleusercontent.com/aida-public/AB6AXuAwEbSTOFIZFktpB4uQ9wkgVgm1FHWTJGJlmEo1BAQcRlSTEAO0PgIU5vdw-gEqAAVE-_pXNfGYGtBW1aCjUlYkMFRwkyEWJrATqoTqeQpkcl2BtOUklo_9cDlw7Hok_IuK-_FHaGGSBBrU9zUIeyy4qILrxeJIbhQst1dCo39DWRzQd7DubZdv9otAhmsJQfjsWtZ-aDvEBMjKIKcOoP0t6iEW_vpEXt2a-oOpZ4Hj7OmMw8Z-KhrlNBAyBLCKUlZEyW4Fyb-44dw",
+    bannerUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuBy9Wss6EBRoR7h3QbFmEUvv8yYqAkAHJvQHJolGdmXUU6eXj62XpZQgfUVzCZc_WAkapFJSxbovCIb8D6h1bJuSDKxqfJ4V_yk2h8nqIHtI9nLhgyOcT53RH09ZVWxNLRGtdS2oSMEiBHj80gbB_GA0-YUwB0eHspnjYbceQyZkw4youOQoQbZVoFUDclCl2oYNu4YiR7rSoGVBeJ_qZmW7JTnrRzGW1VoYcG0_ujIk9svn-s5mIUa7t86AR_qaPxqgKf3BmSvolw"
   };
 
   const stats = [
@@ -55,7 +81,7 @@ export default function UsuarioPage() {
       <HeaderPublic />
 
       <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-        <UsuarioBanner usuario={usuario} />
+        <UsuarioBanner usuario={usuarioMapped} />
 
         {/* Estadísticas */}
         <section className="flex flex-wrap gap-3 py-3 mb-6" aria-label="Estadísticas del perfil">
@@ -86,7 +112,7 @@ export default function UsuarioPage() {
                         Actividad reciente
                       </h3>
                       <button className="text-xs text-[#f2780d] font-medium hover:underline">
-                        Ver toda la actividadz la actividad
+                        Ver toda la actividad
                       </button>
                     </div>
 
@@ -127,19 +153,14 @@ export default function UsuarioPage() {
               )}
 
               {tab === "ajustes" && (
-                <div className="rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] p-6">
-                  <p className="font-bold">Ajustes</p>
-                  <p className="mt-1 text-sm text-[#6b7280] dark:text-[#9ca3af]">
-                    Aquí irán ajustes del perfil (editar bio, foto, etc.).
-                  </p>
-                </div>
+                <UsuarioAjustes user={usuario} onUserUpdate={handleUserUpdate} />
               )}
             </section>
           </div>
 
           {/* SIDEBAR */}
           <aside className="lg:col-span-4 flex flex-col gap-8">
-            <UsuarioSidebar />
+            <UsuarioSidebar usuario={usuarioMapped} />
           </aside>
         </div>
       </main>

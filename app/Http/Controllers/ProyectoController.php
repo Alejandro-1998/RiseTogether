@@ -13,9 +13,19 @@ class ProyectoController extends Controller
     /**
      * Obtiene todos los proyectos.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $proyectos = Proyecto::with('categoria')->get();
+        $query = Proyecto::with('categoria');
+
+        if ($request->has('categoria_id')) {
+            $query->where('categoria_id', $request->categoria_id);
+        }
+
+        if ($request->has('titulo')) {
+             $query->where('titulo', 'like', '%' . $request->titulo . '%');
+        }
+
+        $proyectos = $query->get();
         return response()->json($proyectos);
     }
 
@@ -99,7 +109,7 @@ class ProyectoController extends Controller
      */
     public function show(string $id)
     {
-        $proyecto = Proyecto::with('categoria')->where('id', $id)->first();
+        $proyecto = Proyecto::with(['categoria', 'recompensas', 'user'])->where('id', $id)->first();
         return response()->json($proyecto);
     }
 

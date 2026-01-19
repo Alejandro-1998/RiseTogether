@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ComentarioController;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\UserController;
 
 /// RUTAS PÚBLICAS DE API ///
 
@@ -21,6 +22,7 @@ Route::get('/categorias', [CategoriaController::class, 'index']);
 
 // Proyectos
 Route::get('/proyectos', [ProyectoController::class, 'index']);
+Route::get('/proyectos/{id}', [ProyectoController::class, 'show']);
 
 /// RUTAS PROTEGIDAS DE API ///
 
@@ -28,6 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    Route::get('/user/profile', [UserController::class, 'show']);
+    Route::put('/user/profile', [UserController::class, 'update']);
     Route::post('/proyectos', [ProyectoController::class, 'store']);
     Route::post('/logout', [LoginController::class, 'logout']);
 });

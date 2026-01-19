@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import useAuth from "../../hooks/useAuth";
 
 const CATEGORIES = [
@@ -8,6 +9,15 @@ const CATEGORIES = [
 
 export default function HeaderPublic({ isAuth }) {
   const { pathname } = useLocation();
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    import("axios").then((axios) => {
+      axios.default.get("/api/categorias")
+        .then((res) => setCategories(res.data))
+        .catch((err) => console.error("Error fetching categories:", err));
+    });
+  }, []);
 
   const { isAuth: authState, logout } = useAuth();
   // Allow prop override, otherwise use hook
@@ -173,16 +183,20 @@ export default function HeaderPublic({ isAuth }) {
       {showCategories && (
         <nav className="mt-3 hidden md:block" aria-label="Categorías">
           <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[17px] font-medium text-[#1c140d] dark:text-[#fcfaf8]">
-            {CATEGORIES.map((cat) => (
-              <li key={cat}>
-                <Link
-                  to="/proyectos"
-                  className="transition-colors hover:text-[#f2780d] dark:hover:text-[#f2780d]"
-                >
-                  {cat}
-                </Link>
-              </li>
-            ))}
+            {categories.length > 0 ? (
+              categories.map((cat) => (
+                <li key={cat.id}>
+                  <Link
+                    to={`/proyectos?categoria=${cat.id}`}
+                    className="transition-colors hover:text-[#f2780d] dark:hover:text-[#f2780d]"
+                  >
+                    {cat.nombre}
+                  </Link>
+                </li>
+              ))
+            ) : (
+              <p className="text-sm text-gray-500">Cargando categorías...</p>
+            )}
           </ul>
         </nav>
       )}

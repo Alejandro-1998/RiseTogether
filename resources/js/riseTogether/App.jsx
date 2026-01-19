@@ -37,9 +37,9 @@ function App() {
 
           {/* Usuario */}
           <Route path="/usuario" element={<UsuarioPage />} />
-          
+
           {/* Proyecto */}
-          <Route path="/proyecto" element={<ProyectoPage />} />
+          <Route path="/proyecto/:id" element={<ProyectoPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
