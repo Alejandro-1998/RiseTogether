@@ -22,6 +22,7 @@ return new class extends Migration
             $table->date('fechaNacimiento')->nullable();
             $table->string('direccion')->nullable();
             $table->string('numeroCuenta')->unique()->nullable();
+            $table->text('biografia')->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
