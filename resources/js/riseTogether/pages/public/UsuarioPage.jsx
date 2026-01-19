@@ -21,10 +21,18 @@ export default function UsuarioPage() {
   const [usuario, setUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isMe, setIsMe] = useState(false);
+  const [proyectosCreados, setProyectosCreados] = useState([]);
+  const [loadingProyectos, setLoadingProyectos] = useState(false);
 
   useEffect(() => {
     fetchUser();
   }, [id]);
+
+  useEffect(() => {
+    if (tab === "creados" && usuario) {
+      fetchProyectosCreados();
+    }
+  }, [tab, usuario]);
 
   const fetchUser = async () => {
     setLoading(true);
@@ -43,6 +51,19 @@ export default function UsuarioPage() {
       console.error("Error fetching user:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchProyectosCreados = async () => {
+    if (proyectosCreados.length > 0) return; // Ya cargados
+    setLoadingProyectos(true);
+    try {
+      const res = await axios.get(`/api/proyectos?user_id=${usuario.id}`);
+      setProyectosCreados(res.data);
+    } catch (error) {
+      console.error("Error fetching created projects:", error);
+    } finally {
+      setLoadingProyectos(false);
     }
   };
 
@@ -65,7 +86,7 @@ export default function UsuarioPage() {
   };
 
   const stats = [
-    { value: "12", label: "Proyectos creados" },
+    { value: usuario.proyectos_creados_count?.toString() || "0", label: "Proyectos creados" },
     { value: "48", label: "Proyectos apoyados" },
     { value: "1.2k", label: "Seguidores" },
     { value: "320", label: "Siguiendo" },
@@ -139,11 +160,25 @@ export default function UsuarioPage() {
               )}
 
               {tab === "creados" && (
-                <div className="rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] p-6">
-                  <p className="font-bold">Proyectos creados</p>
-                  <p className="mt-1 text-sm text-[#6b7280] dark:text-[#9ca3af]">
-                    Aquí listaremos los proyectos creados por el usuario.
-                  </p>
+                <div className="space-y-4">
+                  <h3 className="font-bold text-xl">Proyectos creados</h3>
+                  {loadingProyectos ? (
+                    <p>Cargando proyectos...</p>
+                  ) : proyectosCreados.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {proyectosCreados.map((p) => (
+                        <div key={p.id} className="rounded-2xl overflow-hidden border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] shadow-sm">
+                          <ProyectoCard proyecto={p} />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] p-6">
+                      <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">
+                        Este usuario no ha creado ningún proyecto todavía.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
 

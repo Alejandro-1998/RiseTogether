@@ -7,6 +7,8 @@ use App\Models\Proyecto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProyectoController extends Controller
 {
@@ -23,6 +25,10 @@ class ProyectoController extends Controller
 
         if ($request->has('titulo')) {
              $query->where('titulo', 'like', '%' . $request->titulo . '%');
+        }
+
+        if ($request->has('user_id')) {
+            $query->where('user_id', $request->user_id);
         }
 
         $proyectos = $query->get();
@@ -57,51 +63,65 @@ class ProyectoController extends Controller
             'imagen_portada.required' => 'La imagen es obligatoria para atraer mecenas.',
         ]);
 
-        $rutaImagen = null;
-        if ($request->hasFile('imagen_portada')) {
-            $rutaImagen = $request->file('imagen_portada')->store('proyectos', 'public');
-        }
+        try {
+            DB::beginTransaction();
 
-        $proyecto = Proyecto::create([
-            'user_id' => Auth::id(),
-            'categoria_id' => $request->categoria_id,
-            'titulo' => $request->titulo,
-            'slug' => Str::slug($request->titulo),
-            'resumen' => $request->resumen,
-            'descripcion' => $request->descripcion,
-            'imagen_portada' => $rutaImagen,
-            'video_url' => $request->video_url,
-            'objetivo_financiacion' => $request->objetivo_financiacion,
-            'fecha_limite' => $request->fecha_limite,
-            'estado' => $request->estado ?? 'borrador',
-            'cantidad_recaudada' => 0,
-        ]);
+            $rutaImagen = null;
+            if ($request->hasFile('imagen_portada')) {
+                $rutaImagen = $request->file('imagen_portada')->store('proyectos', 'public');
+            }
 
-        // Guardar recompensas si vienen
-        if ($request->has('recompensas')) {
-            $recompensasData = json_decode($request->recompensas, true);
-            if (is_array($recompensasData)) {
-                foreach ($recompensasData as $r) {
-                    // Validar un poco campos mínimos
-                    if (!empty($r['titulo']) && !empty($r['cantidad'])) {
-                        $proyecto->recompensas()->create([
-                            'nombreRecompensa' => $r['titulo'],
-                            'descripcionRecompensa' => $r['descripcion'] ?? '',
-                            'costoRecompensa' => $r['cantidad'],
-                            'tipoEntrega' => 'fisica',
-                        ]);
+            $proyecto = Proyecto::create([
+                'user_id' => Auth::id(),
+                'categoria_id' => $request->categoria_id,
+                'titulo' => $request->titulo,
+                'slug' => Str::slug($request->titulo),
+                'resumen' => $request->resumen,
+                'descripcion' => $request->descripcion,
+                'imagen_portada' => $rutaImagen,
+                'video_url' => $request->video_url,
+                'objetivo_financiacion' => $request->objetivo_financiacion,
+                'fecha_limite' => $request->fecha_limite,
+                'estado' => $request->estado ?? 'borrador',
+                'cantidad_recaudada' => 0,
+            ]);
+
+            // Guardar recompensas si vienen
+            if ($request->has('recompensas')) {
+                $recompensasData = json_decode($request->recompensas, true);
+                if (is_array($recompensasData)) {
+                    foreach ($recompensasData as $r) {
+                        // Validar campos: titulo no vacío, costo numérico
+                        if (!empty($r['titulo']) && isset($r['cantidad']) && is_numeric($r['cantidad'])) {
+                            $proyecto->recompensas()->create([
+                                'nombreRecompensa' => $r['titulo'],
+                                'descripcionRecompensa' => $r['descripcion'] ?? '',
+                                'costoRecompensa' => $r['cantidad'],
+                                'tipoEntrega' => 'fisica', // Default
+                            ]);
+                        }
                     }
                 }
             }
+
+            DB::commit();
+
+            // Cargar la relación para devolverla en la respuesta
+            $proyecto->load('categoria');
+
+            return response()->json([
+                'message' => 'Proyecto creado con éxito',
+                'proyecto' => $proyecto
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error creando proyecto: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Error al crear el proyecto',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        // Cargar la relación para devolverla en la respuesta
-        $proyecto->load('categoria');
-
-        return response()->json([
-            'message' => 'Proyecto creado con éxito',
-            'proyecto' => $proyecto
-        ], 201);
     }
 
     /**
@@ -109,7 +129,9 @@ class ProyectoController extends Controller
      */
     public function show(string $id)
     {
-        $proyecto = Proyecto::with(['categoria', 'recompensas', 'user'])->where('id', $id)->first();
+        $proyecto = Proyecto::with(['categoria', 'recompensas' => function ($query) {
+            $query->orderBy('costoRecompensa', 'asc');
+        }, 'user'])->where('id', $id)->first();
         return response()->json($proyecto);
     }
 

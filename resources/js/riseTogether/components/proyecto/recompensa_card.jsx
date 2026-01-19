@@ -1,7 +1,7 @@
 export default function RecompensaCard({ recompensa }) {
-  const precio = recompensa?.precio ?? 10;
-  const titulo = recompensa?.titulo ?? "Aportación de apoyo";
-  const descripcion = recompensa?.descripcion ?? "Descripción de recompensa...";
+  const precio = recompensa?.costoRecompensa ?? recompensa?.precio ?? 10;
+  const titulo = recompensa?.nombreRecompensa ?? recompensa?.titulo ?? "Aportación de apoyo";
+  const descripcion = recompensa?.descripcionRecompensa ?? recompensa?.descripcion ?? "Descripción de recompensa...";
 
   return (
     <div className="rounded-2xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-5 hover:border-[#f2780d]/50 dark:hover:border-[#f2780d]/50 transition-all">
