@@ -10,6 +10,8 @@ import CrearProyectoPage from "./pages/public/CrearProyectoPage";
 import ProyectosPage from "./pages/public/ProyectosPage";
 import UsuarioPage from "./pages/public/UsuarioPage";
 import ProyectoPage from "./pages/public/ProyectoPage";
+import AdminGestionProyectos from "./pages/admin/AdminGestionProyectos";
+
 
 // RUTAS //
 function App() {
@@ -40,6 +42,10 @@ function App() {
 
           {/* Proyecto */}
           <Route path="/proyecto/:id" element={<ProyectoPage />} />
+
+          {/* Proyecto Seccion Administrador */}
+          <Route path="/administrador/proyectos" element={<AdminGestionProyectos />} />
+
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

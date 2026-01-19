@@ -1,4 +1,6 @@
 // src/components/admin/sidebar.jsx
+import { Link } from "react-router-dom";
+
 export default function Sidebar() {
   // Estilo base para los enlaces NO activos
   const itemBase =
@@ -22,21 +24,17 @@ export default function Sidebar() {
       {/* Menú 1*/}
       <nav className="flex-1 px-2 py-4 space-y-2 text-sm">
         {/* Activo */}
-        <a className={itemActive} href="#panel">
-          <span
-            className="material-symbols-outlined text-2xl"
-            style={{ fontVariationSettings: "'FILL' 1" }}
-          >
-            dashboard
-          </span>
+       <Link className={itemActive} to="/administrador">
+          <span className="material-symbols-outlined text-2xl">dashboard</span>
           Panel de administración
-        </a>
+        </Link>
 
         {/* Secciones futuras (enlaces) */}
-        <a className={itemBase} href="#gestion-proyectos">
+
+        <Link className={itemBase} to="/administrador/proyectos">
           <span className="material-symbols-outlined">folder</span>
           Gestión de proyectos
-        </a>
+        </Link>
 
         <a className={itemBase} href="#usuarios">
           <span className="material-symbols-outlined">group</span>
