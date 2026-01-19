@@ -63,6 +63,7 @@ export default function ProyectosPage() {
         const res = await fetch(url, {
           headers: { Accept: "application/json" },
           credentials: "same-origin",
+          cache: "no-store",
         });
 
         if (!res.ok) throw new Error("No endpoint /api/proyectos");

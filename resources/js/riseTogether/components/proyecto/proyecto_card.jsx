@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function ProyectoCard({ proyecto, preview = false }) {
   const {
     titulo,
@@ -27,9 +29,10 @@ export default function ProyectoCard({ proyecto, preview = false }) {
       <div
         className="w-full bg-center bg-no-repeat aspect-video bg-cover"
         style={{
-          backgroundImage: `url('${
-            imagen_portada || "/img/default-project.png"
-          }')`,
+          backgroundImage: `url('${imagen_portada
+            ? (imagen_portada.startsWith('http') ? imagen_portada : `/storage/${imagen_portada}`)
+            : "/img/default-project.png"
+            }')`,
         }}
       />
 
@@ -76,8 +79,8 @@ export default function ProyectoCard({ proyecto, preview = false }) {
               {diasRestantes === null
                 ? "—"
                 : esExpirado
-                ? "Finalizado"
-                : `${diasRestantes} días`}
+                  ? "Finalizado"
+                  : `${diasRestantes} días`}
             </span>
           </div>
         </div>
@@ -86,12 +89,12 @@ export default function ProyectoCard({ proyecto, preview = false }) {
       {/* Botón */}
       {!preview ? (
         <div className="px-4 pb-4">
-          <a
-            href="/proyecto"
+          <Link
+            to={`/proyecto/${proyecto.id}`}
             className="w-full flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f2780d]/20 dark:bg-[#f2780d]/30 text-[#f2780d] text-sm font-bold group-hover:bg-[#f2780d] group-hover:text-white dark:group-hover:text-[#F3F4F6] transition-colors duration-300"
           >
             Ver proyecto
-          </a>
+          </Link>
         </div>
       ) : (
         <div className="px-4 pb-4">

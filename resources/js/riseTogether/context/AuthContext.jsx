@@ -62,6 +62,7 @@ export const AuthProvider = ({ children }) => {
             console.error("Logout error:", e);
         } finally {
             setUser(null);
+            window.location.href = "/login"; // Force hard redirect/reload to clear state
         }
     };
 

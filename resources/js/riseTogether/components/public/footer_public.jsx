@@ -24,7 +24,7 @@ export default function FooterPublic() {
               Descubrir
             </h3>
             <ul className="mt-4 space-y-2">
-              {["Juegos", "Diseño", "Tecnología", "Publicaciones"].map((item) => (
+              {["Proyectos", "Eventos"].map((item) => (
                 <li key={item}>
                   <Link
                     to="/proyectos"

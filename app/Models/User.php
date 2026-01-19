@@ -57,6 +57,11 @@ class User extends Authenticatable
         ];
     }
 
+    function proyectosCreados()
+    {
+        return $this->hasMany(Proyecto::class, 'user_id');
+    }
+
     function proyectos()
     {
         return $this->belongsToMany(Proyecto::class, 'users_proyectos', 'idUsuario', 'idProyecto');
