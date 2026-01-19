@@ -36,7 +36,7 @@ function App() {
           <Route path="/proyectos" element={<ProyectosPage />} />
 
           {/* Usuario */}
-          <Route path="/usuario" element={<UsuarioPage />} />
+          <Route path="/usuario/:id?" element={<UsuarioPage />} />
 
           {/* Proyecto */}
           <Route path="/proyecto/:id" element={<ProyectoPage />} />

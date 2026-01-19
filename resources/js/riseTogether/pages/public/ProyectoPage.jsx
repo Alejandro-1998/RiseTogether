@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
 
@@ -166,11 +166,11 @@ export default function ProyectoPage() {
                         {autorNombre}
                       </h4>
                       <p className="text-base text-[#9c7049] dark:text-[#9c7049]/80 mt-1">
-                        Creador del proyecto.
+                        {proyecto.user?.biografia || "Creador del proyecto."}
                       </p>
-                      <button type="button" className="text-[#f2780d] font-bold text-sm mt-3 inline-block hover:underline">
+                      <Link to={`/usuario/${proyecto.user?.nombreUsuario ?? proyecto.user?.id}`} className="text-[#f2780d] font-bold text-sm mt-3 inline-block hover:underline">
                         Ver perfil del creador
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </>

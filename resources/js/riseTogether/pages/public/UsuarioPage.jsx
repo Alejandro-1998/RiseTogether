@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 
 import HeaderPublic from "../../components/public/header_public";
@@ -13,19 +14,31 @@ import UsuarioAjustes from "../../components/usuario/usuario_ajustes";
 import ProyectoCard from "../../components/proyecto/proyecto_card";
 import ActividadReciente from "../../components/cards/actividad_reciente";
 
+
 export default function UsuarioPage() {
+  const { id } = useParams();
   const [tab, setTab] = useState("resumen"); // resumen | creados | apoyados | actividad | ajustes
   const [usuario, setUsuario] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isMe, setIsMe] = useState(false);
 
   useEffect(() => {
     fetchUser();
-  }, []);
+  }, [id]);
 
   const fetchUser = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get('/api/user/profile');
+      // Si hay ID, buscamos ese usuario (público). Si no, perfil propio (me).
+      const endpoint = id ? `/api/users/${id}` : '/api/user/profile';
+      const response = await axios.get(endpoint);
       setUsuario(response.data);
+
+      // Determinar si soy yo (si no hay ID, es mi perfil. Si hay ID, habría q comparar con mi auth ID, pero por simplicidad: sin ID = yo)
+      // Ajuste: Si navego a /usuario/MI_ID desde fuera, debería detectarlo.
+      // Pero de momento: sin ID -> soy yo. Con ID -> es otro (o yo visto públicamente).
+      setIsMe(!id);
+
     } catch (error) {
       console.error("Error fetching user:", error);
     } finally {
@@ -93,7 +106,7 @@ export default function UsuarioPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* MAIN */}
           <div className="lg:col-span-8">
-            <UsuarioTabs tab={tab} setTab={setTab} />
+            <UsuarioTabs tab={tab} setTab={setTab} isMe={isMe} />
 
             {/* CONTENIDO TABS */}
             <section className="pt-8 space-y-8">
@@ -152,7 +165,7 @@ export default function UsuarioPage() {
                 </div>
               )}
 
-              {tab === "ajustes" && (
+              {tab === "ajustes" && isMe && (
                 <UsuarioAjustes user={usuario} onUserUpdate={handleUserUpdate} />
               )}
             </section>

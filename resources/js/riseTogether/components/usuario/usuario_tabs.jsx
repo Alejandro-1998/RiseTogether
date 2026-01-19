@@ -1,10 +1,10 @@
-export default function UsuarioTabs({ tab, setTab }) {
+export default function UsuarioTabs({ tab, setTab, isMe }) {
   const tabs = [
     { id: "resumen", label: "Resumen" },
     { id: "creados", label: "Proyectos creados" },
     { id: "apoyados", label: "Proyectos apoyados" },
     { id: "actividad", label: "Actividad" },
-    { id: "ajustes", label: "Ajustes" },
+    ...(isMe ? [{ id: "ajustes", label: "Ajustes" }] : []),
   ];
 
   return (

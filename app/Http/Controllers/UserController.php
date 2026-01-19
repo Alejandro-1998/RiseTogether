@@ -9,8 +9,15 @@ use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    public function show(Request $request)
+    /**
+     * Retorna el usuario autenticado actual O un usuario específico por ID.
+     */
+    public function show(Request $request, string $id = null)
     {
+        if ($id) {
+            $user = User::where('id', $id)->orWhere('nombreUsuario', $id)->firstOrFail();
+            return response()->json($user);
+        }
         return response()->json($request->user());
     }
 
