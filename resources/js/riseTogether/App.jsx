@@ -13,6 +13,7 @@ import ProyectoPage from "./pages/public/ProyectoPage";
 import AdminGestionProyectos from "./pages/admin/AdminGestionProyectos";
 import SobreNosotrosPage from "./pages/public/SobreNosotrosPage";
 import ContactoPage from "./pages/public/ContactoPage";
+import AvisoLegalPage from "./pages/public/AvisoLegalPage";
 
 
 // RUTAS //
@@ -51,8 +52,11 @@ function App() {
           {/* Proyecto Sobre Nosotros */}
           <Route path="/about" element={<SobreNosotrosPage />} />
 
-          {/* Fallback */}
+          {/* Contacto */}
           <Route path="/contacto" element={<ContactoPage />} />
+
+          {/* Aviso Legal */}
+          <Route path="/aviso-legal" element={<AvisoLegal />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
