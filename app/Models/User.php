@@ -45,6 +45,13 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected $appends = ['roles_list'];
+
+    public function getRolesListAttribute()
+    {
+        return $this->getRoleNames();
+    }
+
     /**
      * Get the attributes that should be cast.
      *
