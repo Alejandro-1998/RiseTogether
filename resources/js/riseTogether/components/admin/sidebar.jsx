@@ -24,22 +24,21 @@ export default function Sidebar() {
       {/* Menú 1*/}
       <nav className="flex-1 px-2 py-4 space-y-2 text-sm">
         {/* Activo */}
-       <Link className={itemActive} to="/administrador">
+        <Link className={itemActive} to="/administrador">
           <span className="material-symbols-outlined text-2xl">dashboard</span>
           Panel de administración
         </Link>
 
         {/* Secciones futuras (enlaces) */}
-
         <Link className={itemBase} to="/administrador/proyectos">
           <span className="material-symbols-outlined">folder</span>
           Gestión de proyectos
         </Link>
 
-        <a className={itemBase} href="#usuarios">
+        <Link className={itemBase} to="/administrador/usuarios">
           <span className="material-symbols-outlined">group</span>
           Usuarios
-        </a>
+        </Link>
 
         <a className={itemBase} href="#categorias">
           <span className="material-symbols-outlined">sell</span>
