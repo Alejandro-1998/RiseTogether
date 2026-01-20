@@ -12,6 +12,7 @@ import UsuarioPage from "./pages/public/UsuarioPage";
 import ProyectoPage from "./pages/public/ProyectoPage";
 import AdminGestionProyectos from "./pages/admin/AdminGestionProyectos";
 import SobreNosotrosPage from "./pages/public/SobreNosotrosPage";
+import ContactoPage from "./pages/public/ContactoPage";
 
 
 // RUTAS //
@@ -51,7 +52,11 @@ function App() {
           <Route path="/about" element={<SobreNosotrosPage />} />
 
           {/* Fallback */}
+          <Route path="/contacto" element={<ContactoPage />} />
+
+          {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
+
         </Routes>
       </AuthProvider>
     </BrowserRouter>
