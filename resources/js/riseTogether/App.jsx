@@ -11,9 +11,6 @@ import ProyectosPage from "./pages/public/ProyectosPage";
 import UsuarioPage from "./pages/public/UsuarioPage";
 import ProyectoPage from "./pages/public/ProyectoPage";
 import AdminGestionProyectos from "./pages/admin/AdminGestionProyectos";
-import SobreNosotrosPage from "./pages/public/SobreNosotrosPage";
-import ContactoPage from "./pages/public/ContactoPage";
-import AvisoLegalPage from "./pages/public/AvisoLegalPage";
 
 
 // RUTAS //
@@ -45,6 +42,9 @@ function App() {
 
           {/* Proyecto */}
           <Route path="/proyecto/:id" element={<ProyectoPage />} />
+
+          {/* Usuarios Seccion Administrador */}
+          <Route path="/administrador/usuarios" element={<AdminGestionUsuarios />} />
 
           {/* Proyecto Seccion Administrador */}
           <Route path="/administrador/proyectos" element={<AdminGestionProyectos />} />
