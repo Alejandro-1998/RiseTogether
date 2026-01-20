@@ -183,11 +183,35 @@ export default function UsuarioPage() {
               )}
 
               {tab === "apoyados" && (
-                <div className="rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] p-6">
-                  <p className="font-bold">Proyectos apoyados</p>
-                  <p className="mt-1 text-sm text-[#6b7280] dark:text-[#9ca3af]">
-                    Aquí listaremos los proyectos apoyados por el usuario.
-                  </p>
+                <div className="space-y-4">
+                  <p className="font-bold text-xl">Proyectos apoyados</p>
+                  {usuario.donaciones && usuario.donaciones.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {usuario.donaciones.map((donacion) => (
+                        <div key={donacion.id} className="rounded-2xl overflow-hidden border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] shadow-sm flex flex-col">
+                          {/* Reusing ProyectoCard if possible, or custom display */}
+                          {donacion.proyectos && <ProyectoCard proyecto={donacion.proyectos} />}
+
+                          <div className="p-4 border-t border-[#f4ede7] dark:border-[#374151] bg-[#fcfaf8] dark:bg-[#1a120d]">
+                            <p className="text-xs font-bold text-[#9c7049] uppercase tracking-wide">Tu aportación</p>
+                            <div className="flex justify-between items-center mt-2">
+                              <span className="font-bold text-lg text-[#1c140d] dark:text-white">{Number(donacion.importe).toFixed(2)}€</span>
+                              <span className="text-sm px-2 py-1 rounded-md bg-[#f2780d]/10 text-[#f2780d] font-medium">
+                                {donacion.recompensas ? donacion.recompensas.nombreRecompensa : 'Donación libre'}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-2">Fecha: {new Date(donacion.fechaCompra).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] p-6">
+                      <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">
+                        Este usuario no ha apoyado ningún proyecto todavía.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
 

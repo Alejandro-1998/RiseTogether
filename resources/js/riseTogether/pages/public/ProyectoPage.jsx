@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
+import axios from "axios";
+import useAuth from "../../hooks/useAuth";
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
 
@@ -9,9 +11,24 @@ import RecompensaCard from "../../components/proyecto/recompensa_card";
 
 export default function ProyectoPage() {
   const { id } = useParams();
+  const location = useLocation();
   const [proyecto, setProyecto] = useState(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState("historia"); // historia | actualizaciones | faq | comentarios
+  const { isAuth, user } = useAuth(); // Get auth state
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const paymentStatus = params.get("payment");
+    if (paymentStatus === "success") {
+      // Simple alert for now, can be replaced with a toast
+      alert("¡Gracias por tu apoyo! El pago se ha realizado correctamente.");
+    } else if (paymentStatus === "failed") {
+      alert("El pago no se pudo completar.");
+    } else if (paymentStatus === "error") {
+      alert("Hubo un error al procesar el pago.");
+    }
+  }, [location]);
 
   useEffect(() => {
     let mounted = true;
@@ -78,6 +95,39 @@ export default function ProyectoPage() {
     objetivo: objetivo,
     mecenas: 0, // Not in DB yet
     diasRestantes: diasRestantes > 0 ? diasRestantes : 0,
+  };
+
+
+
+
+  const handlePayment = async (amount, rewardId = null) => {
+    if (!isAuth) {
+      // Force redirect if not authenticated (though UI should prevent this usually)
+      window.location.href = "/login";
+      return;
+    }
+
+    try {
+      // Use axios to ensure cookies (Sanctum) are sent. 
+      // No 'Authorization' header needed for cookie-based auth.
+      const response = await axios.post("/api/payment/checkout", {
+        project_id: proyecto.id,
+        amount: amount,
+        reward_id: rewardId
+      });
+
+      const data = response.data;
+
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        console.error("Error initiating payment:", data);
+        alert("Error al iniciar el pago: " + (data.message || "Error desconocido"));
+      }
+    } catch (error) {
+      console.error("Payment error:", error);
+      alert("Error de conexión al procesar el pago. Asegúrate de haber iniciado sesión.");
+    }
   };
 
   return (
@@ -208,10 +258,35 @@ export default function ProyectoPage() {
           {/* Right */}
           <div className="lg:col-span-1">
             <div className="space-y-4">
-              <h3 className="text-xl font-bold text-[#1c140d] dark:text-white">Recompensas</h3>
+              {/* Donación Libre */}
+              <div className="rounded-2xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-5 bg-white dark:bg-[#1a120d] shadow-sm">
+                <h3 className="text-xl font-bold text-[#1c140d] dark:text-white mb-2">Apoya este proyecto</h3>
+                <p className="text-sm text-[#9c7049] mb-4">Haz una donación sin recompensa para ayudar a que este proyecto se haga realidad.</p>
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    id="donacionLibre"
+                    placeholder="Importe (€)"
+                    className="flex-1 rounded-xl border border-[#e6dbd1] dark:border-[#3a2c20] px-4 py-2 bg-transparent focus:ring-2 focus:ring-[#f2780d] outline-none"
+                    min="1"
+                  />
+                  <button
+                    onClick={() => {
+                      const val = document.getElementById('donacionLibre').value;
+                      if (val >= 1) handlePayment(val);
+                      else alert("El importe mínimo es 1€");
+                    }}
+                    className="px-4 py-2 bg-[#f2780d] text-white font-bold rounded-xl hover:bg-[#d96600] transition-colors"
+                  >
+                    Donar
+                  </button>
+                </div>
+              </div>
+
+              <h3 className="text-xl font-bold text-[#1c140d] dark:text-white mt-8">Recompensas</h3>
               {proyecto.recompensas && proyecto.recompensas.length > 0 ? (
                 proyecto.recompensas.map((r) => (
-                  <RecompensaCard key={r.id} recompensa={r} />
+                  <RecompensaCard key={r.id} recompensa={r} onSupport={() => handlePayment(r.costoRecompensa, r.id)} />
                 ))
               ) : (
                 <div className="rounded-2xl border border-dashed border-[#f4ede7] dark:border-[#3a2c20] p-6 text-center">

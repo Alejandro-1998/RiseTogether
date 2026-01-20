@@ -17,12 +17,14 @@ class UserController extends Controller
         if ($id) {
             $user = User::where('id', $id)->orWhere('nombreUsuario', $id)->firstOrFail();
             $user->loadCount('proyectosCreados');
+            $user->load(['donaciones.proyectos', 'donaciones.recompensas']);
             return response()->json($user);
         }
         
         $user = $request->user();
         if ($user) {
             $user->loadCount('proyectosCreados');
+            $user->load(['donaciones.proyectos', 'donaciones.recompensas']);
         }
         return response()->json($user);
     }

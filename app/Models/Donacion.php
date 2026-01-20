@@ -25,16 +25,16 @@ class Donacion extends Model
 
     function proyectos()
     {
-        return $this->belongsTo(Proyecto::class);
+        return $this->belongsTo(Proyecto::class, 'idProyecto');
     }
 
     function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'idUsuario');
     }
 
     function recompensas()
     {
-        return $this->belongsTo(Recompensa::class);
+        return $this->belongsTo(Recompensa::class, 'idRecompensa');
     }
 }
