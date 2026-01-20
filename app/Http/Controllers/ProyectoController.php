@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Exception;
 
 class ProyectoController extends Controller
 {
@@ -114,7 +115,7 @@ class ProyectoController extends Controller
                 'proyecto' => $proyecto
             ], 201);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             Log::error('Error creando proyecto: ' . $e->getMessage());
             return response()->json([

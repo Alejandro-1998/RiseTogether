@@ -10,6 +10,8 @@ use App\Models\Recompensa;
 use App\Models\Donacion;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+use Exception;
 
 class PaymentController extends Controller
 {
@@ -51,8 +53,8 @@ class PaymentController extends Controller
             ]);
 
             return response()->json(['url' => $sesion->url]);
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error en Stripe Checkout: ' . $e->getMessage());
+        } catch (Exception $e) {
+            Log::error('Error en Stripe Checkout: ' . $e->getMessage());
             return response()->json(['message' => 'Error al iniciar el pago: ' . $e->getMessage()], 500);
         }
     }
