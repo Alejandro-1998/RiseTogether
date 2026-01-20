@@ -60,7 +60,7 @@ function App() {
           <Route path="/contacto" element={<ContactoPage />} />
 
           {/* Aviso Legal */}
-          <Route path="/aviso-legal" element={<AvisoLegal />} />
+          <Route path="/aviso-legal" element={<AvisoLegalPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
