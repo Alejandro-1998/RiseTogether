@@ -1,7 +1,7 @@
-// resources/js/riseTogether/pages/public/AboutPage.jsx
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
 
+// ✅ Card reutilizable para valores
 function ValorCard({ icon, title, text }) {
     return (
         <div className="p-8 bg-white dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 rounded-xl hover:border-[#f2780d]/50 transition-all group">
@@ -14,7 +14,7 @@ function ValorCard({ icon, title, text }) {
     );
 }
 
-function Step({ n, title, text }) {
+function Paso({ n, title, text }) {
     return (
         <div className="flex flex-col items-center text-center gap-6">
             <div className="size-16 rounded-full bg-[#f2780d] text-white flex items-center justify-center text-2xl font-black shadow-lg shadow-[#f2780d]/30">
@@ -26,7 +26,12 @@ function Step({ n, title, text }) {
     );
 }
 
-function TeamMember({ name, role, img }) {
+// ✅ Componente listo para admins (foto + nombre + rol)
+function AdminCard({ admin }) {
+    const name = admin?.name || "Administrador";
+    const roleLabel = admin?.roleLabel || "Administrador";
+    const img = admin?.avatarUrl || "/img/admin-placeholder.png"; // 👈 placeholder local (ponlo si quieres)
+
     return (
         <div className="flex flex-col items-center text-center gap-4">
             <div
@@ -35,16 +40,25 @@ function TeamMember({ name, role, img }) {
             />
             <div>
                 <h4 className="font-bold">{name}</h4>
-                <p className="text-sm text-[#f2780d]">{role}</p>
+                <p className="text-sm text-[#f2780d]">{roleLabel}</p>
             </div>
         </div>
     );
 }
 
-export default function AboutPage() {
+export default function AboutPage({ admins = [] }) {
+    // ✅ Si aún no estás trayendo admins desde Laravel, usamos fallback de 4 “huecos”
+    const adminsFinal = admins?.length
+        ? admins.slice(0, 4)
+        : [
+            { id: 1, name: "Administrador 1", roleLabel: "Admin", avatarUrl: "/img/admin-placeholder.png" },
+            { id: 2, name: "Administrador 2", roleLabel: "Admin", avatarUrl: "/img/admin-placeholder.png" },
+            { id: 3, name: "Administrador 3", roleLabel: "Admin", avatarUrl: "/img/admin-placeholder.png" },
+            { id: 4, name: "Administrador 4", roleLabel: "Admin", avatarUrl: "/img/admin-placeholder.png" },
+        ];
+
     return (
         <div className="bg-[#f9f8f6] dark:bg-[#120c07] text-[#1c140d] dark:text-gray-100 transition-colors duration-300 min-h-screen">
-            {/* Header reutilizado */}
             <HeaderPublic />
 
             <main className="max-w-[1200px] mx-auto px-6 py-12 md:py-20">
@@ -52,25 +66,24 @@ export default function AboutPage() {
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
                     <div className="flex flex-col gap-6">
                         <span className="inline-block px-3 py-1 text-xs font-bold tracking-widest uppercase text-[#f2780d] bg-[#f2780d]/10 rounded-full w-fit">
-                            Our Story
+                            Nuestra historia
                         </span>
 
                         <h1 className="text-5xl md:text-6xl font-black leading-[1.1] tracking-tight text-[#1c140d] dark:text-white">
-                            Empowering <span className="text-[#f2780d]">Dreams</span>, Together
+                            Impulsando <span className="text-[#f2780d]">sueños</span>, juntos
                         </h1>
 
                         <p className="text-lg md:text-xl text-[#9c7049] dark:text-gray-400 leading-relaxed max-w-lg">
-                            A modern crowdfunding platform built on transparency, innovation,
-                            and the power of community. Join thousands of creators making an
-                            impact.
+                            Una plataforma moderna de crowdfunding basada en transparencia, innovación
+                            y el poder de la comunidad. Únete a miles de creadores generando impacto.
                         </p>
 
                         <div className="flex flex-wrap gap-4 pt-4">
                             <button className="px-8 py-4 bg-[#f2780d] text-white font-bold rounded-xl text-lg hover:translate-y-[-2px] transition-all shadow-xl shadow-[#f2780d]/20">
-                                Browse Campaigns
+                                Explorar campañas
                             </button>
                             <button className="px-8 py-4 bg-[#f4ede7] dark:bg-gray-800 text-[#1c140d] dark:text-white font-bold rounded-xl text-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">
-                                Our Vision
+                                Nuestra visión
                             </button>
                         </div>
                     </div>
@@ -87,7 +100,7 @@ export default function AboutPage() {
                     </div>
                 </section>
 
-                {/* MISSION */}
+                {/* MISIÓN */}
                 <section className="mb-24">
                     <div className="bg-white dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 rounded-xl p-8 md:p-12 flex flex-col md:flex-row gap-10 items-center">
                         <div className="w-full md:w-1/3 aspect-square bg-[#f2780d]/5 rounded-xl flex items-center justify-center">
@@ -97,128 +110,112 @@ export default function AboutPage() {
                         </div>
 
                         <div className="flex-1 space-y-4">
-                            <h2 className="text-3xl font-bold">Our Mission</h2>
+                            <h2 className="text-3xl font-bold">Nuestra misión</h2>
                             <p className="text-xl text-[#9c7049] dark:text-gray-400 leading-relaxed">
-                                RiseTogether was founded to bridge the gap between visionaries
-                                and supporters. We believe that when people come together, the
-                                impossible becomes achievable. Our goal is to democratize access
-                                to capital for everyone, everywhere.
+                                RiseTogether nace para conectar a personas con ideas con una comunidad
+                                dispuesta a apoyarlas. Creemos que cuando la gente se une, lo imposible
+                                se vuelve alcanzable. Nuestro objetivo es democratizar el acceso a la financiación
+                                para cualquiera, en cualquier lugar.
                             </p>
                             <p className="text-lg font-medium text-[#f2780d]">
-                                Fostering a world where every great idea finds its foundation.
+                                Un mundo donde cada gran idea encuentre su impulso.
                             </p>
                         </div>
                     </div>
                 </section>
 
-                {/* VALUES */}
+                {/* VALORES */}
                 <section className="mb-24">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Our Core Values
-                        </h2>
+                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Nuestros valores</h2>
                         <p className="text-gray-500 dark:text-gray-400">
-                            The principles that guide every decision we make.
+                            Los principios que guían cada decisión que tomamos.
                         </p>
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         <ValorCard
                             icon="visibility"
-                            title="Transparency"
-                            text="Open communication and honest reporting at every step of the journey."
+                            title="Transparencia"
+                            text="Comunicación abierta y reportes honestos en cada paso del camino."
                         />
                         <ValorCard
                             icon="groups"
-                            title="Community"
-                            text="We believe in the collective power of people to drive global change."
+                            title="Comunidad"
+                            text="Creemos en el poder colectivo para generar cambios reales."
                         />
                         <ValorCard
                             icon="lightbulb"
-                            title="Innovation"
-                            text="Constantly building better tools to help creators bring ideas to life."
+                            title="Innovación"
+                            text="Creamos herramientas mejores para ayudar a impulsar ideas."
                         />
                         <ValorCard
                             icon="public"
-                            title="Inclusion"
-                            text="Creating a platform where funding is accessible to everyone."
+                            title="Inclusión"
+                            text="Una plataforma donde la financiación sea accesible para todos."
                         />
                     </div>
                 </section>
 
-                {/* HOW IT WORKS */}
+                {/* CÓMO FUNCIONA */}
                 <section className="mb-24 py-16 bg-white/50 dark:bg-gray-900/30 rounded-xl px-8">
-                    <h2 className="text-3xl font-bold text-center mb-16">How it Works</h2>
+                    <h2 className="text-3xl font-bold text-center mb-16">Cómo funciona</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                        <Step
+                        <Paso
                             n="1"
-                            title="Create a Project"
-                            text="Define your goals, set your target, and tell your unique story to the world."
+                            title="Crea un proyecto"
+                            text="Define tus objetivos, fija tu meta y cuenta tu historia al mundo."
                         />
-                        <Step
+                        <Paso
                             n="2"
-                            title="Share with Community"
-                            text="Use our built-in tools to reach backers who believe in your vision."
+                            title="Comparte con la comunidad"
+                            text="Usa nuestras herramientas para llegar a personas que creen en tu idea."
                         />
-                        <Step
+                        <Paso
                             n="3"
-                            title="Reach Your Goal"
-                            text="Collect funds, provide updates, and make your dream a reality."
+                            title="Alcanza tu meta"
+                            text="Recauda fondos, comparte actualizaciones y hazlo realidad."
                         />
                     </div>
                 </section>
 
-                {/* TEAM */}
+                {/* EQUIPO (Admins) */}
                 <section className="mb-24">
                     <h2 className="text-3xl font-bold text-center mb-12">
-                        Meet Our Team
+                        Conoce al equipo
                     </h2>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        <TeamMember
-                            name="Sarah Chen"
-                            role="Founder & CEO"
-                            img="https://lh3.googleusercontent.com/aida-public/AB6AXuBkAI1e6s7UuAJDdmJjkHCZ4mI6YV864rjEg71-gfoKqtYUN5j-CcPudyNPo_56IXAdDsO4TVk6WRSRGFQh20OgCa2DuKFakK-SArzfKXJREc5L5JWR3cUnV9Elk3sAde9JQO0KcLf4jsoTLxa8QDYlMOfz9tozeQlBxMS7vgOqoac5KdP0Ya4F2g0Az7bm9YceZYRYchrQ6-yGXazPoZQw8oAnm-7vzCEshjE6tEp1l9XwzaeaKOdMKVS1YvCdId_RjrQf-1hIMHs"
-                        />
-                        <TeamMember
-                            name="Marcus Thorne"
-                            role="Head of Growth"
-                            img="https://lh3.googleusercontent.com/aida-public/AB6AXuAeFaRcYl2BQWE56tOtTVJD3w_x1U_QZMcADPxZCdoG0GaT7f9UQw-5xg3agmzJWK290PE0tKVQOTh3Gz7ILh_wyOxG0TfnFiplR5o1p0u5_Pz0pwjKBesb9r85V_yeMe3Sfx2qB28zpCIhtoQlKnTHMVw0ggVRXVkXFEXcsOOBkt_cODHeBO1htHIFZYTj6iJ4ExbjGOmqIJx3NHX_Zx-c_KauhEg5cVF_bOvvFmAGDtsywNPVbxS3f8LQSpcFoOU-01sHn_lsed8"
-                        />
-                        <TeamMember
-                            name="Elena Rodriguez"
-                            role="Product Designer"
-                            img="https://lh3.googleusercontent.com/aida-public/AB6AXuB6_g1rm5qTfyVa-PQQa0Bd69KyoP8i2JzLD8CRL_jEoXoJ-cLeg37XEI9dLHu2hRyGK79v0rWUM-Kl1ciXyXOg-E1mt-EaqvguKzs2G7BF4RtxeMQeA1ts9RrvjDrg0F1YbZXcs0qeYcGYkO5d4KoUwXsh7ccs09TZDFclHiMNGwF98rC5gKjVF8pXKZNaAbLjhTVSo4iadjswZD5CVyRtSlnRAqmAoxipwDMExhRU_aLvJKPmNsl8y6SuSxPJWQR5t61jiGUdQL8"
-                        />
-                        <TeamMember
-                            name="David Kim"
-                            role="CTO"
-                            img="https://lh3.googleusercontent.com/aida-public/AB6AXuB-dNbP0nwSNnoAbG6BmTukr0GjyH8LCYTuSrlunH-DyO1JIDzYq3vH2x2VKqmm0N7sf9_nKg0d5mGy0qWaOtKm41-xgxSSKKe-0j2y2FfmEp0_h-6CRkM7OWZx34w13wg2cxUB5VUuRsMW9tK9XaotNZeoxC5tIi-csve-W7yiHLzto2Gum9L78qXA8AM4-K6oHHFu99mzBky6LdEYmKknMsPuWQCRYdFqwLWGbppGUl7tFX1a3QYXktb90MQcJ7dYJ4cumpRYjSE"
-                        />
+                        {adminsFinal.map((admin) => (
+                            <AdminCard key={admin.id} admin={admin} />
+                        ))}
                     </div>
+
+                    <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
+                        *Este bloque está preparado para mostrar automáticamente a los 4 usuarios con rol administrador.
+                    </p>
                 </section>
 
                 {/* CTA FINAL */}
                 <section className="mb-12">
                     <div className="bg-[#f2780d]/10 dark:bg-[#f2780d]/5 rounded-xl p-12 text-center flex flex-col items-center gap-8 border border-[#f2780d]/20">
                         <h2 className="text-4xl font-black max-w-2xl">
-                            Ready to make a difference in the world?
+                            ¿Lista/o para marcar la diferencia?
                         </h2>
 
                         <div className="flex flex-wrap justify-center gap-4">
                             <button className="px-10 py-4 bg-[#f2780d] text-white font-bold rounded-xl text-lg hover:scale-105 transition-transform">
-                                Launch Your Project
+                                Lanza tu proyecto
                             </button>
                             <button className="px-10 py-4 bg-white dark:bg-gray-800 text-[#1c140d] dark:text-white font-bold rounded-xl text-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-all border border-[#f2780d]/20">
-                                Browse Campaigns
+                                Explorar proyectos
                             </button>
                         </div>
                     </div>
                 </section>
             </main>
 
-            {/* Footer reutilizado */}
             <FooterPublic />
         </div>
     );
