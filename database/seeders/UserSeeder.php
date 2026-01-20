@@ -21,6 +21,8 @@ class UserSeeder extends Seeder
             'numeroCuenta' => 'ES12345678901234567890',
         ]);
 
+        User::where('id', 1)->first()->assignRole('admin');
+
         // Usuarios predefinidos
         User::create([
             'dni' => '12345678B',
