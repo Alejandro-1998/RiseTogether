@@ -11,6 +11,7 @@ import ProyectosPage from "./pages/public/ProyectosPage";
 import UsuarioPage from "./pages/public/UsuarioPage";
 import ProyectoPage from "./pages/public/ProyectoPage";
 import AdminGestionProyectos from "./pages/admin/AdminGestionProyectos";
+import AdminGestionUsuarios from "./pages/admin/AdminGestionUsuarios";
 import SobreNosotrosPage from "./pages/public/SobreNosotrosPage";
 import ContactoPage from "./pages/public/ContactoPage";
 import AvisoLegalPage from "./pages/public/AvisoLegalPage";
@@ -21,7 +22,7 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        
+
         <Routes>
           {/* Home */}
           <Route path="/" element={<HomePage />} />
