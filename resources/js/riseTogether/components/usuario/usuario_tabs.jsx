@@ -1,4 +1,4 @@
-export default function UsuarioTabs({ tab, setTab, isMe }) {
+export default function UsuarioTabs({ tab, setTab, isMe, user }) {
   const tabs = [
     { id: "resumen", label: "Resumen" },
     { id: "creados", label: "Proyectos creados" },
@@ -28,6 +28,19 @@ export default function UsuarioTabs({ tab, setTab, isMe }) {
             </button>
           );
         })}
+
+        {/* Enlace Admin (si corresponde) */}
+        {isMe && user?.roles_list?.includes('admin') && (
+          <a
+            href="/administrador"
+            className="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#f2780d] hover:border-b-[#f2780d]/50 hover:bg-[#f2780d]/5 shrink-0 pb-[13px] pt-4 px-4 transition-colors font-bold"
+          >
+            <span className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+              <span className="text-sm tracking-[0.015em]">Administrador</span>
+            </span>
+          </a>
+        )}
       </div>
     </div>
   );
