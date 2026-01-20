@@ -11,6 +11,7 @@ import ProyectosPage from "./pages/public/ProyectosPage";
 import UsuarioPage from "./pages/public/UsuarioPage";
 import ProyectoPage from "./pages/public/ProyectoPage";
 import AdminGestionProyectos from "./pages/admin/AdminGestionProyectos";
+import SobreNosotrosPage from "./pages/public/SobreNosotrosPage";
 
 
 // RUTAS //
@@ -46,6 +47,8 @@ function App() {
           {/* Proyecto Seccion Administrador */}
           <Route path="/administrador/proyectos" element={<AdminGestionProyectos />} />
 
+          {/* Proyecto Sobre Nosotros */}
+          <Route path="/about" element={<SobreNosotrosPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
