@@ -111,9 +111,9 @@ export default function ProyectoPage() {
       // Use axios to ensure cookies (Sanctum) are sent. 
       // No 'Authorization' header needed for cookie-based auth.
       const response = await axios.post("/api/payment/checkout", {
-        project_id: proyecto.id,
-        amount: amount,
-        reward_id: rewardId
+        id_proyecto: proyecto.id,
+        importe: amount,
+        id_recompensa: rewardId
       });
 
       const data = response.data;

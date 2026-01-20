@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Cookie;
 
 class LoginController extends Controller
 {
@@ -80,12 +80,12 @@ class LoginController extends Controller
         $sameSite = config('session.same_site');
         $path = config('session.path');
 
-        $cookieXsrf = \Illuminate\Support\Facades\Cookie::make('XSRF-TOKEN', '', -1, $path, $domain, $secure, false, false, $sameSite);
-        $cookieSession = \Illuminate\Support\Facades\Cookie::make(config('session.cookie'), '', -1, $path, $domain, $secure, $httpOnly, false, $sameSite);
+        $cookieXsrf = Cookie::make('XSRF-TOKEN', '', -1, $path, $domain, $secure, false, false, $sameSite);
+        $cookieSession = Cookie::make(config('session.cookie'), '', -1, $path, $domain, $secure, $httpOnly, false, $sameSite);
         
         // Queue them to ensure they are attached to headers
-        \Illuminate\Support\Facades\Cookie::queue($cookieXsrf);
-        \Illuminate\Support\Facades\Cookie::queue($cookieSession);
+        Cookie::queue($cookieXsrf);
+        Cookie::queue($cookieSession);
 
         return response()->json(['message' => 'Sesión cerrada']);
     }

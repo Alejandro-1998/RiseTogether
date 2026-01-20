@@ -16,15 +16,15 @@ class PaymentController extends Controller
     public function checkout(Request $request)
     {
         $request->validate([
-            'project_id' => 'required|exists:proyectos,id',
-            'amount' => 'required|numeric|min:1', // El monto debe ser al menos 1
-            'reward_id' => 'nullable|exists:recompensas,id',
+            'id_proyecto' => 'required|exists:proyectos,id',
+            'importe' => 'required|numeric|min:1',
+            'id_recompensa' => 'nullable|exists:recompensas,id',
         ]);
 
         try {
-            $proyecto = Proyecto::findOrFail($request->project_id);
-            $recompensa = $request->reward_id ? Recompensa::find($request->reward_id) : null;
-            $user = $request->user(); // Get user from request logic
+            $proyecto = Proyecto::findOrFail($request->id_proyecto);
+            $recompensa = $request->id_recompensa ? Recompensa::find($request->id_recompensa) : null;
+            $user = $request->user();
 
             Stripe::setApiKey(env('STRIPE_SECRET'));
 
@@ -35,7 +35,7 @@ class PaymentController extends Controller
                         'name' => 'Apoyo al proyecto: ' . $proyecto->titulo,
                         'description' => $recompensa ? 'Recompensa: ' . $recompensa->nombreRecompensa : 'Donación libre',
                     ],
-                    'unit_amount' => (int) ($request->amount * 100), 
+                    'unit_amount' => (int) ($request->importe * 100), 
                 ],
                 'quantity' => 1,
             ]];
@@ -46,7 +46,7 @@ class PaymentController extends Controller
                 'payment_method_types' => ['card'],
                 'line_items' => $lineItems,
                 'mode' => 'payment',
-                'success_url' => route('payment.success') . '?session_id={CHECKOUT_SESSION_ID}&project_id=' . $proyecto->id . '&reward_id=' . ($recompensa->id ?? '') . '&user_id=' . $userId,
+                'success_url' => route('payment.success') . '?session_id={CHECKOUT_SESSION_ID}&id_proyecto=' . $proyecto->id . '&id_recompensa=' . ($recompensa->id ?? '') . '&id_usuario=' . $userId,
                 'cancel_url' => $request->header('Referer') ?? route('home'), // Better cancel URL
             ]);
 
@@ -60,9 +60,9 @@ class PaymentController extends Controller
     public function success(Request $request)
     {
         $sessionId = $request->get('session_id');
-        $projectId = $request->get('project_id');
-        $rewardId = $request->get('reward_id');
-        $userId = $request->get('user_id');
+        $projectId = $request->get('id_proyecto');
+        $rewardId = $request->get('id_recompensa');
+        $userId = $request->get('id_usuario');
 
         if (!$sessionId || !$projectId) {
             return redirect('/')->with('error', 'Pago no válido.');
@@ -74,7 +74,7 @@ class PaymentController extends Controller
 
             if ($session->payment_status === 'paid') {
                 DB::transaction(function () use ($session, $projectId, $rewardId, $userId) {
-                    $monto = $session->amount_total / 100; // Convertir de vuelta a unidad principal
+                    $monto = $session->amount_total / 100;
 
                     // Crear Donación
                     $donacion = Donacion::create([

@@ -33,7 +33,7 @@ class CategoriaController extends Controller
         Categoria::create([
             'nombre' => $request->nombre,
             'slug' => strtolower(str_replace(' ', '', $request->nombre)),
-            'icono' => '', // Falta modificar
+            'icono' => '', // Falta integrar iconos
         ]);
     }
 
