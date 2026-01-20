@@ -13,29 +13,29 @@ export default function ProyectoPage() {
   const { id } = useParams();
   const location = useLocation();
   const [proyecto, setProyecto] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState("historia"); // historia | actualizaciones | faq | comentarios
+  const [cargando, setCargando] = useState(true);
+  const [pestana, setPestana] = useState("historia"); // historia | actualizaciones | faq | comentarios
   const { isAuth, user } = useAuth(); // Get auth state
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const paymentStatus = params.get("payment");
-    if (paymentStatus === "success") {
+    const estadoPago = params.get("pago");
+    if (estadoPago === "exito") {
       // Simple alert for now, can be replaced with a toast
       alert("¡Gracias por tu apoyo! El pago se ha realizado correctamente.");
-    } else if (paymentStatus === "failed") {
+    } else if (estadoPago === "fallido") {
       alert("El pago no se pudo completar.");
-    } else if (paymentStatus === "error") {
+    } else if (estadoPago === "error") {
       alert("Hubo un error al procesar el pago.");
     }
   }, [location]);
 
   useEffect(() => {
-    let mounted = true;
+    let montado = true;
     if (!id) return;
 
-    const fetchProyecto = async () => {
-      console.log("Fetching project with ID:", id); // Debug log
+    const obtenerProyecto = async () => {
+      console.log("Obteniendo proyecto con ID:", id); // Debug log
       try {
         const res = await fetch(`/api/proyectos/${id}`, {
           headers: { Accept: "application/json" }
@@ -43,36 +43,36 @@ export default function ProyectoPage() {
 
         if (res.ok) {
           const data = await res.json();
-          console.log("PROJECT LOADED:", data);
-          if (mounted) setProyecto(data);
+          console.log("PROYECTO CARGADO:", data);
+          if (montado) setProyecto(data);
         } else {
-          console.error("PROJECT LOAD FAILED:", res.status, res.statusText);
+          console.error("FALLO AL CARGAR PROYECTO:", res.status, res.statusText);
         }
       } catch (error) {
-        console.error("Error fetching project:", error);
+        console.error("Error obteniendo proyecto:", error);
       } finally {
-        if (mounted) setLoading(false);
+        if (montado) setCargando(false);
       }
     };
 
-    fetchProyecto();
-    return () => { mounted = false; };
+    obtenerProyecto();
+    return () => { montado = false; };
   }, [id]);
 
-  const tabBtn = (id, active) =>
+  const btnPestana = (id, active) =>
     active
       ? "shrink-0 border-b-2 border-[#f2780d] px-1 pb-3 text-sm font-bold text-[#f2780d]"
       : "shrink-0 border-b-2 border-transparent px-1 pb-3 text-sm font-medium text-[#9c7049] dark:text-[#9c7049]/80 hover:border-[#f4ede7] dark:hover:border-[#f4ede7]/20 hover:text-[#1c140d] dark:hover:text-white";
 
-  if (loading) return <div className="flex h-screen items-center justify-center text-[#9c7049]">Cargando proyecto...</div>;
+  if (cargando) return <div className="flex h-screen items-center justify-center text-[#9c7049]">Cargando proyecto...</div>;
   if (!proyecto) return <div className="flex h-screen items-center justify-center text-[#9c7049]">Proyecto no encontrado.</div>;
 
   // --- DATA MAPPING ---
   // Images
-  const mainImage = proyecto.imagen_portada
+  const imagenPrincipal = proyecto.imagen_portada
     ? (proyecto.imagen_portada.startsWith('http') ? proyecto.imagen_portada : `/storage/${proyecto.imagen_portada}`)
     : "/img/default-project.png";
-  const imagenes = [mainImage, mainImage, mainImage]; // Gallery placeholder
+  const imagenes = [imagenPrincipal, imagenPrincipal, imagenPrincipal]; // Gallery placeholder
 
   // Author
   const autorNombre = proyecto.user?.nombreUsuario ?? "Autor desconocido";
@@ -100,7 +100,7 @@ export default function ProyectoPage() {
 
 
 
-  const handlePayment = async (amount, rewardId = null) => {
+  const iniciarPago = async (importe, idRecompensa = null) => {
     if (!isAuth) {
       // Force redirect if not authenticated (though UI should prevent this usually)
       window.location.href = "/login";
@@ -110,10 +110,10 @@ export default function ProyectoPage() {
     try {
       // Use axios to ensure cookies (Sanctum) are sent. 
       // No 'Authorization' header needed for cookie-based auth.
-      const response = await axios.post("/api/payment/checkout", {
+      const response = await axios.post("/api/pagos/iniciar", {
         id_proyecto: proyecto.id,
-        importe: amount,
-        id_recompensa: rewardId
+        importe: importe,
+        id_recompensa: idRecompensa
       });
 
       const data = response.data;
@@ -121,11 +121,11 @@ export default function ProyectoPage() {
       if (data.url) {
         window.location.href = data.url;
       } else {
-        console.error("Error initiating payment:", data);
+        console.error("Error iniciando pago:", data);
         alert("Error al iniciar el pago: " + (data.message || "Error desconocido"));
       }
     } catch (error) {
-      console.error("Payment error:", error);
+      console.error("Error pago:", error);
       alert("Error de conexión al procesar el pago. Asegúrate de haber iniciado sesión.");
     }
   };
@@ -161,32 +161,32 @@ export default function ProyectoPage() {
               <nav aria-label="Tabs" className="flex space-x-6">
                 <button
                   type="button"
-                  onClick={() => setTab("historia")}
-                  className={tabBtn("historia", tab === "historia")}
+                  onClick={() => setPestana("historia")}
+                  className={btnPestana("historia", pestana === "historia")}
                 >
                   Historia
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setTab("actualizaciones")}
-                  className={tabBtn("actualizaciones", tab === "actualizaciones")}
+                  onClick={() => setPestana("actualizaciones")}
+                  className={btnPestana("actualizaciones", pestana === "actualizaciones")}
                 >
                   Actualizaciones
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setTab("faq")}
-                  className={tabBtn("faq", tab === "faq")}
+                  onClick={() => setPestana("faq")}
+                  className={btnPestana("faq", pestana === "faq")}
                 >
                   FAQ
                 </button>
 
                 <button
                   type="button"
-                  onClick={() => setTab("comentarios")}
-                  className={tabBtn("comentarios", tab === "comentarios")}
+                  onClick={() => setPestana("comentarios")}
+                  className={btnPestana("comentarios", pestana === "comentarios")}
                 >
                   Comentarios
                 </button>
@@ -195,7 +195,7 @@ export default function ProyectoPage() {
 
             {/* Contenido */}
             <div className="prose prose-lg dark:prose-invert max-w-none text-[#1c140d] dark:text-gray-300 mt-8 space-y-6">
-              {tab === "historia" && (
+              {pestana === "historia" && (
                 <>
                   <h3 className="text-2xl font-bold text-[#1c140d] dark:text-white">
                     Sobre el proyecto
@@ -226,7 +226,7 @@ export default function ProyectoPage() {
                 </>
               )}
 
-              {tab === "actualizaciones" && (
+              {pestana === "actualizaciones" && (
                 <div className="not-prose rounded-3xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-6">
                   <p className="font-bold text-lg">Actualizaciones</p>
                   <p className="text-sm text-[#9c7049] dark:text-[#9c7049]/80 mt-1">
@@ -235,7 +235,7 @@ export default function ProyectoPage() {
                 </div>
               )}
 
-              {tab === "faq" && (
+              {pestana === "faq" && (
                 <div className="not-prose rounded-3xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-6">
                   <p className="font-bold text-lg">FAQ</p>
                   <p className="text-sm text-[#9c7049] dark:text-[#9c7049]/80 mt-1">
@@ -244,7 +244,7 @@ export default function ProyectoPage() {
                 </div>
               )}
 
-              {tab === "comentarios" && (
+              {pestana === "comentarios" && (
                 <div className="not-prose rounded-3xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-6">
                   <p className="font-bold text-lg">Comentarios</p>
                   <p className="text-sm text-[#9c7049] dark:text-[#9c7049]/80 mt-1">
@@ -273,7 +273,7 @@ export default function ProyectoPage() {
                   <button
                     onClick={() => {
                       const val = document.getElementById('donacionLibre').value;
-                      if (val >= 1) handlePayment(val);
+                      if (val >= 1) iniciarPago(val);
                       else alert("El importe mínimo es 1€");
                     }}
                     className="px-4 py-2 bg-[#f2780d] text-white font-bold rounded-xl hover:bg-[#d96600] transition-colors"
@@ -286,7 +286,7 @@ export default function ProyectoPage() {
               <h3 className="text-xl font-bold text-[#1c140d] dark:text-white mt-8">Recompensas</h3>
               {proyecto.recompensas && proyecto.recompensas.length > 0 ? (
                 proyecto.recompensas.map((r) => (
-                  <RecompensaCard key={r.id} recompensa={r} onSupport={() => handlePayment(r.costoRecompensa, r.id)} />
+                  <RecompensaCard key={r.id} recompensa={r} onSupport={() => iniciarPago(r.costoRecompensa, r.id)} />
                 ))
               ) : (
                 <div className="rounded-2xl border border-dashed border-[#f4ede7] dark:border-[#3a2c20] p-6 text-center">

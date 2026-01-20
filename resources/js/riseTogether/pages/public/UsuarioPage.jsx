@@ -17,25 +17,25 @@ import ActividadReciente from "../../components/cards/actividad_reciente";
 
 export default function UsuarioPage() {
   const { id } = useParams();
-  const [tab, setTab] = useState("resumen"); // resumen | creados | apoyados | actividad | ajustes
+  const [pestana, setPestana] = useState("resumen"); // resumen | creados | apoyados | actividad | ajustes
   const [usuario, setUsuario] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isMe, setIsMe] = useState(false);
+  const [cargando, setCargando] = useState(true);
+  const [soyYo, setSoyYo] = useState(false);
   const [proyectosCreados, setProyectosCreados] = useState([]);
-  const [loadingProyectos, setLoadingProyectos] = useState(false);
+  const [cargandoProyectos, setCargandoProyectos] = useState(false);
 
   useEffect(() => {
-    fetchUser();
+    obtenerUsuario();
   }, [id]);
 
   useEffect(() => {
-    if (tab === "creados" && usuario) {
-      fetchProyectosCreados();
+    if (pestana === "creados" && usuario) {
+      obtenerProyectosCreados();
     }
-  }, [tab, usuario]);
+  }, [pestana, usuario]);
 
-  const fetchUser = async () => {
-    setLoading(true);
+  const obtenerUsuario = async () => {
+    setCargando(true);
     try {
       // Si hay ID, buscamos ese usuario (público). Si no, perfil propio (me).
       const endpoint = id ? `/api/users/${id}` : '/api/user/profile';
@@ -45,37 +45,37 @@ export default function UsuarioPage() {
       // Determinar si soy yo (si no hay ID, es mi perfil. Si hay ID, habría q comparar con mi auth ID, pero por simplicidad: sin ID = yo)
       // Ajuste: Si navego a /usuario/MI_ID desde fuera, debería detectarlo.
       // Pero de momento: sin ID -> soy yo. Con ID -> es otro (o yo visto públicamente).
-      setIsMe(!id);
+      setSoyYo(!id);
 
     } catch (error) {
-      console.error("Error fetching user:", error);
+      console.error("Error obteniendo usuario:", error);
     } finally {
-      setLoading(false);
+      setCargando(false);
     }
   };
 
-  const fetchProyectosCreados = async () => {
+  const obtenerProyectosCreados = async () => {
     if (proyectosCreados.length > 0) return; // Ya cargados
-    setLoadingProyectos(true);
+    setCargandoProyectos(true);
     try {
       const res = await axios.get(`/api/proyectos?user_id=${usuario.id}`);
       setProyectosCreados(res.data);
     } catch (error) {
-      console.error("Error fetching created projects:", error);
+      console.error("Error obteniendo proyectos creados:", error);
     } finally {
-      setLoadingProyectos(false);
+      setCargandoProyectos(false);
     }
   };
 
-  const handleUserUpdate = (updatedUser) => {
-    setUsuario(updatedUser);
+  const manejarActualizacionUsuario = (usuarioActualizado) => {
+    setUsuario(usuarioActualizado);
   };
 
-  if (loading) return <div className="flex h-screen items-center justify-center">Cargando...</div>;
+  if (cargando) return <div className="flex h-screen items-center justify-center">Cargando...</div>;
   if (!usuario) return <div className="flex h-screen items-center justify-center">Usuario no encontrado. <a href="/login" className="ml-2 text-blue-500">Iniciar Sesión</a></div>;
 
   // Map API data to component expectations
-  const usuarioMapped = {
+  const usuarioMapeado = {
     ...usuario,
     nombre: usuario.nombreCompleto || usuario.nombreUsuario,
     username: `@${usuario.nombreUsuario}`,
@@ -85,9 +85,14 @@ export default function UsuarioPage() {
     bannerUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuBy9Wss6EBRoR7h3QbFmEUvv8yYqAkAHJvQHJolGdmXUU6eXj62XpZQgfUVzCZc_WAkapFJSxbovCIb8D6h1bJuSDKxqfJ4V_yk2h8nqIHtI9nLhgyOcT53RH09ZVWxNLRGtdS2oSMEiBHj80gbB_GA0-YUwB0eHspnjYbceQyZkw4youOQoQbZVoFUDclCl2oYNu4YiR7rSoGVBeJ_qZmW7JTnrRzGW1VoYcG0_ujIk9svn-s5mIUa7t86AR_qaPxqgKf3BmSvolw"
   };
 
-  const stats = [
+  // Calcular proyectos únicos apoyados
+  const proyectosApoyadosUnicos = usuario.donaciones
+    ? new Set(usuario.donaciones.map(d => d.idProyecto)).size
+    : 0;
+
+  const estadisticas = [
     { value: usuario.proyectos_creados_count?.toString() || "0", label: "Proyectos creados" },
-    { value: "48", label: "Proyectos apoyados" },
+    { value: proyectosApoyadosUnicos.toString(), label: "Proyectos apoyados" },
     { value: "1.2k", label: "Seguidores" },
     { value: "320", label: "Siguiendo" },
   ];
@@ -115,11 +120,11 @@ export default function UsuarioPage() {
       <HeaderPublic />
 
       <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-        <UsuarioBanner usuario={usuarioMapped} />
+        <UsuarioBanner usuario={usuarioMapeado} />
 
         {/* Estadísticas */}
         <section className="flex flex-wrap gap-3 py-3 mb-6" aria-label="Estadísticas del perfil">
-          {stats.map((s, i) => (
+          {estadisticas.map((s, i) => (
             <EstadisticasUsuario key={i} value={s.value} label={s.label} />
           ))}
         </section>
@@ -127,11 +132,11 @@ export default function UsuarioPage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* MAIN */}
           <div className="lg:col-span-8">
-            <UsuarioTabs tab={tab} setTab={setTab} isMe={isMe} />
+            <UsuarioTabs tab={pestana} setTab={setPestana} isMe={soyYo} />
 
             {/* CONTENIDO TABS */}
             <section className="pt-8 space-y-8">
-              {tab === "resumen" && (
+              {pestana === "resumen" && (
                 <>
                   <div>
                     <h3 className="text-lg font-bold mb-4">Proyecto destacado</h3>
@@ -159,10 +164,10 @@ export default function UsuarioPage() {
                 </>
               )}
 
-              {tab === "creados" && (
+              {pestana === "creados" && (
                 <div className="space-y-4">
                   <h3 className="font-bold text-xl">Proyectos creados</h3>
-                  {loadingProyectos ? (
+                  {cargandoProyectos ? (
                     <p>Cargando proyectos...</p>
                   ) : proyectosCreados.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -182,7 +187,7 @@ export default function UsuarioPage() {
                 </div>
               )}
 
-              {tab === "apoyados" && (
+              {pestana === "apoyados" && (
                 <div className="space-y-4">
                   <p className="font-bold text-xl">Proyectos apoyados</p>
                   {usuario.donaciones && usuario.donaciones.length > 0 ? (
@@ -215,7 +220,7 @@ export default function UsuarioPage() {
                 </div>
               )}
 
-              {tab === "actividad" && (
+              {pestana === "actividad" && (
                 <div className="rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] p-6">
                   <p className="font-bold">Actividad</p>
                   <p className="mt-1 text-sm text-[#6b7280] dark:text-[#9ca3af]">
@@ -224,15 +229,15 @@ export default function UsuarioPage() {
                 </div>
               )}
 
-              {tab === "ajustes" && isMe && (
-                <UsuarioAjustes user={usuario} onUserUpdate={handleUserUpdate} />
+              {pestana === "ajustes" && soyYo && (
+                <UsuarioAjustes user={usuario} onUserUpdate={manejarActualizacionUsuario} />
               )}
             </section>
           </div>
 
           {/* SIDEBAR */}
           <aside className="lg:col-span-4 flex flex-col gap-8">
-            <UsuarioSidebar usuario={usuarioMapped} />
+            <UsuarioSidebar usuario={usuarioMapeado} />
           </aside>
         </div>
       </main>

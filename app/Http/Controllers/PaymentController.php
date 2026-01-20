@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
-    public function checkout(Request $request)
+    public function iniciarPago(Request $request)
     {
         $request->validate([
             'id_proyecto' => 'required|exists:proyectos,id',
@@ -24,11 +24,11 @@ class PaymentController extends Controller
         try {
             $proyecto = Proyecto::findOrFail($request->id_proyecto);
             $recompensa = $request->id_recompensa ? Recompensa::find($request->id_recompensa) : null;
-            $user = $request->user();
+            $usuario = $request->user();
 
             Stripe::setApiKey(env('STRIPE_SECRET'));
 
-            $lineItems = [[
+            $itemsLinea = [[
                 'price_data' => [
                     'currency' => 'eur',
                     'product_data' => [
@@ -40,68 +40,65 @@ class PaymentController extends Controller
                 'quantity' => 1,
             ]];
 
-            $userId = $user ? $user->id : Auth::id(); // Fallback
+            $idUsuario = $usuario ? $usuario->id : Auth::id();
 
-            $session = Session::create([
+            $sesion = Session::create([
                 'payment_method_types' => ['card'],
-                'line_items' => $lineItems,
+                'line_items' => $itemsLinea,
                 'mode' => 'payment',
-                'success_url' => route('payment.success') . '?session_id={CHECKOUT_SESSION_ID}&id_proyecto=' . $proyecto->id . '&id_recompensa=' . ($recompensa->id ?? '') . '&id_usuario=' . $userId,
-                'cancel_url' => $request->header('Referer') ?? route('home'), // Better cancel URL
+                'success_url' => route('pagos.confirmar') . '?session_id={CHECKOUT_SESSION_ID}&id_proyecto=' . $proyecto->id . '&id_recompensa=' . ($recompensa->id ?? '') . '&id_usuario=' . $idUsuario,
+                'cancel_url' => $request->header('Referer') ?? route('home'),
             ]);
 
-            return response()->json(['url' => $session->url]);
+            return response()->json(['url' => $sesion->url]);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Stripe Checkout Error: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Error en Stripe Checkout: ' . $e->getMessage());
             return response()->json(['message' => 'Error al iniciar el pago: ' . $e->getMessage()], 500);
         }
     }
 
-    public function success(Request $request)
+    public function confirmarPago(Request $request)
     {
-        $sessionId = $request->get('session_id');
-        $projectId = $request->get('id_proyecto');
-        $rewardId = $request->get('id_recompensa');
-        $userId = $request->get('id_usuario');
+        $idSesion = $request->get('session_id');
+        $idProyecto = $request->get('id_proyecto');
+        $idRecompensa = $request->get('id_recompensa');
+        $idUsuario = $request->get('id_usuario');
 
-        if (!$sessionId || !$projectId) {
+        if (!$idSesion || !$idProyecto) {
             return redirect('/')->with('error', 'Pago no válido.');
         }
 
         try {
             Stripe::setApiKey(env('STRIPE_SECRET'));
-            $session = Session::retrieve($sessionId);
+            $sesion = Session::retrieve($idSesion);
 
-            if ($session->payment_status === 'paid') {
-                DB::transaction(function () use ($session, $projectId, $rewardId, $userId) {
-                    $monto = $session->amount_total / 100;
+            if ($sesion->payment_status === 'paid') {
+                DB::transaction(function () use ($sesion, $idProyecto, $idRecompensa, $idUsuario) {
+                    $monto = $sesion->amount_total / 100;
 
                     // Crear Donación
                     $donacion = Donacion::create([
-                        'idRecompensa' => $rewardId ?: null,
-                        'idUsuario' => $userId,
-                        'idProyecto' => $projectId,
+                        'idRecompensa' => $idRecompensa ?: null,
+                        'idUsuario' => $idUsuario,
+                        'idProyecto' => $idProyecto,
                         'fechaCompra' => now(),
                         'importe' => $monto,
                         'estadoDonacion' => 'pagada',
                     ]);
 
                     // Actualizar Proyecto
-                    $proyecto = Proyecto::lockForUpdate()->find($projectId);
+                    $proyecto = Proyecto::lockForUpdate()->find($idProyecto);
                     $proyecto->cantidad_recaudada += $monto;
                     $proyecto->save();
-                    
-                    // Opcional: Vincular usuario con proyecto si no existe relación
-                    // $proyecto->users()->syncWithoutDetaching([$userId]);
                 });
 
-                return redirect('/proyecto/' . $projectId . '?payment=success');
+                return redirect('/proyecto/' . $idProyecto . '?pago=exito');
             } else {
-                 return redirect('/proyecto/' . $projectId . '?payment=failed');
+                 return redirect('/proyecto/' . $idProyecto . '?pago=fallido');
             }
 
         } catch (\Exception $e) {
-            return redirect('/proyecto/' . $projectId . '?payment=error');
+            return redirect('/proyecto/' . $idProyecto . '?pago=error');
         }
     }
 }

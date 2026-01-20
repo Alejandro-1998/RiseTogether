@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentController;
 
 /// RUTAS DE PAGO ///
-Route::get('/payment/success', [PaymentController::class, 'success'])->name('payment.success');
+Route::get('/pagos/confirmar', [PaymentController::class, 'confirmarPago'])->name('pagos.confirmar');
 
 /// RUTA PRINCIPAL A REACT ///
 Route::get('/{any?}', function () {
