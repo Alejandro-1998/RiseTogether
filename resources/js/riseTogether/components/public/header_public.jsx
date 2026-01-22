@@ -2,10 +2,10 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useAuth from "../../hooks/useAuth";
 
-const CATEGORIES = [
-  "Arte", "Cómics", "Artesanías", "Danza", "Diseño", "Moda", "Cine", "Comida",
-  "Juegos", "Periodismo", "Música", "Fotografía", "Publicaciones", "Tecnología", "Teatro",
-];
+// const CATEGORIES = [
+//   "Arte", "Cómics", "Artesanías", "Danza", "Diseño", "Moda", "Cine", "Comida",
+//   "Juegos", "Periodismo", "Música", "Fotografía", "Publicaciones", "Tecnología", "Teatro",
+// ];
 
 export default function HeaderPublic({ isAuth }) {
   const { pathname } = useLocation();
@@ -92,7 +92,7 @@ export default function HeaderPublic({ isAuth }) {
 
                 {/* Círculo de perfil (visual, no click) */}
                 <div
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4ede7] text-[#1c140d] cursor-default dark:bg-[#2a2017] dark:text-[#fcfaf8]"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4ede7] text-[#1c140d] cursor-pointer dark:bg-[#2a2017] dark:text-[#fcfaf8]"
                   title="Sesión Iniciada"
                 >
                   <Link

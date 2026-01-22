@@ -18,8 +18,8 @@ export default function UsuarioTabs({ tab, setTab, isMe, user }) {
               onClick={() => setTab(t.id)}
               className={
                 active
-                  ? "flex flex-col items-center justify-center border-b-[3px] border-b-[#f2780d] shrink-0 pb-[13px] pt-4"
-                  : "flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#6b7280] dark:text-[#9ca3af] hover:border-b-[#f2780d]/50 hover:text-[#1a1a1a] dark:hover:text-[#f0f0f0] shrink-0 pb-[13px] pt-4"
+                  ? "cursor-pointer flex flex-col items-center justify-center border-b-[3px] border-b-[#f2780d] shrink-0 pb-[13px] pt-4"
+                  : "cursor-pointer flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#6b7280] dark:text-[#9ca3af] hover:border-b-[#f2780d]/50 hover:text-[#1a1a1a] dark:hover:text-[#f0f0f0] shrink-0 pb-[13px] pt-4"
               }
               role="tab"
               aria-selected={active}

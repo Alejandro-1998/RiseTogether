@@ -150,7 +150,7 @@ export default function UsuarioPage() {
                       <h3 id="actividad-reciente-titulo" className="text-lg font-bold">
                         Actividad reciente
                       </h3>
-                      <button className="text-xs text-[#f2780d] font-medium hover:underline">
+                      <button className="cursor-pointer text-xs text-[#f2780d] font-medium hover:underline">
                         Ver toda la actividad
                       </button>
                     </div>
