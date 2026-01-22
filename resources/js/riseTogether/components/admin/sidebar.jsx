@@ -13,13 +13,13 @@ export default function Sidebar() {
   return (
     <aside className="w-64 shrink-0 bg-white dark:bg-gray-900/50 border-r border-gray-200 dark:border-gray-800 flex flex-col fixed h-full">
       {/* Logo */}
-      <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-800 h-16">
+      <Link className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-800 h-16" to="/">
         <img
           src="/img/logo.png"
           className="h-9 w-auto object-contain"
           alt="RiseTogether"
         />
-      </div>
+      </Link>
 
       {/* Menú 1*/}
       <nav className="flex-1 px-2 py-4 space-y-2 text-sm">
