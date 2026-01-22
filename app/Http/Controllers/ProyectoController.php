@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use Exception;
 
 class ProyectoController extends Controller
@@ -193,8 +194,11 @@ class ProyectoController extends Controller
         $datos['slug'] = Str::slug($request->titulo);
 
         if ($request->hasFile('imagen_portada')) {
+            // Borrar imagen antigua si existe
+            if ($proyecto->imagen_portada) {
+                Storage::disk('public')->delete($proyecto->imagen_portada);
+            }
             $datos['imagen_portada'] = $request->file('imagen_portada')->store('proyectos', 'public');
-            // Aquí podríamos borrar la imagen antigua si quisiéramos
         }
 
         $proyecto->update($datos);
@@ -209,6 +213,9 @@ class ProyectoController extends Controller
         $proyecto = Proyecto::findOrFail($id);
         if ($proyecto->user_id !== Auth::id()) {
             return response()->json(['message' => 'No tienes permiso para eliminar este proyecto.'], 403);
+        }
+        if ($proyecto->imagen_portada) {
+            Storage::disk('public')->delete($proyecto->imagen_portada);
         }
         $proyecto->delete();
         return response()->json(null, 204);
