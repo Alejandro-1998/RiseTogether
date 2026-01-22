@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Categoria;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Str;
 
 class CategoriaController extends Controller
 {
@@ -30,11 +31,21 @@ class CategoriaController extends Controller
      */
     public function store(Request $request)
     {
-        Categoria::create([
+        $request->validate([
+            'nombre' => 'required|string|max:20|unique:categorias,nombre',
+        ], [
+            'nombre.required' => 'El nombre de la categoría es obligatorio.',
+            'nombre.unique' => 'Ya existe una categoría con este nombre.',
+            'nombre.max' => 'El nombre no puede tener más de :max caracteres.',
+        ]);
+
+        $categoria = Categoria::create([
             'nombre' => $request->nombre,
-            'slug' => strtolower(str_replace(' ', '', $request->nombre)),
+            'slug' => Str::slug($request->nombre),
             'icono' => '', // Falta integrar iconos
         ]);
+
+        return response()->json($categoria, 201);
     }
 
     /**
@@ -42,7 +53,7 @@ class CategoriaController extends Controller
      */
     public function show(string $id)
     {
-        $categoria = Categoria::where('id', $id)->first();
+        $categoria = Categoria::findOrFail($id);
         return response()->json($categoria);
     }
 
@@ -59,7 +70,22 @@ class CategoriaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $categoria = Categoria::findOrFail($id);
+
+        $request->validate([
+            'nombre' => 'required|string|max:20|unique:categorias,nombre,' . $categoria->id,
+        ], [
+            'nombre.required' => 'El nombre de la categoría es obligatorio.',
+            'nombre.unique' => 'Ya existe una categoría con este nombre.',
+            'nombre.max' => 'El nombre no puede tener más de :max caracteres.',
+        ]);
+
+        $categoria->update([
+            'nombre' => $request->nombre,
+            'slug' => Str::slug($request->nombre),
+        ]);
+
+        return response()->json($categoria);
     }
 
     /**
@@ -67,6 +93,9 @@ class CategoriaController extends Controller
      */
     public function destroy(string $id)
     {
-        Categoria::where('id', $id)->first()->delete();
+        $categoria = Categoria::findOrFail($id);
+        $categoria->delete();
+
+        return response()->json(null, 204);
     }
 }
