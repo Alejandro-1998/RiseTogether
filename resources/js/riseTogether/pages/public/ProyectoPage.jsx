@@ -269,6 +269,11 @@ export default function ProyectoPage() {
                     placeholder="Importe (€)"
                     className="flex-1 rounded-xl border border-[#e6dbd1] dark:border-[#3a2c20] px-4 py-2 bg-transparent focus:ring-2 focus:ring-[#f2780d] outline-none"
                     min="1"
+                    onKeyDown={(e) => {
+                      if (["-", "+", "e", "E"].includes(e.key)) {
+                        e.preventDefault();
+                      }
+                    }}
                   />
                   <button
                     onClick={() => {
