@@ -30,15 +30,37 @@ class ComentarioController extends Controller
      */
     public function store(Request $request)
     {
-        Comentario::create([
+        $request->validate([
+            'idProyecto' => 'required|exists:proyectos,id',
+            'idComentario' => 'nullable|exists:comentarios,id',
+            'mensaje' => 'required|string|min:3|max:1000',
+            'fechaHora' => 'required|date',
+            'estrellas' => 'nullable|integer|min:1|max:5',
+        ], [
+            'idProyecto.required' => 'El proyecto es obligatorio.',
+            'idProyecto.exists' => 'El proyecto seleccionado no existe.',
+            'idComentario.exists' => 'El comentario al que respondes no existe.',
+            'mensaje.required' => 'El mensaje no puede estar vacío.',
+            'mensaje.min' => 'El mensaje debe tener al menos :min caracteres.',
+            'mensaje.max' => 'El mensaje no puede superar los :max caracteres.',
+            'fechaHora.required' => 'La fecha y hora son obligatorias.',
+            'fechaHora.date' => 'La fecha no tiene un formato válido.',
+            'estrellas.integer' => 'La valoración debe ser un número entero.',
+            'estrellas.min' => 'La valoración mínima es 1 estrella.',
+            'estrellas.max' => 'La valoración máxima son 5 estrellas.',
+        ]);
+
+        $comentario = Comentario::create([
             'idUsuario' => Auth::id(),
-            'idProyecto' => '',  // Falta modificar
-            'idComentario' => '', // Falta modificar
+            'idProyecto' => $request->idProyecto,
+            'idComentario' => $request->idComentario,
             'mensaje' => $request->mensaje,
             'fechaHora' => $request->fechaHora,
             'estrellas' => $request->estrellas,
             'estado' => 'pendiente',
         ]);
+
+        return response()->json($comentario, 201);
     }
 
     /**
@@ -46,7 +68,7 @@ class ComentarioController extends Controller
      */
     public function show(string $id)
     {
-        $comentario = Comentario::where('id', $id)->first();
+        $comentario = Comentario::findOrFail($id);
         return response()->json($comentario);
     }
 
@@ -63,7 +85,23 @@ class ComentarioController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $comentario = Comentario::where('idUsuario', Auth::id())->findOrFail($id);
+
+        $request->validate([
+            'mensaje' => 'required|string|min:3|max:1000',
+            'estrellas' => 'nullable|integer|min:1|max:5',
+        ], [
+            'mensaje.required' => 'El mensaje no puede estar vacío.',
+            'mensaje.min' => 'El mensaje debe tener al menos :min caracteres.',
+            'mensaje.max' => 'El mensaje no puede superar los :max caracteres.',
+            'estrellas.integer' => 'La valoración debe ser un número entero.',
+            'estrellas.min' => 'La valoración mínima es 1 estrella.',
+            'estrellas.max' => 'La valoración máxima son 5 estrellas.',
+        ]);
+
+        $comentario->update($request->only(['mensaje', 'estrellas']));
+
+        return response()->json($comentario);
     }
 
     /**
@@ -71,7 +109,10 @@ class ComentarioController extends Controller
      */
     public function destroy(string $id)
     {
-        Comentario::where('id', $id)->first()->delete();
+        $comentario = Comentario::where('idUsuario', Auth::id())->findOrFail($id);
+        $comentario->delete();
+
+        return response()->json(null, 204);
     }
 
     /**
