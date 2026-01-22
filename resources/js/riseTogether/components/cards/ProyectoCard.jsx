@@ -19,8 +19,12 @@ export default function ProyectoCard({ proyecto }) {
         if (proyecto.imagen_portada.startsWith('http') || proyecto.imagen_portada.startsWith('blob')) {
             imagen = proyecto.imagen_portada;
         } else {
-            // Asegúrate de correr: php artisan storage:link
-            imagen = `/storage/${proyecto.imagen_portada}`;
+            // Usamos la URL base inyectada desde Laravel o vacía por defecto
+            const baseUrl = window.Laravel?.assetUrl || '/';
+            // Nos aseguramos de no duplicar barras si baseUrl ya termina en /
+            const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+
+            imagen = `${cleanBaseUrl}storage/${proyecto.imagen_portada}`;
         }
     }
 
