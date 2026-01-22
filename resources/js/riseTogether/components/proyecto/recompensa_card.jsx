@@ -27,7 +27,7 @@ export default function RecompensaCard({ recompensa, onSupport }) {
 
       <button
         onClick={handleSupport}
-        className="mt-4 px-4 h-10 w-full rounded-2xl bg-[#f2780d] text-white text-sm font-bold hover:bg-[#f2780d]/90 transition-colors shadow-sm"
+        className="cursor-pointer mt-4 px-4 h-10 w-full rounded-2xl bg-[#f2780d] text-white text-sm font-bold hover:bg-[#f2780d]/90 transition-colors shadow-sm"
       >
         Seleccionar esta recompensa
       </button>

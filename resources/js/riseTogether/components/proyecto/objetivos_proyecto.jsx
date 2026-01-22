@@ -48,11 +48,11 @@ export default function ObjetivosProyecto({
         </div>
 
         <div className="flex flex-col gap-2 pt-4">
-          <button className="flex w-full items-center justify-center overflow-hidden rounded-2xl h-12 px-6 bg-[#f2780d] text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-[#f2780d]/90 transition-colors">
+          <button className="cursor-pointer flex w-full items-center justify-center overflow-hidden rounded-2xl h-12 px-6 bg-[#f2780d] text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-[#f2780d]/90 transition-colors">
             <span className="truncate">Apoyar este proyecto</span>
           </button>
 
-          <button className="flex w-full items-center justify-center overflow-hidden rounded-2xl h-12 px-6 bg-[#f4ede7] dark:bg-[#f4ede7]/10 text-[#1c140d] dark:text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-[#f4ede7] dark:hover:bg-[#f4ede7]/20 transition-colors">
+          <button className="cursor-pointer flex w-full items-center justify-center overflow-hidden rounded-2xl h-12 px-6 bg-[#f4ede7] dark:bg-[#f4ede7]/10 text-[#1c140d] dark:text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-[#f4ede7] dark:hover:bg-[#f4ede7]/20 transition-colors">
             <span className="material-symbols-outlined mr-2 text-lg">bookmark</span>
             <span className="truncate">Seguir</span>
           </button>
