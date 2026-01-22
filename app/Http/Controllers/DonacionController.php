@@ -32,14 +32,29 @@ class DonacionController extends Controller
      */
     public function store(Request $request)
     {
-        Donacion::create([
-            'idRecompensa' => '', // Falta modificar
+        $request->validate([
+            'idProyecto' => 'required|exists:proyectos,id',
+            'idRecompensa' => 'nullable|exists:recompensas,id',
+            'importe' => 'required|numeric|min:1',
+        ], [
+            'idProyecto.required' => 'El proyecto es obligatorio.',
+            'idProyecto.exists' => 'El proyecto seleccionado no existe.',
+            'idRecompensa.exists' => 'La recompensa seleccionada no existe.',
+            'importe.required' => 'El importe de la donación es obligatorio.',
+            'importe.numeric' => 'El importe debe ser un número válido.',
+            'importe.min' => 'El importe mínimo es de :min euro.',
+        ]);
+
+        $donacion = Donacion::create([
+            'idRecompensa' => $request->idRecompensa,
             'idUsuario' => Auth::id(),
-            'idProyecto' => '', // Falta modificar
+            'idProyecto' => $request->idProyecto,
             'fechaCompra' => Carbon::now(),
             'importe' => $request->importe,
             'estadoDonacion' => 'pendiente',
         ]);
+
+        return response()->json($donacion, 201);
     }
 
     /**
@@ -47,7 +62,7 @@ class DonacionController extends Controller
      */
     public function show(string $id)
     {
-        $donacion = Donacion::where('id', $id)->first();
+        $donacion = Donacion::findOrFail($id);
         return response()->json($donacion);
     }
 
@@ -64,7 +79,24 @@ class DonacionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $donacion = Donacion::findOrFail($id);
+
+        // Solo permitir editar si está pendiente (regla de negocio lógica)
+        if ($donacion->estadoDonacion !== 'pendiente') {
+             return response()->json(['message' => 'No se puede editar una donación procesada.'], 403);
+        }
+
+        $request->validate([
+            'importe' => 'required|numeric|min:1',
+        ], [
+            'importe.required' => 'El importe de la donación es obligatorio.',
+            'importe.numeric' => 'El importe debe ser un número válido.',
+            'importe.min' => 'El importe mínimo es de :min euro.',
+        ]);
+
+        $donacion->update($request->only(['importe']));
+
+        return response()->json($donacion);
     }
 
     /**
@@ -72,6 +104,9 @@ class DonacionController extends Controller
      */
     public function destroy(string $id)
     {
-        Donacion::where('id', $id)->first()->delete();
+        $donacion = Donacion::findOrFail($id);
+        $donacion->delete();
+
+        return response()->json(null, 204);
     }
 }

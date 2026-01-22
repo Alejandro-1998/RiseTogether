@@ -30,13 +30,34 @@ class RecompensaController extends Controller
      */
     public function store(Request $request)
     {
-        Recompensa::create([
-            'idProyecto' => '', // Falta modificar
+        $request->validate([
+            'idProyecto' => 'required|exists:proyectos,id',
+            'nombreRecompensa' => 'required|string|max:255',
+            'costoRecompensa' => 'required|numeric|min:0',
+            'descripcionRecompensa' => 'required|string|min:10',
+            'tipoEntrega' => 'required|in:digital,fisica,mixta,desbloqueo',
+        ], [
+            'idProyecto.required' => 'El proyecto es obligatorio.',
+            'idProyecto.exists' => 'El proyecto seleccionado no existe.',
+            'nombreRecompensa.required' => 'El título de la recompensa es obligatorio.',
+            'costoRecompensa.required' => 'El costo es obligatorio.',
+            'costoRecompensa.numeric' => 'El costo debe ser un número válido.',
+            'costoRecompensa.min' => 'El costo no puede ser negativo.',
+            'descripcionRecompensa.required' => 'La descripción es obligatoria.',
+            'descripcionRecompensa.min' => 'La descripción debe tener al menos 10 caracteres.',
+            'tipoEntrega.required' => 'El tipo de entrega es obligatorio.',
+            'tipoEntrega.in' => 'El tipo de entrega no es válido.',
+        ]);
+
+        $recompensa = Recompensa::create([
+            'idProyecto' => $request->idProyecto,
             'nombreRecompensa' => $request->nombreRecompensa,
             'costoRecompensa' => $request->costoRecompensa,
             'descripcionRecompensa' => $request->descripcionRecompensa,
             'tipoEntrega' => $request->tipoEntrega,
         ]);
+
+        return response()->json($recompensa, 201);
     }
 
     /**
@@ -44,7 +65,7 @@ class RecompensaController extends Controller
      */
     public function show(string $id)
     {
-        $recompensa = Recompensa::where('id', $id)->first();
+        $recompensa = Recompensa::findOrFail($id);
         return response()->json($recompensa);
     }
 
@@ -61,7 +82,32 @@ class RecompensaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $recompensa = Recompensa::findOrFail($id);
+
+        $request->validate([
+            'nombreRecompensa' => 'required|string|max:255',
+            'costoRecompensa' => 'required|numeric|min:0',
+            'descripcionRecompensa' => 'required|string|min:10',
+            'tipoEntrega' => 'required|in:digital,fisica,mixta,desbloqueo',
+        ], [
+            'nombreRecompensa.required' => 'El título de la recompensa es obligatorio.',
+            'costoRecompensa.required' => 'El costo es obligatorio.',
+            'costoRecompensa.numeric' => 'El costo debe ser un número válido.',
+            'costoRecompensa.min' => 'El costo no puede ser negativo.',
+            'descripcionRecompensa.required' => 'La descripción es obligatoria.',
+            'descripcionRecompensa.min' => 'La descripción debe tener al menos 10 caracteres.',
+            'tipoEntrega.required' => 'El tipo de entrega es obligatorio.',
+            'tipoEntrega.in' => 'El tipo de entrega no es válido.',
+        ]);
+
+        $recompensa->update($request->only([
+            'nombreRecompensa',
+            'costoRecompensa',
+            'descripcionRecompensa',
+            'tipoEntrega'
+        ]));
+
+        return response()->json($recompensa);
     }
 
     /**
@@ -69,6 +115,9 @@ class RecompensaController extends Controller
      */
     public function destroy(string $id)
     {
-        Recompensa::where('id', $id)->first()->delete();
+        $recompensa = Recompensa::findOrFail($id);
+        $recompensa->delete();
+
+        return response()->json(null, 204);
     }
 }

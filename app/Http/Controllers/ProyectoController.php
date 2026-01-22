@@ -60,8 +60,18 @@ class ProyectoController extends Controller
             'descripcion' => 'required',
         ], [
             'titulo.required' => 'El proyecto necesita un nombre.',
+            'titulo.unique' => 'Este nombre de proyecto ya está pillado.',
+            'resumen.required' => 'Escribe un resumen corto y pegadizo.',
             'categoria_id.required' => 'Elige una categoría.',
+            'categoria_id.exists' => 'Esa categoría no es válida.',
             'imagen_portada.required' => 'La imagen es obligatoria para atraer mecenas.',
+            'imagen_portada.image' => 'El archivo debe ser una imagen.',
+            'imagen_portada.max' => 'La imagen no puede pesar más de 2MB.',
+            'objetivo_financiacion.required' => 'Define cuánto dinero necesitas.',
+            'objetivo_financiacion.min' => 'El objetivo debe ser positivo.',
+            'fecha_limite.required' => 'Pon una fecha límite.',
+            'fecha_limite.after' => 'La fecha límite debe ser futura.',
+            'descripcion.required' => 'La descripción completa es vital.',
         ]);
 
         try {
@@ -132,7 +142,7 @@ class ProyectoController extends Controller
     {
         $proyecto = Proyecto::with(['categoria', 'recompensas' => function ($query) {
             $query->orderBy('costoRecompensa', 'asc');
-        }, 'user'])->where('id', $id)->first();
+        }, 'user'])->findOrFail($id);
         return response()->json($proyecto);
     }
 
@@ -149,7 +159,46 @@ class ProyectoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $proyecto = Proyecto::findOrFail($id);
+        
+        // Verificar propiedad (si no es admin, lógica adicional necesaria aquí o en middleware)
+        if ($proyecto->user_id !== Auth::id()) {
+            return response()->json(['message' => 'No tienes permiso para editar este proyecto.'], 403);
+        }
+
+        $request->validate([
+            'titulo' => 'required|max:255|unique:proyectos,titulo,' . $proyecto->id,
+            'resumen' => 'required|max:255',
+            'categoria_id' => 'required|exists:categorias,id',
+            'imagen_portada' => 'nullable|image|max:2048', // Opcional al editar
+            'objetivo_financiacion' => 'required|numeric|min:1',
+            'fecha_limite' => 'required|date|after:today',
+            'descripcion' => 'required',
+        ], [
+            'titulo.required' => 'El proyecto necesita un nombre.',
+            'titulo.unique' => 'Este nombre de proyecto ya está pillado.',
+            'resumen.required' => 'Escribe un resumen corto y pegadizo.',
+            'categoria_id.required' => 'Elige una categoría.',
+            'categoria_id.exists' => 'Esa categoría no es válida.',
+            'imagen_portada.image' => 'El archivo debe ser una imagen.',
+            'imagen_portada.max' => 'La imagen no puede pesar más de 2MB.',
+            'objetivo_financiacion.required' => 'Define cuánto dinero necesitas.',
+            'objetivo_financiacion.min' => 'El objetivo debe ser positivo.',
+            'fecha_limite.required' => 'Pon una fecha límite.',
+            'fecha_limite.after' => 'La fecha límite debe ser futura.',
+            'descripcion.required' => 'La descripción completa es vital.',
+        ]);
+
+        $datos = $request->all();
+        $datos['slug'] = Str::slug($request->titulo);
+
+        if ($request->hasFile('imagen_portada')) {
+            $datos['imagen_portada'] = $request->file('imagen_portada')->store('proyectos', 'public');
+            // Aquí podríamos borrar la imagen antigua si quisiéramos
+        }
+
+        $proyecto->update($datos);
+        return response()->json($proyecto);
     }
 
     /**
@@ -157,7 +206,12 @@ class ProyectoController extends Controller
      */
     public function destroy(string $id)
     {
-        Proyecto::where('id', $id)->first()->delete();
+        $proyecto = Proyecto::findOrFail($id);
+        if ($proyecto->user_id !== Auth::id()) {
+            return response()->json(['message' => 'No tienes permiso para eliminar este proyecto.'], 403);
+        }
+        $proyecto->delete();
+        return response()->json(null, 204);
     }
 
     public function proyectosDestacados()

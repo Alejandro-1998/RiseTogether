@@ -30,13 +30,31 @@ class EventoController extends Controller
      */
     public function store(Request $request)
     {
-        Evento::create([
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'fechaInicio' => 'required|date',
+            'fechaFinal' => 'required|date|after:fechaInicio',
+            'cantidadMaxParticipantes' => 'nullable|integer|min:1',
+            'idFinalidad' => 'required|exists:finalidades,id',
+        ], [
+            'nombre.required' => 'El nombre del evento es obligatorio.',
+            'fechaInicio.required' => 'La fecha de inicio es obligatoria.',
+            'fechaFinal.required' => 'La fecha de fin es obligatoria.',
+            'fechaFinal.after' => 'La fecha de fin debe ser posterior a la de inicio.',
+            'cantidadMaxParticipantes.integer' => 'La cantidad de participantes debe ser un número entero.',
+            'idFinalidad.required' => 'La finalidad es obligatoria.',
+            'idFinalidad.exists' => 'La finalidad seleccionada no existe.',
+        ]);
+
+        $evento = Evento::create([
             'nombre' => $request->nombre,
             'fechaInicio' => $request->fechaInicio,
             'fechaFinal' => $request->fechaFinal,
             'cantidadMaxParticipantes' => $request->cantidadMaxParticipantes,
-            'idFinalidad' => $request->finalidad,
+            'idFinalidad' => $request->idFinalidad,
         ]);
+
+        return response()->json($evento, 201);
     }
 
     /**
@@ -44,7 +62,7 @@ class EventoController extends Controller
      */
     public function show(string $id)
     {
-        $evento = Evento::where('id', $id)->first();
+        $evento = Evento::findOrFail($id);
         return response()->json($evento);
     }
 
@@ -61,7 +79,33 @@ class EventoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $evento = Evento::findOrFail($id);
+
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'fechaInicio' => 'required|date',
+            'fechaFinal' => 'required|date|after:fechaInicio',
+            'cantidadMaxParticipantes' => 'nullable|integer|min:1',
+            'idFinalidad' => 'required|exists:finalidades,id',
+        ], [
+            'nombre.required' => 'El nombre del evento es obligatorio.',
+            'fechaInicio.required' => 'La fecha de inicio es obligatoria.',
+            'fechaFinal.required' => 'La fecha de fin es obligatoria.',
+            'fechaFinal.after' => 'La fecha de fin debe ser posterior a la de inicio.',
+            'cantidadMaxParticipantes.integer' => 'La cantidad de participantes debe ser un número entero.',
+            'idFinalidad.required' => 'La finalidad es obligatoria.',
+            'idFinalidad.exists' => 'La finalidad seleccionada no existe.',
+        ]);
+
+        $evento->update([
+            'nombre' => $request->nombre,
+            'fechaInicio' => $request->fechaInicio,
+            'fechaFinal' => $request->fechaFinal,
+            'cantidadMaxParticipantes' => $request->cantidadMaxParticipantes,
+            'idFinalidad' => $request->idFinalidad,
+        ]);
+
+        return response()->json($evento);
     }
 
     /**
@@ -69,6 +113,9 @@ class EventoController extends Controller
      */
     public function destroy(string $id)
     {
-        Evento::where('id', $id)->first()->delete();
+        $evento = Evento::findOrFail($id);
+        $evento->delete();
+
+        return response()->json(null, 204);
     }
 }
