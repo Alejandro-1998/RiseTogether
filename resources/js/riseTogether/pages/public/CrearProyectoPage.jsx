@@ -9,13 +9,11 @@ export default function CrearProyectoPage() {
     const [categoriasdB, setCategoriasdB] = useState([]);
     const [form, setForm] = useState({
         titulo: "",
-        resumen: "",
         categoria: "", // ID de la categoría
         objetivo: 20000,
         fecha_limite: "",
         imagen_portada: null, // de momento string url o null
-        historia: "",
-        descripcion: "",
+        descripcion: "", // Antes 'historia', ahora descripción principal
     });
 
     useEffect(() => {
@@ -44,7 +42,7 @@ export default function CrearProyectoPage() {
         const catObj = categoriasdB.find(c => c.id == form.categoria);
         return {
             titulo: form.titulo || "Tu título aparecerá aquí",
-            resumen: form.resumen || "Tu resumen aparecerá aquí.",
+            descripcion: form.descripcion || "La descripción de tu proyecto aparecerá aquí.",
             categoria: { nombre: catObj ? catObj.nombre : "General" },
             imagen_portada: form.imagen_portada,
             cantidad_recaudada: 0,
@@ -86,11 +84,11 @@ export default function CrearProyectoPage() {
 
         const formData = new FormData();
         formData.append('titulo', form.titulo);
-        formData.append('resumen', form.resumen);
+        formData.append('titulo', form.titulo);
         formData.append('categoria_id', form.categoria);
         formData.append('objetivo_financiacion', form.objetivo);
         formData.append('fecha_limite', form.fecha_limite);
-        formData.append('descripcion', form.historia || form.resumen); // Usar historia como descripción larga
+        formData.append('descripcion', form.descripcion); // Usar descripción única
         formData.append('estado', type === 'publish' ? 'publicado' : 'borrador');
 
         if (formFile) {
@@ -158,17 +156,7 @@ export default function CrearProyectoPage() {
                                     />
                                 </div>
 
-                                <div>
-                                    <label className="text-sm font-semibold">Resumen</label>
-                                    <textarea
-                                        name="resumen"
-                                        value={form.resumen}
-                                        onChange={onChange}
-                                        rows={3}
-                                        placeholder="Cuenta en 2-3 frases de qué va tu proyecto."
-                                        className="mt-2 w-full rounded-2xl border border-[#ead8ce] dark:border-[#3a2d24] bg-[#fffaf7] dark:bg-[#120b07] px-4 py-3 text-sm outline-none focus:border-[#f2780d]"
-                                    />
-                                </div>
+                                {/* Eliminado campo Resumen */}
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
@@ -223,17 +211,17 @@ export default function CrearProyectoPage() {
                         </section>
                         {/* BLOQUE 2: HISTORIA DEL PROYECTO */}
                         <section className="rounded-3xl border border-[#f4ede7] dark:border-[#2a2017] bg-white dark:bg-[#1a120d] p-6 shadow-sm">
-                            <h3 className="text-xl font-bold">Historia del proyecto</h3>
+                            <h3 className="text-xl font-bold">Descripción del proyecto</h3>
                             <p className="mt-1 text-sm text-[#9c7049] dark:text-[#9c7049]/80">
-                                Aquí va la descripción larga (la pestaña “Historia” en el detalle).
+                                Describe el proyecto, objetivos, por qué es importante, etc.
                             </p>
 
                             <textarea
-                                name="historia"
-                                value={form.historia}
+                                name="descripcion"
+                                value={form.descripcion}
                                 onChange={onChange}
                                 rows={8}
-                                placeholder="Describe el proyecto, objetivos, por qué es importante, etc."
+                                placeholder="Describe el proyecto..."
                                 className="mt-6 w-full rounded-2xl border border-[#ead8ce] dark:border-[#3a2d24] bg-[#fffaf7] dark:bg-[#120b07] px-4 py-3 text-sm outline-none focus:border-[#f2780d]"
                             />
                         </section>

@@ -17,7 +17,6 @@ public function up(): void
         $table->foreignId('categoria_id')->constrained('categorias')->restrictOnDelete();
         $table->string('titulo');
         $table->string('slug')->unique();
-        $table->text('resumen');
         $table->longText('descripcion');
         $table->string('imagen_portada')->nullable();
         $table->string('video_url')->nullable();

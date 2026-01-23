@@ -25,7 +25,6 @@ class ProyectoFactory extends Factory
             // Textos
             'titulo'                => $titulo,
             'slug'                  => Str::slug($titulo),
-            'resumen'               => $this->faker->sentence(10), // Corregido: eliminado ->italic()
             'descripcion'           => $this->faker->paragraphs(5, true),
             
             // Multimedia

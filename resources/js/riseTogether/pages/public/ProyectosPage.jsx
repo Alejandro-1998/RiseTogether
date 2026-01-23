@@ -39,7 +39,17 @@ export default function ProyectosPage() {
     }
   }, [categoriaIdParam]);
 
-  // Fetch Proyectos when filters change
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+
+  // Debounce Search Term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Fetch Proyectos
   useEffect(() => {
     let mounted = true;
 
@@ -52,8 +62,8 @@ export default function ProyectosPage() {
         if (selectedCategory) {
           params.append("categoria_id", selectedCategory);
         }
-        if (searchTerm) {
-          params.append("titulo", searchTerm);
+        if (debouncedSearchTerm) {
+          params.append("titulo", debouncedSearchTerm);
         }
 
         if (params.toString()) {
@@ -83,18 +93,12 @@ export default function ProyectosPage() {
       }
     };
 
-    // Debounce search a bit? or just separate effect? 
-    // For simplicity, we trigger on any change. 
-    // In production, debounce searchTerm is better.
-    const timeoutId = setTimeout(() => {
-      cargar();
-    }, 300);
+    cargar();
 
     return () => {
       mounted = false;
-      clearTimeout(timeoutId);
     };
-  }, [selectedCategory, searchTerm]);
+  }, [selectedCategory, debouncedSearchTerm]);
 
   // Update URL params when filters change (UX)
   useEffect(() => {

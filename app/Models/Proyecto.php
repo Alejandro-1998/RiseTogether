@@ -13,13 +13,11 @@ class Proyecto extends Model
 
     protected $table = "proyectos";
     protected $primaryKey = "id";
-
-protected $fillable = [
+    protected $fillable = [
         'user_id',
         'categoria_id',
         'titulo',
         'slug',
-        'resumen',
         'descripcion',
         'imagen_portada',
         'video_url',
