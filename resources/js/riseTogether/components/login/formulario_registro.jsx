@@ -19,10 +19,62 @@ export default function FormularioRegistro() {
 
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
+
+    let newValue = type === "checkbox" ? checked : value;
+
+    // Strict Input Filtering
+    if (name === "nombreUsuario") {
+      newValue = value.replace(/[^a-zA-Z0-9]/g, "");
+    } else if (name === "email") {
+      newValue = value.replace(/[^a-zA-Z0-9@._-]/g, "");
+    }
+
     setForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: newValue,
     }));
+
+    // Clear error for field on change
+    if (errors[name]) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  const validate = () => {
+    const newErrors = {};
+
+    if (!form.nombreUsuario) {
+      newErrors.nombreUsuario = ["El nombre de usuario es obligatorio."];
+    } else if (!/^[a-zA-Z0-9]+$/.test(form.nombreUsuario)) {
+      newErrors.nombreUsuario = ["El nombre de usuario solo puede contener letras y números."];
+    }
+
+    if (!form.email) {
+      newErrors.email = ["El email es obligatorio."];
+    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+      newErrors.email = ["El email no es válido."];
+    }
+
+    if (!form.password) {
+      newErrors.password = ["La contraseña es obligatoria."];
+    } else if (form.password.length < 8) {
+      newErrors.password = ["La contraseña debe tener al menos 8 caracteres."];
+    }
+
+    if (form.password !== form.password_confirmation) {
+      newErrors.password_confirmation = ["Las contraseñas no coinciden."];
+    }
+
+    if (!form.terminos) {
+      newErrors.terminos = ["Debes aceptar los términos y condiciones."];
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const submit = async (e) => {
@@ -30,6 +82,11 @@ export default function FormularioRegistro() {
     setLoading(true);
     setErrors({});
     setGeneralError("");
+
+    if (!validate()) {
+      setLoading(false);
+      return;
+    }
 
     try {
       await window.axios.get('/sanctum/csrf-cookie');
@@ -81,11 +138,7 @@ export default function FormularioRegistro() {
         </p>
       </div>
 
-      {generalError ? (
-        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-900/20 dark:text-red-200">
-          {generalError}
-        </div>
-      ) : null}
+      {/* generalError block removed as per user request */}
 
       <form onSubmit={submit} className="space-y-4">
         {/* Nombre Usuario */}
@@ -142,6 +195,7 @@ export default function FormularioRegistro() {
               </svg>
             </span>
             <input
+              type="email"
               name="email"
               value={form.email}
               onChange={onChange}
@@ -234,7 +288,7 @@ export default function FormularioRegistro() {
             className="mt-1 h-4 w-4 rounded border-gray-300 text-[#f97316] focus:ring-[#f97316]"
             required
           />
-          <label className="text-sm text-[#9c7049] dark:text-[#a18a7a]">
+          <label className={`text-sm ${errors.terminos ? 'text-red-500' : 'text-[#9c7049] dark:text-[#a18a7a]'}`}>
             Acepto los <a href="#" className="underline">Términos y Condiciones</a> y la <a href="#" className="underline">Política de Privacidad</a>.
           </label>
         </div>
