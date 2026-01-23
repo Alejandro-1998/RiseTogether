@@ -17,6 +17,10 @@ export default function ProyectoPage() {
   const [pestana, setPestana] = useState("historia"); // historia | actualizaciones | faq | comentarios
   const { isAuth, user } = useAuth(); // Get auth state
 
+  // Donation form state
+  const [donationAmount, setDonationAmount] = useState("");
+  const [donationError, setDonationError] = useState("");
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const estadoPago = params.get("pago");
@@ -267,29 +271,44 @@ export default function ProyectoPage() {
               <div className="rounded-2xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-5 bg-white dark:bg-[#1a120d] shadow-sm">
                 <h3 className="text-xl font-bold text-[#1c140d] dark:text-white mb-2">Apoya este proyecto</h3>
                 <p className="text-sm text-[#9c7049] mb-4">Haz una donación sin recompensa para ayudar a que este proyecto se haga realidad.</p>
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    id="donacionLibre"
-                    placeholder="Importe (€)"
-                    className="flex-1 rounded-xl border border-[#e6dbd1] dark:border-[#3a2c20] px-4 py-2 bg-transparent focus:ring-2 focus:ring-[#f2780d] outline-none"
-                    min="1"
-                    onKeyDown={(e) => {
-                      if (["-", "+", "e", "E"].includes(e.key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                  />
-                  <button
-                    onClick={() => {
-                      const val = document.getElementById('donacionLibre').value;
-                      if (val >= 1) iniciarPago(val);
-                      else alert("El importe mínimo es 1€");
-                    }}
-                    className="px-4 py-2 bg-[#f2780d] text-white font-bold rounded-xl hover:bg-[#d96600] transition-colors"
-                  >
-                    Donar
-                  </button>
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      id="donacionLibre"
+                      value={donationAmount}
+                      onChange={(e) => {
+                        setDonationAmount(e.target.value);
+                        if (donationError) setDonationError("");
+                      }}
+                      placeholder="Importe (€)"
+                      className={`flex-1 rounded-xl border ${donationError ? 'border-red-500 ring-1 ring-red-500' : 'border-[#e6dbd1] dark:border-[#3a2c20]'} px-4 py-2 bg-transparent focus:ring-2 focus:ring-[#f2780d] outline-none`}
+                      min="1"
+                      onKeyDown={(e) => {
+                        if (["-", "+", "e", "E"].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                    />
+                    <button
+                      onClick={() => {
+                        const val = parseFloat(donationAmount);
+                        if (!val || val < 1) {
+                          setDonationError("El importe mínimo es 1€");
+                        } else {
+                          iniciarPago(val);
+                        }
+                      }}
+                      className="px-4 py-2 bg-[#f2780d] text-white font-bold rounded-xl hover:bg-[#d96600] transition-colors"
+                    >
+                      Donar
+                    </button>
+                  </div>
+                  {donationError && (
+                    <p className="text-sm text-red-500 font-medium">
+                      {donationError}
+                    </p>
+                  )}
                 </div>
               </div>
 

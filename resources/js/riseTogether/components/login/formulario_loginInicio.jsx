@@ -6,17 +6,33 @@ export default function FormularioLoginInicio() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
 
   const { login, errors: authErrors } = useAuth();
 
-  // Combine local error state if needed, or just use authErrors
-  // For simplicity, let's defer to the hook's handling but keep local check logic if we want custom UI messages
+  const validate = () => {
+    const newErrors = {};
+    if (!email) {
+      newErrors.email = "El email es obligatorio.";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "El email no es válido.";
+    }
+
+    if (!password) {
+      newErrors.password = "La contraseña es obligatoria.";
+    }
+
+    setFieldErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
+
+    if (!validate()) return;
 
     try {
       await login({ email, password });
@@ -50,7 +66,7 @@ export default function FormularioLoginInicio() {
         </p>
       </div>
 
-      <form className="space-y-5" onSubmit={handleSubmit}>
+      <form className="space-y-5" onSubmit={handleSubmit} noValidate>
         {error && (
           <div className="p-3 text-sm text-red-600 bg-red-100 rounded-lg">
             {error}
@@ -73,13 +89,21 @@ export default function FormularioLoginInicio() {
               name="email"
               type="email"
               autoComplete="email"
-              required
               placeholder="correo"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="h-8 w-full rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#b28155] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]"
+              onChange={(e) => {
+                const newValue = e.target.value.replace(/[^a-zA-Z0-9@._-]/g, "");
+                setEmail(newValue);
+                if (fieldErrors.email) setFieldErrors({ ...fieldErrors, email: null });
+              }}
+              className={`h-8 w-full rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#b28155] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a] ${fieldErrors.email ? 'ring-2 ring-red-500' : ''}`}
             />
           </div>
+          {fieldErrors.email && (
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400 font-medium">
+              {fieldErrors.email}
+            </p>
+          )}
         </div>
 
         {/* PASSWORD */}
@@ -98,13 +122,20 @@ export default function FormularioLoginInicio() {
               name="password"
               type="password"
               autoComplete="current-password"
-              required
               placeholder="contraseña"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-8 w-full rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]"
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (fieldErrors.password) setFieldErrors({ ...fieldErrors, password: null });
+              }}
+              className={`h-8 w-full rounded-lg border-none bg-[#f4ede7] pl-10 text-[#1c140d] placeholder:text-[#9c7049] focus:ring-2 focus:ring-[#f2780d] dark:bg-[#6a513b] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a] ${fieldErrors.password ? 'ring-2 ring-red-500' : ''}`}
             />
           </div>
+          {fieldErrors.password && (
+            <p className="mt-1 text-sm text-red-600 dark:text-red-400 font-medium">
+              {fieldErrors.password}
+            </p>
+          )}
         </div>
 
         {/* RECUÉRDAME + OLVIDASTE */}
