@@ -69,9 +69,14 @@ export default function ProyectoPage() {
 
   // --- DATA MAPPING ---
   // Images
-  const imagenPrincipal = proyecto.imagen_portada
-    ? (proyecto.imagen_portada.startsWith('http') ? proyecto.imagen_portada : `/storage/${proyecto.imagen_portada}`)
-    : "/img/default-project.png";
+  const getImagenPrincipal = () => {
+    if (!proyecto.imagen_portada) return "/img/default-project.png";
+    if (proyecto.imagen_portada.startsWith('http')) return proyecto.imagen_portada;
+    if (proyecto.imagen_portada.startsWith('img/')) return `/${proyecto.imagen_portada}`;
+    return `/storage/${proyecto.imagen_portada}`;
+  };
+
+  const imagenPrincipal = getImagenPrincipal();
   const imagenes = [imagenPrincipal, imagenPrincipal, imagenPrincipal]; // Gallery placeholder
 
   // Author

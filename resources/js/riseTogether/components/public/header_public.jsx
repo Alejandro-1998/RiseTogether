@@ -2,11 +2,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useAuth from "../../hooks/useAuth";
 
-// const CATEGORIES = [
-//   "Arte", "Cómics", "Artesanías", "Danza", "Diseño", "Moda", "Cine", "Comida",
-//   "Juegos", "Periodismo", "Música", "Fotografía", "Publicaciones", "Tecnología", "Teatro",
-// ];
-
 export default function HeaderPublic({ isAuth }) {
   const { pathname } = useLocation();
   const [categories, setCategories] = useState([]);
@@ -46,24 +41,6 @@ export default function HeaderPublic({ isAuth }) {
                   className="max-h-20 w-auto object-contain"
                 />
               </Link>
-            </div>
-
-            <div className="w-full flex justify-center">
-              <label className="relative w-full max-w-md">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#9c7049] dark:text-[#a18a7a]">
-                  search
-                </span>
-
-                <input
-                  type="search"
-                  placeholder="Buscar proyectos..."
-                  className="
-                    w-full rounded-lg border border-gray-300 bg-gray-100 py-2 pl-10 pr-4 text-sm
-                    text-gray-800 placeholder:text-gray-500 focus:border-orange-500 focus:ring-2 focus:ring-orange-500 focus:outline-none
-                    dark:border-[#3a2c20] dark:bg-[#1a120c] dark:text-[#fcfaf8] dark:placeholder:text-[#a18a7a]
-                  "
-                />
-              </label>
             </div>
           </>
         ) : (
@@ -178,28 +155,6 @@ export default function HeaderPublic({ isAuth }) {
           </button>
         </div>
       </nav>
-
-      {/* Categorías */}
-      {showCategories && (
-        <nav className="mt-3 hidden md:block" aria-label="Categorías">
-          <ul className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-[17px] font-medium text-[#1c140d] dark:text-[#fcfaf8]">
-            {categories.length > 0 ? (
-              categories.map((cat) => (
-                <li key={cat.id}>
-                  <Link
-                    to={`/proyectos?categoria=${cat.id}`}
-                    className="transition-colors hover:text-[#f2780d] dark:hover:text-[#f2780d]"
-                  >
-                    {cat.nombre}
-                  </Link>
-                </li>
-              ))
-            ) : (
-              <p className="text-sm text-gray-500">Cargando categorías...</p>
-            )}
-          </ul>
-        </nav>
-      )}
     </header>
   );
 }

@@ -29,7 +29,7 @@ class ProyectoSeeder extends Seeder
             'fecha_limite'          => now()->addDays(30),
             'estado'                => 'publicado',
             'ganadorEvento'         => true,
-            'imagen_portada'        => null,
+            'imagen_portada'        => 'img/jardines_urbanos.png',
         ]);
 
         Proyecto::create([
@@ -43,7 +43,7 @@ class ProyectoSeeder extends Seeder
             'fecha_limite'          => now()->addDays(45),
             'estado'                => 'publicado',
             'ganadorEvento'         => true,
-            'imagen_portada'        => null,
+            'imagen_portada'        => 'img/dron.png',
         ]);
 
         Proyecto::create([
@@ -57,7 +57,7 @@ class ProyectoSeeder extends Seeder
             'fecha_limite'          => now()->addDays(15),
             'estado'                => 'publicado',
             'ganadorEvento'         => true,
-            'imagen_portada'        => null,
+            'imagen_portada'        => 'img/festival.png',
         ]);
 
         // --- 3 HISTORIAS DE ÉXITO ---
@@ -74,7 +74,7 @@ class ProyectoSeeder extends Seeder
             'fecha_limite'          => now()->subDays(10),
             'estado'                => 'completado',
             'ganadorEvento'         => false,
-            'imagen_portada'        => null,
+            'imagen_portada'        => 'img/mochila.png',
             'updated_at'            => now(),
         ]);
 
@@ -89,7 +89,7 @@ class ProyectoSeeder extends Seeder
             'fecha_limite'          => now()->subDays(60),
             'estado'                => 'completado',
             'ganadorEvento'         => false,
-            'imagen_portada'        => null,
+            'imagen_portada'        => 'img/juego.png',
             'updated_at'            => now()->subMinutes(5),
         ]);
 
@@ -104,7 +104,7 @@ class ProyectoSeeder extends Seeder
             'fecha_limite'          => now()->subDays(100),
             'estado'                => 'completado',
             'ganadorEvento'         => false,
-            'imagen_portada'        => null,
+            'imagen_portada'        => 'img/filtro.png',
             'updated_at'            => now()->subMinutes(10),
         ]);
     }

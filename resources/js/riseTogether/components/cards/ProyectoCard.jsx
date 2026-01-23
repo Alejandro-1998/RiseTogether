@@ -14,11 +14,16 @@ export default function ProyectoCard({ proyecto }) {
     const categoria = proyecto?.categoria?.nombre ?? "General";
 
     // 1. LÓGICA DE IMAGEN MEJORADA
-    // Soporta URLs externas (Faker) y rutas locales (storage)
+    // Soporta URLs externas (Faker), rutas 'img/' (public) y rutas locales (storage)
     let imagen = "/img/default-project.png"; // Imagen por defecto
     if (proyecto?.imagen_portada) {
         if (proyecto.imagen_portada.startsWith('http') || proyecto.imagen_portada.startsWith('blob')) {
             imagen = proyecto.imagen_portada;
+        } else if (proyecto.imagen_portada.startsWith('img/')) {
+            // Rutas directas a public/img (seeders)
+            const baseUrl = window.Laravel?.assetUrl || '/';
+            const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+            imagen = `${cleanBaseUrl}${proyecto.imagen_portada}`;
         } else {
             // Usamos la URL base inyectada desde Laravel o vacía por defecto
             const baseUrl = window.Laravel?.assetUrl || '/';
