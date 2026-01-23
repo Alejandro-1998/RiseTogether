@@ -100,7 +100,7 @@ export default function UsuarioPage() {
   const proyectoDestacado = {
     id: 99,
     titulo: "Proyecto destacado",
-    resumen: "Este sería el proyecto destacado del usuario (mock).",
+    descripcion: "Este sería el proyecto destacado del usuario (mock).",
     categoria: { nombre: "General" },
     imagen_portada: null,
     cantidad_recaudada: 9800,

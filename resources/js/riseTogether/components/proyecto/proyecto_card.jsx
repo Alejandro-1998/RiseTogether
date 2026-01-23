@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 export default function ProyectoCard({ proyecto, preview = false }) {
   const {
     titulo,
-    resumen,
     categoria,
     imagen_portada,
     cantidad_recaudada = 0,
@@ -53,9 +52,9 @@ export default function ProyectoCard({ proyecto, preview = false }) {
             {titulo}
           </h3>
 
-          {/* Resumen */}
+          {/* Descripción */}
           <p className="text-sm font-normal leading-normal text-[#9c7049] dark:text-[#9CA3AF] line-clamp-3">
-            {resumen}
+            {proyecto?.descripcion ?? ""}
           </p>
         </div>
 

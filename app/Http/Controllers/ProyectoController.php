@@ -53,7 +53,6 @@ class ProyectoController extends Controller
     {
         $request->validate([
             'titulo' => 'required|max:255|unique:proyectos,titulo',
-            'resumen' => 'required|max:255',
             'categoria_id' => 'required|exists:categorias,id',
             'imagen_portada' => 'required|image|max:2048',
             'objetivo_financiacion' => 'required|numeric|min:1',
@@ -62,7 +61,6 @@ class ProyectoController extends Controller
         ], [
             'titulo.required' => 'El proyecto necesita un nombre.',
             'titulo.unique' => 'Este nombre de proyecto ya está pillado.',
-            'resumen.required' => 'Escribe un resumen corto y pegadizo.',
             'categoria_id.required' => 'Elige una categoría.',
             'categoria_id.exists' => 'Esa categoría no es válida.',
             'imagen_portada.required' => 'La imagen es obligatoria para atraer mecenas.',
@@ -88,7 +86,6 @@ class ProyectoController extends Controller
                 'categoria_id' => $request->categoria_id,
                 'titulo' => $request->titulo,
                 'slug' => Str::slug($request->titulo),
-                'resumen' => $request->resumen,
                 'descripcion' => $request->descripcion,
                 'imagen_portada' => $rutaImagen,
                 'video_url' => $request->video_url,
@@ -169,7 +166,6 @@ class ProyectoController extends Controller
 
         $request->validate([
             'titulo' => 'required|max:255|unique:proyectos,titulo,' . $proyecto->id,
-            'resumen' => 'required|max:255',
             'categoria_id' => 'required|exists:categorias,id',
             'imagen_portada' => 'nullable|image|max:2048', // Opcional al editar
             'objetivo_financiacion' => 'required|numeric|min:1',
@@ -178,7 +174,6 @@ class ProyectoController extends Controller
         ], [
             'titulo.required' => 'El proyecto necesita un nombre.',
             'titulo.unique' => 'Este nombre de proyecto ya está pillado.',
-            'resumen.required' => 'Escribe un resumen corto y pegadizo.',
             'categoria_id.required' => 'Elige una categoría.',
             'categoria_id.exists' => 'Esa categoría no es válida.',
             'imagen_portada.image' => 'El archivo debe ser una imagen.',

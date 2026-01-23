@@ -7,7 +7,8 @@ export default function ProyectoCard({ proyecto }) {
     const isCrearProyecto = pathname.includes("/crear-proyecto");
 
     const titulo = proyecto?.titulo ?? "Proyecto sin título";
-    const resumen = proyecto?.resumen ?? "";
+
+
 
     // NOTA: Para que esto funcione, en el controlador debes usar ->with('categoria')
     const categoria = proyecto?.categoria?.nombre ?? "General";
@@ -90,9 +91,9 @@ export default function ProyectoCard({ proyecto }) {
                         {titulo}
                     </h3>
 
-                    {/* RESUMEN */}
-                    <p className="line-clamp-3 text-sm font-normal leading-normal text-[#9c7049] dark:text-[#a18a7a]">
-                        {resumen}
+                    {/* DESCRIPCIÓN */}
+                    <p className="line-clamp-4 text-sm font-normal leading-normal text-[#9c7049] dark:text-[#a18a7a]">
+                        {proyecto?.descripcion ?? ""}
                     </p>
                 </div>
 
