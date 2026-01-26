@@ -17,14 +17,14 @@ class UserController extends Controller
         if ($id) {
             $user = User::where('id', $id)->orWhere('nombreUsuario', $id)->firstOrFail();
             $user->loadCount('proyectosCreados');
-            $user->load(['donaciones.proyectos', 'donaciones.recompensas']);
+            $user->load(['donaciones.proyectos', 'donaciones.recompensas', 'proyectos']);
             return response()->json($user);
         }
-        
+
         $user = $request->user();
         if ($user) {
             $user->loadCount('proyectosCreados');
-            $user->load(['donaciones.proyectos', 'donaciones.recompensas']);
+            $user->load(['donaciones.proyectos', 'donaciones.recompensas', 'proyectos']);
         }
         return response()->json($user);
     }
@@ -38,7 +38,7 @@ class UserController extends Controller
             'nombreUsuario' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($usuario->id)],
             'nombreCompleto' => ['nullable', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($usuario->id)],
-            'dni' => ['nullable', 'string', 'max:9', Rule::unique('users')->ignore($usuario->id)], 
+            'dni' => ['nullable', 'string', 'max:9', Rule::unique('users')->ignore($usuario->id)],
             'fechaNacimiento' => ['nullable', 'date'],
             'direccion' => ['nullable', 'string', 'max:255'],
             'biografia' => ['nullable', 'string'],
@@ -65,7 +65,7 @@ class UserController extends Controller
         } else {
             unset($validaciones['password']);
         }
-        
+
         unset($validaciones['current_password']);
         unset($validaciones['password_confirmation']);
 

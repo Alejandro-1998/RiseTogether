@@ -104,6 +104,8 @@ export default function ProyectoPage() {
     objetivo: objetivo,
     mecenas: 0, // Not in DB yet
     diasRestantes: diasRestantes > 0 ? diasRestantes : 0,
+    id: proyecto.id,
+    isFollowing: proyecto.is_following,
   };
 
 

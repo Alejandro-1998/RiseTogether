@@ -221,11 +221,23 @@ export default function UsuarioPage() {
               )}
 
               {pestana === "actividad" && (
-                <div className="rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] p-6">
-                  <p className="font-bold">Actividad</p>
-                  <p className="mt-1 text-sm text-[#6b7280] dark:text-[#9ca3af]">
-                    Aquí irá el feed completo de actividad.
-                  </p>
+                <div className="space-y-4">
+                  <h3 className="font-bold text-xl">Proyectos que sigue</h3>
+                  {usuario.proyectos && usuario.proyectos.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {usuario.proyectos.map((p) => (
+                        <div key={p.id} className="rounded-2xl overflow-hidden border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] shadow-sm">
+                          <ProyectoCard proyecto={p} />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] p-6">
+                      <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">
+                        No hay proyectos seguidos para mostrar.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
 

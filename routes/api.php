@@ -35,6 +35,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/profile', [UserController::class, 'show']);
     Route::put('/user/profile', [UserController::class, 'update']);
     Route::post('/proyectos', [ProyectoController::class, 'store']);
+    Route::post('/proyectos/{id}/seguir', [ProyectoController::class, 'seguir']);
+    Route::delete('/proyectos/{id}/seguir', [ProyectoController::class, 'dejarDeSeguir']);
     Route::middleware(['auth:sanctum'])->post('/pagos/iniciar', [PaymentController::class, 'iniciarPago']);
     Route::post('/logout', [LoginController::class, 'logout']);
 });

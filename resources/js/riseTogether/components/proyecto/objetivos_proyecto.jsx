@@ -1,15 +1,57 @@
+import { useState } from "react";
+import axios from "axios";
+import useAuth from "../../hooks/useAuth";
+
 export default function ObjetivosProyecto({
   porcentaje = 75,
   recaudado = 15000,
   objetivo = 20000,
   mecenas = 842,
   diasRestantes = 12,
+  id,
+  isFollowing = false,
 }) {
   const clamp = (n) => Math.max(0, Math.min(100, Number(n) || 0));
   const pct = clamp(porcentaje);
+  const { isAuth } = useAuth();
+  const [siguiendo, setSiguiendo] = useState(isFollowing);
+  const [loadingFollow, setLoadingFollow] = useState(false);
 
   const formatEUR = (n) =>
     (Number(n) || 0).toLocaleString("es-ES", { minimumFractionDigits: 0 }) + " €";
+
+  const handleSeguir = async () => {
+    if (!isAuth) {
+      window.location.href = "/login";
+      return;
+    }
+    setLoadingFollow(true);
+    // Optimistic update
+    const nuevoEstado = !siguiendo;
+    setSiguiendo(nuevoEstado);
+
+    try {
+      if (nuevoEstado) {
+        await axios.post(`/api/proyectos/${id}/seguir`);
+      } else {
+        await axios.delete(`/api/proyectos/${id}/seguir`);
+      }
+    } catch (error) {
+      console.error("Error siguiendo proyecto:", error);
+      setSiguiendo(!nuevoEstado); // Revert
+      alert("Hubo un error al intentar seguir el proyecto.");
+    } finally {
+      setLoadingFollow(false);
+    }
+  };
+
+  const handleApoyar = () => {
+    const element = document.getElementById("donacionLibre");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "center" });
+      setTimeout(() => element.focus(), 500);
+    }
+  };
 
   return (
     <div className="lg:col-span-1">
@@ -48,13 +90,25 @@ export default function ObjetivosProyecto({
         </div>
 
         <div className="flex flex-col gap-2 pt-4">
-          <button className="cursor-pointer flex w-full items-center justify-center overflow-hidden rounded-2xl h-12 px-6 bg-[#f2780d] text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-[#f2780d]/90 transition-colors">
+          <button
+            onClick={handleApoyar}
+            className="cursor-pointer flex w-full items-center justify-center overflow-hidden rounded-2xl h-12 px-6 bg-[#f2780d] text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-[#f2780d]/90 transition-colors"
+          >
             <span className="truncate">Apoyar este proyecto</span>
           </button>
 
-          <button className="cursor-pointer flex w-full items-center justify-center overflow-hidden rounded-2xl h-12 px-6 bg-[#f4ede7] dark:bg-[#f4ede7]/10 text-[#1c140d] dark:text-white text-base font-bold leading-normal tracking-[0.015em] hover:bg-[#f4ede7] dark:hover:bg-[#f4ede7]/20 transition-colors">
-            <span className="material-symbols-outlined mr-2 text-lg">bookmark</span>
-            <span className="truncate">Seguir</span>
+          <button
+            onClick={handleSeguir}
+            disabled={loadingFollow}
+            className={`cursor-pointer flex w-full items-center justify-center overflow-hidden rounded-2xl h-12 px-6 text-base font-bold leading-normal tracking-[0.015em] transition-colors ${siguiendo
+                ? "bg-[#f2780d]/10 text-[#f2780d] border border-[#f2780d]"
+                : "bg-[#f4ede7] dark:bg-[#f4ede7]/10 text-[#1c140d] dark:text-white hover:bg-[#f4ede7] dark:hover:bg-[#f4ede7]/20"
+              }`}
+          >
+            <span className="material-symbols-outlined mr-2 text-lg">
+              {siguiendo ? "bookmark_added" : "bookmark_add"}
+            </span>
+            <span className="truncate">{siguiendo ? "Siguiendo" : "Seguir"}</span>
           </button>
         </div>
       </div>
