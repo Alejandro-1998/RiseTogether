@@ -19,7 +19,6 @@ class Proyecto extends Model
         'titulo',
         'slug',
         'descripcion',
-        'imagen_portada',
         'video_url',
         'objetivo_financiacion',
         'cantidad_recaudada',
@@ -70,16 +69,19 @@ class Proyecto extends Model
         return $this->belongsTo(Categoria::class);
     }
 
+    function imagenProyectos()
+    {
+        return $this->hasMany(ImagenProyecto::class, 'proyecto_id');
+    }
+
     public function getPorcentajeFinanciadoAttribute()
     {
-        // Evitar división por cero
         if ((float) $this->objetivo_financiacion <= 0) {
             return 0;
         }
         
-        // Calculamos el porcentaje real (puede ser mayor a 100)
         $porcentaje = ($this->cantidad_recaudada / $this->objetivo_financiacion) * 100;
         
-        return $porcentaje; // Quitamos el min(..., 100) de aquí
+        return $porcentaje;
     }
 }

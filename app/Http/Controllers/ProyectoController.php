@@ -19,7 +19,7 @@ class ProyectoController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Proyecto::with('categoria');
+        $query = Proyecto::with(['categoria', 'imagenProyectos']);
 
         if ($request->has('categoria_id')) {
             $query->where('categoria_id', $request->categoria_id);
@@ -54,7 +54,8 @@ class ProyectoController extends Controller
         $request->validate([
             'titulo' => 'required|max:255|unique:proyectos,titulo',
             'categoria_id' => 'required|exists:categorias,id',
-            'imagen_portada' => 'required|image|max:2048',
+            'imagenes' => 'required|array|min:1|max:3',
+            'imagenes.*' => 'image|max:2048',
             'objetivo_financiacion' => 'required|numeric|min:1',
             'fecha_limite' => 'required|date|after:today',
             'descripcion' => 'required',
@@ -63,9 +64,8 @@ class ProyectoController extends Controller
             'titulo.unique' => 'Este nombre de proyecto ya está pillado.',
             'categoria_id.required' => 'Elige una categoría.',
             'categoria_id.exists' => 'Esa categoría no es válida.',
-            'imagen_portada.required' => 'La imagen es obligatoria para atraer mecenas.',
-            'imagen_portada.image' => 'El archivo debe ser una imagen.',
-            'imagen_portada.max' => 'La imagen no puede pesar más de 2MB.',
+            'imagenes.required' => 'Sube al menos una imagen.',
+            'imagenes.max' => 'Máximo 3 imágenes.',
             'objetivo_financiacion.required' => 'Define cuánto dinero necesitas.',
             'objetivo_financiacion.min' => 'El objetivo debe ser positivo.',
             'fecha_limite.required' => 'Pon una fecha límite.',
@@ -76,9 +76,11 @@ class ProyectoController extends Controller
         try {
             DB::beginTransaction();
 
-            $rutaImagen = null;
-            if ($request->hasFile('imagen_portada')) {
-                $rutaImagen = $request->file('imagen_portada')->store('proyectos', 'public');
+            $rutasImagenes = [];
+            if ($request->hasFile('imagenes')) {
+                foreach ($request->file('imagenes') as $img) {
+                    $rutasImagenes[] = $img->store('proyectos', 'public');
+                }
             }
 
             $proyecto = Proyecto::create([
@@ -87,13 +89,19 @@ class ProyectoController extends Controller
                 'titulo' => $request->titulo,
                 'slug' => Str::slug($request->titulo),
                 'descripcion' => $request->descripcion,
-                'imagen_portada' => $rutaImagen,
+                // 'imagen_portada' => eliminado de la tabla principal
                 'video_url' => $request->video_url,
                 'objetivo_financiacion' => $request->objetivo_financiacion,
                 'fecha_limite' => $request->fecha_limite,
                 'estado' => $request->estado ?? 'borrador',
                 'cantidad_recaudada' => 0,
             ]);
+
+            // Guardar en la nueva tabla imagenes_proyectos
+            foreach ($rutasImagenes as $ruta) {
+                // User defined table uses 'imagen_portada' column for the url
+                $proyecto->imagenProyectos()->create(['imagen_portada' => $ruta]);
+            }
 
             // Guardar recompensas si vienen
             if ($request->has('recompensas')) {
@@ -138,7 +146,7 @@ class ProyectoController extends Controller
      */
     public function show(string $id)
     {
-        $proyecto = Proyecto::with(['categoria', 'recompensas' => function ($query) {
+        $proyecto = Proyecto::with(['categoria', 'imagenProyectos', 'recompensas' => function ($query) {
             $query->orderBy('costoRecompensa', 'asc');
         }, 'user'])->findOrFail($id);
         return response()->json($proyecto);

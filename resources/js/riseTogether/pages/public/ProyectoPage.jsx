@@ -72,16 +72,26 @@ export default function ProyectoPage() {
   if (!proyecto) return <div className="flex h-screen items-center justify-center text-[#9c7049]">Proyecto no encontrado.</div>;
 
   // --- DATA MAPPING ---
-  // Images
-  const getImagenPrincipal = () => {
-    if (!proyecto.imagen_portada) return "/img/default-project.png";
-    if (proyecto.imagen_portada.startsWith('http')) return proyecto.imagen_portada;
-    if (proyecto.imagen_portada.startsWith('img/')) return `/${proyecto.imagen_portada}`;
-    return `/storage/${proyecto.imagen_portada}`;
+  // Images (New logic for imagen_proyectos table)
+  // Backend returns relationship 'imagen_proyectos' or 'imagenProyectos' depending on serialization.
+  // Controller uses: $proyecto->load('imagenProyectos') -> accessible as project.imagen_proyectos in JSON usually (snake_case)
+  // But let's check what came back. To be safe, check both.
+
+  const rawImagenes = proyecto.imagen_proyectos || proyecto.imagenProyectos || [];
+
+  const getImagenUrl = (ruta) => {
+    if (!ruta) return "/img/default-project.png";
+    if (ruta.startsWith('http')) return ruta;
+    if (ruta.startsWith('img/')) return `/${ruta}`;
+    return `/storage/${ruta}`;
   };
 
-  const imagenPrincipal = getImagenPrincipal();
-  const imagenes = [imagenPrincipal]; // Only real images
+  const listaImagenes = rawImagenes.length > 0
+    ? rawImagenes.map(img => getImagenUrl(img.imagen_portada))
+    : ["/img/default-project.png"];
+
+  const imagenPrincipal = listaImagenes[0];
+  const imagenes = listaImagenes;
 
   // Author
   const autorNombre = proyecto.user?.nombreUsuario ?? "Autor desconocido";

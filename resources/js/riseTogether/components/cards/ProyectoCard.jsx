@@ -14,23 +14,27 @@ export default function ProyectoCard({ proyecto }) {
     const categoria = proyecto?.categoria?.nombre ?? "General";
 
     // 1. LÓGICA DE IMAGEN MEJORADA
-    // Soporta URLs externas (Faker), rutas 'img/' (public) y rutas locales (storage)
+    // Backend: relación 'imagenProyectos' -> [{ imagen_portada: '...' }]
+    const rawImgs = proyecto?.imagen_proyectos || proyecto?.imagenProyectos || [];
+    const imagenPortadaPath = rawImgs.length > 0 ? rawImgs[0].imagen_portada : null;
+
     let imagen = "/img/default-project.png"; // Imagen por defecto
-    if (proyecto?.imagen_portada) {
-        if (proyecto.imagen_portada.startsWith('http') || proyecto.imagen_portada.startsWith('blob')) {
-            imagen = proyecto.imagen_portada;
-        } else if (proyecto.imagen_portada.startsWith('img/')) {
+
+    if (imagenPortadaPath) {
+        if (imagenPortadaPath.startsWith('http') || imagenPortadaPath.startsWith('blob')) {
+            imagen = imagenPortadaPath;
+        } else if (imagenPortadaPath.startsWith('img/')) {
             // Rutas directas a public/img (seeders)
             const baseUrl = window.Laravel?.assetUrl || '/';
             const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
-            imagen = `${cleanBaseUrl}${proyecto.imagen_portada}`;
+            imagen = `${cleanBaseUrl}${imagenPortadaPath}`;
         } else {
             // Usamos la URL base inyectada desde Laravel o vacía por defecto
             const baseUrl = window.Laravel?.assetUrl || '/';
             // Nos aseguramos de no duplicar barras si baseUrl ya termina en /
             const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
 
-            imagen = `${cleanBaseUrl}storage/${proyecto.imagen_portada}`;
+            imagen = `${cleanBaseUrl}storage/${imagenPortadaPath}`;
         }
     }
 

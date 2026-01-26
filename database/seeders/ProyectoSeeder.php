@@ -18,7 +18,7 @@ class ProyectoSeeder extends Seeder
         // --- 3 PROYECTOS DESTACADOS (Top Proyectos) ---
         // Deben ser 'publicado' y 'ganadorEvento' => true
 
-        Proyecto::create([
+        $p1 = Proyecto::create([
             'user_id'               => $user->id,
             'categoria_id'          => 6,
             'titulo'                => 'Eco-City Garden: Jardines Urbanos',
@@ -29,10 +29,10 @@ class ProyectoSeeder extends Seeder
             'fecha_limite'          => now()->addDays(30),
             'estado'                => 'publicado',
             'ganadorEvento'         => true,
-            'imagen_portada'        => 'img/jardines_urbanos.png',
         ]);
+        $p1->imagenProyectos()->create(['imagen_portada' => 'img/jardines_urbanos.png']);
 
-        Proyecto::create([
+        $p2 = Proyecto::create([
             'user_id'               => $user->id,
             'categoria_id'          => 7,
             'titulo'                => 'NextGen Drone: Exploración Autónoma',
@@ -43,10 +43,10 @@ class ProyectoSeeder extends Seeder
             'fecha_limite'          => now()->addDays(45),
             'estado'                => 'publicado',
             'ganadorEvento'         => true,
-            'imagen_portada'        => 'img/dron.png',
         ]);
+        $p2->imagenProyectos()->create(['imagen_portada' => 'img/dron.png']);
 
-        Proyecto::create([
+        $p3 = Proyecto::create([
             'user_id'               => $user->id,
             'categoria_id'          => 3,
             'titulo'                => 'Festival de Arte Comunitario 2026',
@@ -57,13 +57,13 @@ class ProyectoSeeder extends Seeder
             'fecha_limite'          => now()->addDays(15),
             'estado'                => 'publicado',
             'ganadorEvento'         => true,
-            'imagen_portada'        => 'img/festival.png',
         ]);
+        $p3->imagenProyectos()->create(['imagen_portada' => 'img/festival.png']);
 
         // --- 3 HISTORIAS DE ÉXITO ---
         // Deben ser 'completado' y recaudado >= 2 * objetivo
 
-        Proyecto::create([
+        $p4 = Proyecto::create([
             'user_id'               => $user->id,
             'categoria_id'          => 6,
             'titulo'                => 'Mochila Solar "SunPack"',
@@ -74,11 +74,11 @@ class ProyectoSeeder extends Seeder
             'fecha_limite'          => now()->subDays(10),
             'estado'                => 'completado',
             'ganadorEvento'         => false,
-            'imagen_portada'        => 'img/mochila.png',
             'updated_at'            => now(),
         ]);
+        $p4->imagenProyectos()->create(['imagen_portada' => 'img/mochila.png']);
 
-        Proyecto::create([
+        $p5 = Proyecto::create([
             'user_id'               => $user->id,
             'categoria_id'          => 1,
             'titulo'                => 'Indie Game: The Lost World',
@@ -89,11 +89,11 @@ class ProyectoSeeder extends Seeder
             'fecha_limite'          => now()->subDays(60),
             'estado'                => 'completado',
             'ganadorEvento'         => false,
-            'imagen_portada'        => 'img/juego.png',
             'updated_at'            => now()->subMinutes(5),
         ]);
+        $p5->imagenProyectos()->create(['imagen_portada' => 'img/juego.png']);
 
-        Proyecto::create([
+        $p6 = Proyecto::create([
             'user_id'               => $user->id,
             'categoria_id'          => 6,
             'titulo'                => 'Filtro de Agua Inteligente',
@@ -104,8 +104,8 @@ class ProyectoSeeder extends Seeder
             'fecha_limite'          => now()->subDays(100),
             'estado'                => 'completado',
             'ganadorEvento'         => false,
-            'imagen_portada'        => 'img/filtro.png',
             'updated_at'            => now()->subMinutes(10),
         ]);
+        $p6->imagenProyectos()->create(['imagen_portada' => 'img/filtro.png']);
     }
 }

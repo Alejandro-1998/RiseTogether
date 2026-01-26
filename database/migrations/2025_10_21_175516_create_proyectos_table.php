@@ -18,7 +18,6 @@ public function up(): void
         $table->string('titulo');
         $table->string('slug')->unique();
         $table->longText('descripcion');
-        $table->string('imagen_portada')->nullable();
         $table->string('video_url')->nullable();
         $table->decimal('objetivo_financiacion', 12, 2); 
         $table->decimal('cantidad_recaudada', 12, 2)->default(0);
