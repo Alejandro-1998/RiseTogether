@@ -8,8 +8,6 @@ export default function ProyectoCard({ proyecto }) {
 
     const titulo = proyecto?.titulo ?? "Proyecto sin título";
 
-
-
     // NOTA: Para que esto funcione, en el controlador debes usar ->with('categoria')
     const categoria = proyecto?.categoria?.nombre ?? "General";
 
