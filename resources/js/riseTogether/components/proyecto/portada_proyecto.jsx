@@ -8,7 +8,7 @@ export default function PortadaProyecto({ imagenes = [], children }) {
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
       <div className="lg:col-span-2">
         <div
-          className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden rounded-3xl min-h-[26rem]"
+          className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden rounded-3xl min-h-104"
           style={{ backgroundImage: `url('${imgs[active]}')` }}
         />
 
