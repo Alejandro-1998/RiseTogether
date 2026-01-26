@@ -12,24 +12,26 @@ export default function PortadaProyecto({ imagenes = [], children }) {
           style={{ backgroundImage: `url('${imgs[active]}')` }}
         />
 
-        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
-          {imgs.slice(0, 3).map((img, i) => {
-            const isActive = i === active;
-            return (
-              <button
-                key={img + i}
-                type="button"
-                onClick={() => setActive(i)}
-                className={[
-                  "aspect-video w-full bg-center bg-no-repeat bg-cover rounded-2xl cursor-pointer transition-opacity border-2",
-                  isActive ? "border-[#f2780d]" : "border-transparent opacity-70 hover:opacity-100",
-                ].join(" ")}
-                style={{ backgroundImage: `url('${img}')` }}
-                aria-label={`Imagen ${i + 1}`}
-              />
-            );
-          })}
-        </div>
+        {imgs.length > 1 && (
+          <div className="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2">
+            {imgs.slice(0, 3).map((img, i) => {
+              const isActive = i === active;
+              return (
+                <button
+                  key={img + i}
+                  type="button"
+                  onClick={() => setActive(i)}
+                  className={[
+                    "aspect-video w-full bg-center bg-no-repeat bg-cover rounded-2xl cursor-pointer transition-opacity border-2",
+                    isActive ? "border-[#f2780d]" : "border-transparent opacity-70 hover:opacity-100",
+                  ].join(" ")}
+                  style={{ backgroundImage: `url('${img}')` }}
+                  aria-label={`Imagen ${i + 1}`}
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Sidebar objetivos */}

@@ -81,7 +81,7 @@ export default function ProyectoPage() {
   };
 
   const imagenPrincipal = getImagenPrincipal();
-  const imagenes = [imagenPrincipal, imagenPrincipal, imagenPrincipal]; // Gallery placeholder
+  const imagenes = [imagenPrincipal]; // Only real images
 
   // Author
   const autorNombre = proyecto.user?.nombreUsuario ?? "Autor desconocido";
