@@ -9,7 +9,7 @@ export default function ProyectosPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoriaIdParam = searchParams.get("categoria");
 
-  const [filtro, setFiltro] = useState("casi");
+  const [filtro, setFiltro] = useState("novedades");
   const [orden, setOrden] = useState("financiados");
   const [proyectos, setProyectos] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -112,22 +112,31 @@ export default function ProyectosPage() {
   }, [selectedCategory, setSearchParams]);
 
 
+  const [showSort, setShowSort] = useState(false);
+
   // Si quieres filtrar/ordenar en frontend (temporal)
   const proyectosFiltrados = useMemo(() => {
     let arr = [...proyectos];
 
-    // Filtros de ejemplo (hasta que el back los haga)
+    // 1. Filtros Rápidos (Priority)
     if (filtro === "novedades") {
-      // si tuvieras created_at aquí ordenarías por fecha
+      arr.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
     } else if (filtro === "tendencia") {
-      // podrías ordenar por visitas/likes si existieran
+      arr.sort((a, b) => (Number(!!b.ganadorEvento) - Number(!!a.ganadorEvento)));
     } else if (filtro === "casi") {
       arr.sort((a, b) => (b.porcentaje_financiado ?? 0) - (a.porcentaje_financiado ?? 0));
-    }
-
-    // Orden (placeholder)
-    if (orden === "financiados") {
-      arr.sort((a, b) => (b.cantidad_recaudada ?? 0) - (a.cantidad_recaudada ?? 0));
+    } else {
+      // 2. Orden Dropdown (Solo si no hay filtro rápido)
+      switch (orden) {
+        case "recaudado_desc":
+          arr.sort((a, b) => (b.cantidad_recaudada ?? 0) - (a.cantidad_recaudada ?? 0));
+          break;
+        case "recaudado_asc":
+          arr.sort((a, b) => (a.cantidad_recaudada ?? 0) - (b.cantidad_recaudada ?? 0));
+          break;
+        default: // 'financiados' fallback
+          arr.sort((a, b) => (b.cantidad_recaudada ?? 0) - (a.cantidad_recaudada ?? 0));
+      }
     }
 
     return arr;
@@ -139,6 +148,12 @@ export default function ProyectosPage() {
     "bg-[#f2780d] text-white dark:text-[#F3F4F6]";
   const btnOff =
     "bg-[#f2780d]/10 text-[#f2780d] hover:bg-[#f2780d]/20 dark:bg-[#f2780d]/20 dark:hover:bg-[#f2780d]/30";
+
+  const sortOptions = {
+    "financiados": "Más financiados",
+    "recaudado_desc": "Más financiados",
+    "recaudado_asc": "Menos financiados",
+  };
 
   return (
     <div className="min-h-screen bg-[#fcfaf8] text-[#1c140d] dark:bg-[#120b07] dark:text-white">
@@ -195,18 +210,18 @@ export default function ProyectosPage() {
               <div className="flex gap-2 flex-wrap">
                 <button
                   type="button"
-                  onClick={() => setFiltro("tendencia")}
-                  className={`${btnBase} ${filtro === "tendencia" ? btnOn : btnOff}`}
-                >
-                  Tendencia
-                </button>
-
-                <button
-                  type="button"
                   onClick={() => setFiltro("novedades")}
                   className={`${btnBase} ${filtro === "novedades" ? btnOn : btnOff}`}
                 >
                   Novedades
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setFiltro("tendencia")}
+                  className={`${btnBase} ${filtro === "tendencia" ? btnOn : btnOff}`}
+                >
+                  Destacados
                 </button>
 
                 <button
@@ -218,17 +233,51 @@ export default function ProyectosPage() {
                 </button>
               </div>
 
-              {/* ORDENAR */}
-              <button
-                type="button"
-                onClick={() =>
-                  setOrden((o) => (o === "financiados" ? "financiados" : "financiados"))
-                }
-                className="flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold bg-[#f2780d]/10 text-[#f2780d] hover:bg-[#f2780d]/20 dark:bg-[#f2780d]/20 dark:hover:bg-[#f2780d]/30 transition-colors"
-              >
-                <span>Ordenar por: Los más financiados</span>
-                <span className="material-symbols-outlined text-base">expand_more</span>
-              </button>
+              {/* ORDENAR (Dropdown) */}
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => setShowSort(!showSort)}
+                  className={`flex h-9 shrink-0 items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold transition-colors ${!filtro && orden !== "financiados"
+                    ? "bg-[#f2780d] text-white"
+                    : "bg-[#f2780d]/10 text-[#f2780d] hover:bg-[#f2780d]/20 dark:bg-[#f2780d]/20 dark:hover:bg-[#f2780d]/30"
+                    }`}
+                >
+                  <span>
+                    {(!filtro && orden !== "financiados" && sortOptions[orden])
+                      ? `Orden: ${sortOptions[orden]}`
+                      : "Ordenar por"}
+                  </span>
+                  <span className="material-symbols-outlined text-base">
+                    {showSort ? 'expand_less' : 'expand_more'}
+                  </span>
+                </button>
+
+                {showSort && (
+                  <div className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] shadow-lg z-20 overflow-hidden flex flex-col">
+                    {[
+                      { key: 'recaudado_desc', label: 'Más financiados' },
+                      { key: 'recaudado_asc', label: 'Menos financiados' },
+                    ].map((opt) => (
+                      <button
+                        key={opt.key}
+                        onClick={() => {
+                          setOrden(opt.key);
+                          setFiltro(""); // Desactiva Novedades/Tendencias/Casi
+                          setShowSort(false);
+                        }}
+                        className={`px-4 py-3 text-left text-sm hover:bg-[#f2780d]/10 dark:hover:bg-[#f2780d]/20 transition-colors ${orden === opt.key && !filtro
+                          ? "text-[#f2780d] font-bold bg-[#f2780d]/5"
+                          : "text-[#1c140d] dark:text-white"
+                          }`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
             </div>
           </section>
 

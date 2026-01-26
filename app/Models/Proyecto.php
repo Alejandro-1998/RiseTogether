@@ -28,6 +28,8 @@ class Proyecto extends Model
         'ganadorEvento',
     ];
 
+    protected $appends = ['porcentaje_financiado'];
+
     function users()
     {
         return $this->belongsToMany(User::class, 'users_proyectos', 'idProyecto', 'idUsuario');
