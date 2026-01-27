@@ -18,7 +18,7 @@ export default function UsuarioBanner({ usuario }) {
               <span className="sr-only">Foto de perfil</span>
             </div>
 
-            <div className="flex flex-col justify-center pt-8 sm:pt-0 sm:pb-2">
+            <div className="flex flex-col justify-center pt-8 sm:pt-0 sm:pb-2 bg-white dark:bg-[#2d2d2d] rounded-2xl p-7 shadow-sm border border-[#e8dace] dark:border-[#374151] mt-4 mb-4">
               <p className="text-xl sm:text-[22px] font-bold leading-tight tracking-[-0.015em]">
                 {usuario.nombre}
               </p>
@@ -31,7 +31,7 @@ export default function UsuarioBanner({ usuario }) {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto mb-5">
             <button className="flex min-w-[84px] items-center justify-center overflow-hidden rounded-2xl h-10 px-6 bg-[#f2780d] text-white text-sm font-bold w-full sm:w-auto shadow-sm hover:opacity-90">
               Seguir
             </button>

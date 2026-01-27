@@ -92,45 +92,45 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nombre de Usuario</label>
                             <input type="text" name="nombreUsuario" value={formData.nombreUsuario} onChange={handleInputChange}
-                                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50" />
+                                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50 py-3 px-4" />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nombre Completo</label>
                             <input type="text" name="nombreCompleto" value={formData.nombreCompleto} onChange={handleInputChange}
-                                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50" />
+                                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50 py-3 px-4" />
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email</label>
                             <input type="email" value={user?.email || ''} disabled
-                                className="w-full rounded-xl border-gray-300 bg-gray-100 dark:bg-gray-800 text-gray-500 cursor-not-allowed shadow-sm" />
+                                className="w-full rounded-xl border-gray-300 bg-gray-100 dark:bg-gray-800 text-gray-500 cursor-not-allowed shadow-sm py-3 px-4" />
                             <p className="text-xs text-gray-500 mt-1">El email no se puede cambiar.</p>
                         </div>
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha de Nacimiento</label>
                             <input type="date" name="fechaNacimiento" value={formData.fechaNacimiento} onChange={handleInputChange}
-                                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50" />
+                                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50 py-3 px-4" />
                         </div>
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Dirección</label>
                         <input type="text" name="direccion" value={formData.direccion} onChange={handleInputChange}
-                            className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50" />
+                            className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50 py-3 px-4" />
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Biografía</label>
                         <textarea name="biografia" rows="4" value={formData.biografia} onChange={handleInputChange}
-                            className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50"></textarea>
+                            className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50 py-3 px-4"></textarea>
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Número de Cuenta</label>
                         <input type="text" name="numeroCuenta" value={formData.numeroCuenta} onChange={handleInputChange} placeholder="IBAN o Número de cuenta"
-                            className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50" />
+                            className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50 py-3 px-4" />
                     </div>
                 </div>
 
@@ -143,17 +143,17 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
                         <div className="md:col-span-2">
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contraseña Actual</label>
                             <input type="password" name="current_password" value={formData.current_password} onChange={handleInputChange}
-                                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50" />
+                                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50 py-3 px-4" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Nueva Contraseña</label>
                             <input type="password" name="password" value={formData.password} onChange={handleInputChange}
-                                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50" />
+                                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50 py-3 px-4" />
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirmar Nueva Contraseña</label>
                             <input type="password" name="password_confirmation" value={formData.password_confirmation} onChange={handleInputChange}
-                                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50" />
+                                className="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50 py-3 px-4" />
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export default function FormularioRegistro() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [form, setForm] = useState({
     nombreUsuario: "",
     email: "",
@@ -98,7 +101,8 @@ export default function FormularioRegistro() {
       if (data.redirect) {
         window.location.href = data.redirect;
       } else {
-        window.location.href = "/";
+        const from = location.state?.from || "/";
+        navigate(from);
       }
 
     } catch (err) {
@@ -353,12 +357,13 @@ export default function FormularioRegistro() {
         {/* Link a login */}
         <p className="pt-4 text-center text-sm text-[#9c7049] dark:text-[#a18a7a]">
           ¿Ya tienes cuenta?{" "}
-          <a
-            href="/login"
+          <Link
+            to="/login"
+            state={{ from: location.state?.from }}
             className="font-semibold text-[#f97316] hover:underline"
           >
             Inicia sesión
-          </a>
+          </Link>
         </p>
       </form>
     </div>

@@ -149,15 +149,28 @@ export default function UsuarioPage() {
         <UsuarioBanner usuario={usuarioMapeado} />
 
         {/* Estadísticas */}
-        <section className="flex flex-wrap gap-3 py-3 mb-6" aria-label="Estadísticas del perfil">
-          {estadisticas.map((s, i) => (
-            <EstadisticasUsuario key={i} value={s.value} label={s.label} />
-          ))}
-        </section>
+        {/* Top Section: Stats Left | Info Right */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* LEFT: Stats Panel Unified */}
+          <div className="rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] p-8 shadow-sm h-full flex flex-col justify-center">
+            <div className="grid grid-cols-2 gap-y-10 gap-x-8">
+              {estadisticas.map((s, i) => (
+                <div key={i} className="flex flex-col items-center justify-center text-center">
+                  <p className="text-4xl font-black text-[#1c140d] dark:text-white leading-tight mb-2">{s.value}</p>
+                  <p className="text-[#9c7049] dark:text-[#9ca3af] text-sm font-bold uppercase tracking-wider">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* RIGHT: User Info Panel Unified */}
+          <UsuarioSidebar usuario={usuarioMapeado} />
+        </div>
+
+        <div className="flex flex-col gap-8">
           {/* MAIN */}
-          <div className="lg:col-span-8">
+          <div className="w-full">
             <UsuarioTabs tab={pestana} setTab={setPestana} isMe={soyYo} user={usuario} />
 
             {/* CONTENIDO TABS */}
@@ -196,7 +209,7 @@ export default function UsuarioPage() {
                   {cargandoProyectos ? (
                     <p>Cargando proyectos...</p>
                   ) : proyectosCreados.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                       {proyectosCreados.map((p) => (
                         <div key={p.id} className="rounded-2xl overflow-hidden border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] shadow-sm">
                           <ProyectoCard proyecto={p} />
@@ -217,7 +230,7 @@ export default function UsuarioPage() {
                 <div className="space-y-4">
                   <p className="font-bold text-xl">Proyectos apoyados</p>
                   {usuario.donaciones && usuario.donaciones.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                       {usuario.donaciones.map((donacion) => (
                         <div key={donacion.id} className="rounded-2xl overflow-hidden border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] shadow-sm flex flex-col">
                           {/* Reusing ProyectoCard if possible, or custom display */}
@@ -250,7 +263,7 @@ export default function UsuarioPage() {
                 <div className="space-y-4">
                   <h3 className="font-bold text-xl">Proyectos que sigue</h3>
                   {proyectosSeguidos && proyectosSeguidos.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                       {proyectosSeguidos.map((p) => (
                         <div key={p.id} className="rounded-2xl overflow-hidden border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] shadow-sm">
                           <ProyectoCard proyecto={p} />
@@ -272,11 +285,6 @@ export default function UsuarioPage() {
               )}
             </section>
           </div>
-
-          {/* SIDEBAR */}
-          <aside className="lg:col-span-4 flex flex-col gap-8">
-            <UsuarioSidebar usuario={usuarioMapeado} />
-          </aside>
         </div>
       </main>
 

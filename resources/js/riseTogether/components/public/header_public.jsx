@@ -38,7 +38,7 @@ export default function HeaderPublic({ isAuth }) {
                 <img
                   src="/img/logo.png"
                   alt="Rise Together"
-                  className="max-h-20 w-auto object-contain"
+                  className="max-h-12 w-auto object-contain"
                 />
               </Link>
             </div>
@@ -96,6 +96,7 @@ export default function HeaderPublic({ isAuth }) {
                   <>
                     <Link
                       to="/login"
+                      state={{ from: pathname }}
                       className="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#3a2c20]"
                     >
                       Iniciar Sesión
@@ -136,6 +137,7 @@ export default function HeaderPublic({ isAuth }) {
 
                     <Link
                       to="/login"
+                      state={{ from: pathname }}
                       className="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
                     >
                       Iniciar Sesión

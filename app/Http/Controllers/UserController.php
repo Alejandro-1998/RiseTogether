@@ -37,7 +37,7 @@ class UserController extends Controller
         $validaciones = $request->validate([
             'nombreUsuario' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($usuario->id)],
             'nombreCompleto' => ['nullable', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($usuario->id)],
+            'email' => ['sometimes', 'string', 'email', 'max:255', Rule::unique('users')->ignore($usuario->id)],
             'dni' => ['nullable', 'string', 'max:9', Rule::unique('users')->ignore($usuario->id)],
             'fechaNacimiento' => ['nullable', 'date'],
             'direccion' => ['nullable', 'string', 'max:255'],
