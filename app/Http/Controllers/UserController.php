@@ -14,18 +14,20 @@ class UserController extends Controller
      */
     public function show(Request $request, string $id = null)
     {
-        if ($id) {
-            $user = User::where('id', $id)->orWhere('nombreUsuario', $id)->firstOrFail();
-            $user->loadCount('proyectosCreados');
-            $user->load(['donaciones.proyectos.categoria', 'donaciones.recompensas', 'proyectos']);
-            return response()->json($user);
-        }
+        $user = $id ? User::where('id', $id)->orWhere('nombreUsuario', $id)->firstOrFail() : $request->user();
 
-        $user = $request->user();
         if ($user) {
             $user->loadCount('proyectosCreados');
             $user->load(['donaciones.proyectos.categoria', 'donaciones.recompensas', 'proyectos']);
+            
+            $totalFollowers = 0;
+            foreach ($user->proyectosCreados as $proyecto) {
+                // Sum 'seguidores' column
+                $totalFollowers += $proyecto->seguidores;
+            }
+            $user->followers_count = $totalFollowers;
         }
+
         return response()->json($user);
     }
 

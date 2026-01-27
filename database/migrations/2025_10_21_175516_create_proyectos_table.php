@@ -25,6 +25,7 @@ public function up(): void
         $table->dateTime('fecha_limite');
         $table->enum('estado', ['borrador', 'revision', 'publicado', 'completado', 'fallido', 'cancelado'])->default('borrador');
         $table->boolean('ganadorEvento')->default(false);
+        $table->integer('seguidores')->default(0);
         $table->timestamps();
         $table->softDeletes();
     });

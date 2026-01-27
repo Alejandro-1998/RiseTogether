@@ -250,13 +250,17 @@ class ProyectoController extends Controller
 
     public function seguir(string $id)
     {
-        // Logic moved to client-side localStorage
-        return response()->json(['message' => 'Logic moved to localStorage']);
+        $proyecto = Proyecto::findOrFail($id);
+        $proyecto->increment('seguidores');
+        return response()->json(['message' => 'Proyecto seguido', 'seguidores' => $proyecto->seguidores]);
     }
 
     public function dejarDeSeguir(string $id)
     {
-        // Logic moved to client-side localStorage
-        return response()->json(['message' => 'Logic moved to localStorage']);
+        $proyecto = Proyecto::findOrFail($id);
+        if ($proyecto->seguidores > 0) {
+           $proyecto->decrement('seguidores');
+        }
+        return response()->json(['message' => 'Proyecto dejado de seguir', 'seguidores' => $proyecto->seguidores]);
     }
 }

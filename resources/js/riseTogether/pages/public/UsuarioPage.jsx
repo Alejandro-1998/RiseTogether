@@ -119,7 +119,7 @@ export default function UsuarioPage() {
   const estadisticas = [
     { value: usuario.proyectos_creados_count?.toString() || "0", label: "Proyectos creados" },
     { value: proyectosApoyadosUnicos.toString(), label: "Proyectos apoyados" },
-    { value: "1.2k", label: "Seguidores" },
+    { value: usuario.followers_count?.toString() || "0", label: "Seguidores" },
     { value: JSON.parse(localStorage.getItem("seguidos"))?.length.toString() || "0", label: "Siguiendo" },
   ];
 
@@ -176,7 +176,8 @@ export default function UsuarioPage() {
             {/* CONTENIDO TABS */}
             <section className="pt-8 space-y-8">
               {pestana === "resumen" && (
-                <>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Left Column: Featured Project */}
                   <div>
                     <h3 className="text-lg font-bold mb-4">Proyecto destacado</h3>
                     <article className="flex flex-col overflow-hidden rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] shadow-sm">
@@ -184,10 +185,11 @@ export default function UsuarioPage() {
                     </article>
                   </div>
 
-                  <section aria-labelledby="actividad-reciente-titulo">
+                  {/* Right Column: Actividad (Old Proyectos seguidos) */}
+                  <section aria-labelledby="actividad-reciente-titulo" className="h-full">
                     <div className="flex items-center justify-between mb-3">
                       <h3 id="actividad-reciente-titulo" className="text-lg font-bold">
-                        Proyectos seguidos
+                        Actividad
                       </h3>
                       <button className="cursor-pointer text-xs text-[#f2780d] font-medium hover:underline">
                         Ver toda la actividad
@@ -200,7 +202,7 @@ export default function UsuarioPage() {
                       ))}
                     </div>
                   </section>
-                </>
+                </div>
               )}
 
               {pestana === "creados" && (

@@ -26,6 +26,7 @@ class Proyecto extends Model
         'fecha_limite',
         'estado',
         'ganadorEvento',
+        'seguidores',
     ];
 
     protected $appends = ['porcentaje_financiado'];

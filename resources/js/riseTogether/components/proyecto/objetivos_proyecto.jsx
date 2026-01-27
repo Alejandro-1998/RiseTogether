@@ -25,22 +25,38 @@ export default function ObjetivosProyecto({
   const formatEUR = (n) =>
     (Number(n) || 0).toLocaleString("es-ES", { minimumFractionDigits: 0 }) + " €";
 
-  const handleSeguir = () => {
-
+  const handleSeguir = async () => {
     setLoadingFollow(true);
     const seguidos = JSON.parse(localStorage.getItem("seguidos")) || [];
     const idStr = String(id);
 
     let nuevosSeguidos;
+    let isFollowingNow = false;
+
     if (seguidos.includes(idStr)) {
       nuevosSeguidos = seguidos.filter(sid => sid !== idStr);
       setSiguiendo(false);
+      isFollowingNow = false;
     } else {
       nuevosSeguidos = [...seguidos, idStr];
       setSiguiendo(true);
+      isFollowingNow = true;
     }
 
     localStorage.setItem("seguidos", JSON.stringify(nuevosSeguidos));
+
+    if (isAuth) {
+      try {
+        if (isFollowingNow) {
+          await axios.post(`/api/proyectos/${id}/seguir`);
+        } else {
+          await axios.delete(`/api/proyectos/${id}/seguir`);
+        }
+      } catch (error) {
+        console.error("Error al actualizar seguimiento en servidor:", error);
+      }
+    }
+
     setLoadingFollow(false);
   };
 
