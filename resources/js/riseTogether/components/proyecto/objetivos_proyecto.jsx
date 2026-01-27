@@ -69,7 +69,6 @@ export default function ObjetivosProyecto({
   };
 
   return (
-  return (
     <div className="flex flex-col gap-4 border border-[#f4ede7] dark:border-[#f4ede7]/10 rounded-3xl p-6 shadow-sm bg-white dark:bg-[#1a120d]">
       <div className="flex flex-col gap-3">
         <div className="rounded-full bg-[#f4ede7] dark:bg-[#f4ede7]/10 h-2.5">
@@ -120,6 +119,5 @@ export default function ObjetivosProyecto({
         </button>
       </div>
     </div>
-  );
   );
 }
