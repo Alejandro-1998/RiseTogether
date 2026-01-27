@@ -99,10 +99,12 @@ export default function ModalProyecto({ open, modo, proyecto, onClose, onSave })
               onChange={(e) => set("estado", e.target.value)}
               className="w-full rounded-xl px-3 py-2 bg-white dark:bg-black/20 border border-gray-200 dark:border-gray-800 outline-none"
             >
-              <option value="pendiente">Pendiente</option>
-              <option value="activo">Activo</option>
-              <option value="rechazado">Rechazado</option>
-              <option value="finalizado">Finalizado</option>
+              <option value="borrador">Borrador</option>
+              <option value="revision">Revisión</option>
+              <option value="publicado">Publicado</option>
+              <option value="completado">Completado</option>
+              <option value="fallido">Fallido</option>
+              <option value="cancelado">Cancelado</option>
             </select>
           </Field>
 

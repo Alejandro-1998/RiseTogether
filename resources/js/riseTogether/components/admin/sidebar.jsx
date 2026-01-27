@@ -66,12 +66,7 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer (acciones) */}
-      <div className="px-2 py-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
-        <a className={itemBase} href="#cerrar-sesion">
-          <span className="material-symbols-outlined">logout</span>
-          Cerrar sesión
-        </a>
-      </div>
+
     </aside>
   );
 }

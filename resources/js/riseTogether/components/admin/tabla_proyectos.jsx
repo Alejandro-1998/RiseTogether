@@ -67,27 +67,36 @@ function Th({ children, className = "" }) {
 }
 
 function BadgeEstado({ estado }) {
-  const map = {
-    pendiente: "bg-yellow-500/20 text-yellow-300",
-    activo: "bg-green-500/20 text-green-300",
-    rechazado: "bg-red-500/20 text-red-300",
-    finalizado: "bg-gray-500/20 text-gray-200",
-  };
+  const norm = estado ? estado.toLowerCase() : "borrador";
 
-  const cls = map[estado] ?? "bg-gray-500/20 text-gray-200";
-  const label =
-    estado === "pendiente"
-      ? "Pendiente"
-      : estado === "activo"
-      ? "Activo"
-      : estado === "rechazado"
-      ? "Rechazado"
-      : estado === "finalizado"
-      ? "Finalizado"
-      : estado;
+  let cls = "bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/10";
+  let label = "Borrador";
+
+  // Map of states
+  if (norm === "publicado" || norm === "activo") {
+    cls = "bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-300 border-green-200 dark:border-green-500/20";
+    label = "Publicado";
+  } else if (norm === "completado" || norm === "finalizado") {
+    cls = "bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-300 border-purple-200 dark:border-purple-500/20";
+    label = "Completado";
+  } else if (norm === "revision" || norm === "pendiente") {
+    cls = "bg-yellow-50 dark:bg-yellow-500/10 text-yellow-600 dark:text-yellow-300 border-yellow-200 dark:border-yellow-500/20";
+    label = "En revisión";
+  } else if (norm === "fallido" || norm === "rechazado") {
+    cls = "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-300 border-red-200 dark:border-red-500/20";
+    label = "Fallido";
+  } else if (norm === "cancelado") {
+    cls = "bg-gray-50 dark:bg-gray-500/10 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-500/20";
+    label = "Cancelado";
+  } else if (norm === "borrador") {
+    // Default
+    label = "Borrador";
+  } else {
+    label = estado;
+  }
 
   return (
-    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold ${cls}`}>
+    <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-bold border ${cls}`}>
       {label}
     </span>
   );

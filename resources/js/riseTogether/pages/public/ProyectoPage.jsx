@@ -169,13 +169,21 @@ export default function ProyectoPage() {
           <div className="lg:col-span-2">
             {/* Tabs */}
             <div className="border-b border-[#f4ede7] dark:border-[#f4ede7]/10">
-              <nav aria-label="Tabs" className="flex space-x-6">
+              <nav aria-label="Tabs" className="flex space-x-6 overflow-x-auto">
                 <button
                   type="button"
                   onClick={() => setPestana("historia")}
                   className={btnPestana("historia", pestana === "historia")}
                 >
                   Historia
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setPestana("recompensas")}
+                  className={btnPestana("recompensas", pestana === "recompensas")}
+                >
+                  Recompensas
                 </button>
 
                 <button
@@ -235,6 +243,25 @@ export default function ProyectoPage() {
                     </div>
                   </div>
                 </>
+              )}
+
+              {pestana === "recompensas" && (
+                <div className="not-prose space-y-6">
+                  <h3 className="text-2xl font-bold text-[#1c140d] dark:text-white mb-6">
+                    Selecciona tu recompensa
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {proyecto.recompensas && proyecto.recompensas.length > 0 ? (
+                      proyecto.recompensas.map((r) => (
+                        <RecompensaCard key={r.id} recompensa={r} onSupport={() => iniciarPago(r.costoRecompensa, r.id)} />
+                      ))
+                    ) : (
+                      <div className="col-span-full rounded-2xl border border-dashed border-[#f4ede7] dark:border-[#3a2c20] p-6 text-center">
+                        <p className="text-sm text-[#9c7049]">Este proyecto no tiene recompensas configuradas.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
 
               {pestana === "actualizaciones" && (
@@ -313,17 +340,6 @@ export default function ProyectoPage() {
                   )}
                 </div>
               </div>
-
-              <h3 className="text-xl font-bold text-[#1c140d] dark:text-white mt-8">Recompensas</h3>
-              {proyecto.recompensas && proyecto.recompensas.length > 0 ? (
-                proyecto.recompensas.map((r) => (
-                  <RecompensaCard key={r.id} recompensa={r} onSupport={() => iniciarPago(r.costoRecompensa, r.id)} />
-                ))
-              ) : (
-                <div className="rounded-2xl border border-dashed border-[#f4ede7] dark:border-[#3a2c20] p-6 text-center">
-                  <p className="text-sm text-[#9c7049]">Este proyecto no tiene recompensas configuradas.</p>
-                </div>
-              )}
             </div>
           </div>
         </div>

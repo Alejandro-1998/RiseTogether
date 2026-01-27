@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import Sidebar from "../../components/admin/sidebar";
 import HeaderPublic from "../../components/public/header_public";
 import TablaProyectos from "../../components/admin/tabla_proyectos";
@@ -16,35 +16,26 @@ export default function AdminGestionProyectos() {
   const [aBorrar, setABorrar] = useState(null);
 
   // ✅ Mock data (luego fetch /api/admin/proyectos)
-  const [proyectos, setProyectos] = useState([
-    {
-      id: 1,
-      nombre: "Dron ecológico",
-      creador: "Fali de la Fuente",
-      categoria: "Tecnología",
-      recaudado: 45000,
-      estado: "pendiente",
-      fecha_envio: "2025-10-26",
-    },
-    {
-      id: 2,
-      nombre: "Huertos urbanos",
-      creador: "Santi",
-      categoria: "Sostenibilidad",
-      recaudado: 9800,
-      estado: "activo",
-      fecha_envio: "2025-09-11",
-    },
-    {
-      id: 3,
-      nombre: "Cortometraje indie",
-      creador: "María",
-      categoria: "Arte",
-      recaudado: 1200,
-      estado: "rechazado",
-      fecha_envio: "2025-08-01",
-    },
-  ]);
+  const [proyectos, setProyectos] = useState([]);
+
+  useEffect(() => {
+    import("axios").then((axios) => {
+      axios.default.get("/api/admin/proyectos")
+        .then((res) => {
+          const mapped = res.data.map((p) => ({
+            id: p.id,
+            nombre: p.titulo,
+            creador: p.user ? (p.user.nombreUsuario || p.user.nombreCompleto || "Desconocido") : "Desconocido",
+            categoria: p.categoria ? p.categoria.nombre : "Sin categoría",
+            recaudado: Number(p.cantidad_recaudada || 0),
+            estado: p.estado || "borrador",
+            fecha_envio: p.created_at ? p.created_at.substring(0, 10) : "",
+          }));
+          setProyectos(mapped);
+        })
+        .catch((err) => console.error(err));
+    });
+  }, []);
 
   const proyectosFiltrados = useMemo(() => {
     let arr = [...proyectos];
@@ -193,10 +184,12 @@ function SelectEstado({ value, onChange }) {
       className="rounded-xl bg-white dark:bg-[#1a120d] border border-gray-200 dark:border-gray-800 px-3 py-2 text-sm outline-none"
     >
       <option value="todos">Todos</option>
-      <option value="pendiente">Pendiente</option>
-      <option value="activo">Activo</option>
-      <option value="rechazado">Rechazado</option>
-      <option value="finalizado">Finalizado</option>
+      <option value="borrador">Borrador</option>
+      <option value="revision">Revisión</option>
+      <option value="publicado">Publicado</option>
+      <option value="completado">Completado</option>
+      <option value="fallido">Fallido</option>
+      <option value="cancelado">Cancelado</option>
     </select>
   );
 }

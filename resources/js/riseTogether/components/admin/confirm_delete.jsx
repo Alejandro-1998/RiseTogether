@@ -10,7 +10,7 @@ export default function ConfirmDelete({ open, titulo, descripcion, onCancel, onC
       />
 
       {/* Modal Container */}
-      <div className="relative z-10 w-full max-w-sm transform overflow-hidden rounded-2xl bg-white dark:bg-[#1a120d] border border-gray-100 dark:border-gray-800 p-6 text-left shadow-2xl transition-all sm:my-8 text-center">
+      <div className="relative z-10 w-full max-w-sm transform overflow-hidden rounded-2xl bg-white dark:bg-[#1a120d] border border-gray-100 dark:border-gray-800 p-6 shadow-2xl transition-all sm:my-8 text-center">
 
         {/* Icon */}
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 mb-4">

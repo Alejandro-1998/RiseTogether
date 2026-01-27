@@ -43,6 +43,16 @@ class ProyectoController extends Controller
     }
 
     /**
+     * Obtiene todos los proyectos para admin (incluyendo creador).
+     */
+    public function indexAdmin()
+    {
+        // Eager load creator (user) and category for admin display
+        $proyectos = Proyecto::with(['user', 'categoria'])->orderBy('created_at', 'desc')->get();
+        return response()->json($proyectos);
+    }
+
+    /**
      * Muestra el formulario.
      */
     public function create()

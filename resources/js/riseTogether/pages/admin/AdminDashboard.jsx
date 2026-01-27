@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Sidebar from "../../components/admin/sidebar";
 import HeaderPublic from "../../components/public/header_public";
 import Stats from "../../components/admin/stats";
@@ -6,6 +7,23 @@ import RevisionComentario from "../../components/admin/revision_comentario";
 import ActividadReciente from "../../components/cards/actividad_reciente";
 
 export default function AdminDashboard() {
+  const [stats, setStats] = useState({
+    proyectos_activos: 0,
+    proyectos_pendientes: 0,
+    usuarios: 0,
+    ingresos: 0
+  });
+
+  useEffect(() => {
+    import("axios").then((axios) => {
+      axios.default.get("/api/admin/stats")
+        .then((res) => {
+          setStats(res.data);
+        })
+        .catch((err) => console.error(err));
+    });
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
       <HeaderPublic />
@@ -25,14 +43,14 @@ export default function AdminDashboard() {
 
             {/* 4 TARJETAS (stats) */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-              <Stats title="Proyectos activos" value="1.245" trend="+2,5 % vs mes anterior" />
-              <Stats title="Pendientes de revisión" value="86" trend="+1,8 % vs mes anterior" />
-              <Stats title="Usuarios registrados" value="15.302" trend="+5,1 % vs mes anterior" />
+              <Stats title="Proyectos activos" value={stats.proyectos_activos} trend="En curso" />
+              <Stats title="Pendientes de revisión" value={stats.proyectos_pendientes} trend="Requieren acción" />
+              <Stats title="Usuarios registrados" value={stats.usuarios.toLocaleString('es-ES')} trend="Total histórico" />
               <Stats
-                title="Ingresos este mes"
-                value="75.942 €"
-                trend="-0,5 % vs mes anterior"
-                trendColor="text-red-600 dark:text-red-500"
+                title="Ingresos totales"
+                value={stats.ingresos.toLocaleString('es-ES') + " €"}
+                trend="Recaudado Global"
+                trendColor="text-green-600 dark:text-green-500"
               />
             </div>
 
