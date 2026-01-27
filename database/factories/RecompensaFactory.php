@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\Proyecto;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories.Factory<\App\Models\Recompensa>
+ * @extends
  */
 class RecompensaFactory extends Factory
 {
