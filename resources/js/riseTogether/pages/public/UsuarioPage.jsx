@@ -22,6 +22,7 @@ export default function UsuarioPage() {
   const [cargando, setCargando] = useState(true);
   const [soyYo, setSoyYo] = useState(false);
   const [proyectosCreados, setProyectosCreados] = useState([]);
+  const [proyectosSeguidos, setProyectosSeguidos] = useState([]);
   const [cargandoProyectos, setCargandoProyectos] = useState(false);
 
   useEffect(() => {
@@ -31,6 +32,9 @@ export default function UsuarioPage() {
   useEffect(() => {
     if (pestana === "creados" && usuario) {
       obtenerProyectosCreados();
+    }
+    if (pestana === "actividad") {
+      obtenerProyectosSeguidos();
     }
   }, [pestana, usuario]);
 
@@ -67,6 +71,28 @@ export default function UsuarioPage() {
     }
   };
 
+  const obtenerProyectosSeguidos = async () => {
+
+    const seguidosIds = JSON.parse(localStorage.getItem("seguidos")) || [];
+
+    if (seguidosIds.length === 0) {
+      setProyectosSeguidos([]);
+      return;
+    }
+
+    setCargandoProyectos(true);
+    try {
+      // Join IDs with comma
+      const idsParam = seguidosIds.join(',');
+      const res = await axios.get(`/api/proyectos?ids=${idsParam}`);
+      setProyectosSeguidos(res.data);
+    } catch (error) {
+      console.error("Error obteniendo proyectos seguidos:", error);
+    } finally {
+      setCargandoProyectos(false);
+    }
+  };
+
   const manejarActualizacionUsuario = (usuarioActualizado) => {
     setUsuario(usuarioActualizado);
   };
@@ -94,7 +120,7 @@ export default function UsuarioPage() {
     { value: usuario.proyectos_creados_count?.toString() || "0", label: "Proyectos creados" },
     { value: proyectosApoyadosUnicos.toString(), label: "Proyectos apoyados" },
     { value: "1.2k", label: "Seguidores" },
-    { value: "320", label: "Siguiendo" },
+    { value: JSON.parse(localStorage.getItem("seguidos"))?.length.toString() || "0", label: "Siguiendo" },
   ];
 
   const proyectoDestacado = {
@@ -148,7 +174,7 @@ export default function UsuarioPage() {
                   <section aria-labelledby="actividad-reciente-titulo">
                     <div className="flex items-center justify-between mb-3">
                       <h3 id="actividad-reciente-titulo" className="text-lg font-bold">
-                        Actividad reciente
+                        Proyectos seguidos
                       </h3>
                       <button className="cursor-pointer text-xs text-[#f2780d] font-medium hover:underline">
                         Ver toda la actividad
@@ -223,9 +249,9 @@ export default function UsuarioPage() {
               {pestana === "actividad" && (
                 <div className="space-y-4">
                   <h3 className="font-bold text-xl">Proyectos que sigue</h3>
-                  {usuario.proyectos && usuario.proyectos.length > 0 ? (
+                  {proyectosSeguidos && proyectosSeguidos.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {usuario.proyectos.map((p) => (
+                      {proyectosSeguidos.map((p) => (
                         <div key={p.id} className="rounded-2xl overflow-hidden border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] shadow-sm">
                           <ProyectoCard proyecto={p} />
                         </div>

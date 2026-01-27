@@ -3,7 +3,7 @@ export default function UsuarioTabs({ tab, setTab, isMe, user }) {
     { id: "resumen", label: "Resumen" },
     { id: "creados", label: "Proyectos creados" },
     { id: "apoyados", label: "Proyectos apoyados" },
-    { id: "actividad", label: "Actividad" },
+    { id: "actividad", label: "Proyectos seguidos" },
     ...(isMe ? [{ id: "ajustes", label: "Ajustes" }] : []),
   ];
 

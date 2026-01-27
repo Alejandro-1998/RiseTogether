@@ -33,6 +33,11 @@ class ProyectoController extends Controller
             $query->where('user_id', $request->user_id);
         }
 
+        if ($request->has('ids')) {
+             $ids = explode(',', $request->ids);
+             $query->whereIn('id', $ids);
+        }
+
         $proyectos = $query->get();
         return response()->json($proyectos);
     }
@@ -142,13 +147,8 @@ class ProyectoController extends Controller
             $query->orderBy('costoRecompensa', 'asc');
         }, 'user'])->findOrFail($id);
 
-        $isFollowing = false;
-        if (Auth::guard('sanctum')->check()) {
-            $user = Auth::guard('sanctum')->user();
-            $isFollowing = $user->proyectos()->where('idProyecto', $id)->exists();
-        }
         // Inject into the response object
-        $proyecto->setAttribute('is_following', $isFollowing);
+        // $proyecto->setAttribute('is_following', $isFollowing);
 
         return response()->json($proyecto);
     }
@@ -250,27 +250,13 @@ class ProyectoController extends Controller
 
     public function seguir(string $id)
     {
-        $user = Auth::user();
-        if (!$user) {
-            return response()->json(['message' => 'No autenticado'], 401);
-        }
-        
-        // Find project to ensure it exists
-        $proyecto = Proyecto::findOrFail($id);
-        
-        if (!$user->proyectos()->where('idProyecto', $id)->exists()) {
-             $user->proyectos()->attach($id);
-        }
-        return response()->json(['message' => 'Ahora sigues este proyecto']);
+        // Logic moved to client-side localStorage
+        return response()->json(['message' => 'Logic moved to localStorage']);
     }
 
     public function dejarDeSeguir(string $id)
     {
-        $user = Auth::user();
-        if (!$user) {
-            return response()->json(['message' => 'No autenticado'], 401);
-        }
-        $user->proyectos()->detach($id);
-        return response()->json(['message' => 'Has dejado de seguir el proyecto']);
+        // Logic moved to client-side localStorage
+        return response()->json(['message' => 'Logic moved to localStorage']);
     }
 }

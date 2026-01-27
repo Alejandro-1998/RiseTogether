@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import useAuth from "../../hooks/useAuth";
 
@@ -14,35 +14,34 @@ export default function ObjetivosProyecto({
   const clamp = (n) => Math.max(0, Math.min(100, Number(n) || 0));
   const pct = clamp(porcentaje);
   const { isAuth } = useAuth();
-  const [siguiendo, setSiguiendo] = useState(isFollowing);
+  const [siguiendo, setSiguiendo] = useState(false);
   const [loadingFollow, setLoadingFollow] = useState(false);
+
+  useEffect(() => {
+    const seguidos = JSON.parse(localStorage.getItem("seguidos")) || [];
+    setSiguiendo(seguidos.includes(String(id)));
+  }, [id]);
 
   const formatEUR = (n) =>
     (Number(n) || 0).toLocaleString("es-ES", { minimumFractionDigits: 0 }) + " €";
 
-  const handleSeguir = async () => {
-    if (!isAuth) {
-      window.location.href = "/login";
-      return;
-    }
-    setLoadingFollow(true);
-    // Optimistic update
-    const nuevoEstado = !siguiendo;
-    setSiguiendo(nuevoEstado);
+  const handleSeguir = () => {
 
-    try {
-      if (nuevoEstado) {
-        await axios.post(`/api/proyectos/${id}/seguir`);
-      } else {
-        await axios.delete(`/api/proyectos/${id}/seguir`);
-      }
-    } catch (error) {
-      console.error("Error siguiendo proyecto:", error);
-      setSiguiendo(!nuevoEstado); // Revert
-      alert("Hubo un error al intentar seguir el proyecto.");
-    } finally {
-      setLoadingFollow(false);
+    setLoadingFollow(true);
+    const seguidos = JSON.parse(localStorage.getItem("seguidos")) || [];
+    const idStr = String(id);
+
+    let nuevosSeguidos;
+    if (seguidos.includes(idStr)) {
+      nuevosSeguidos = seguidos.filter(sid => sid !== idStr);
+      setSiguiendo(false);
+    } else {
+      nuevosSeguidos = [...seguidos, idStr];
+      setSiguiendo(true);
     }
+
+    localStorage.setItem("seguidos", JSON.stringify(nuevosSeguidos));
+    setLoadingFollow(false);
   };
 
   const handleApoyar = () => {
@@ -101,8 +100,8 @@ export default function ObjetivosProyecto({
             onClick={handleSeguir}
             disabled={loadingFollow}
             className={`cursor-pointer flex w-full items-center justify-center overflow-hidden rounded-2xl h-12 px-6 text-base font-bold leading-normal tracking-[0.015em] transition-colors ${siguiendo
-                ? "bg-[#f2780d]/10 text-[#f2780d] border border-[#f2780d]"
-                : "bg-[#f4ede7] dark:bg-[#f4ede7]/10 text-[#1c140d] dark:text-white hover:bg-[#f4ede7] dark:hover:bg-[#f4ede7]/20"
+              ? "bg-[#f2780d]/10 text-[#f2780d] border border-[#f2780d]"
+              : "bg-[#f4ede7] dark:bg-[#f4ede7]/10 text-[#1c140d] dark:text-white hover:bg-[#f4ede7] dark:hover:bg-[#f4ede7]/20"
               }`}
           >
             <span className="material-symbols-outlined mr-2 text-lg">

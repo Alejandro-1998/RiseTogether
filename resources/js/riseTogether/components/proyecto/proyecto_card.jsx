@@ -22,18 +22,31 @@ export default function ProyectoCard({ proyecto, preview = false }) {
 
   const esExpirado = diasRestantes !== null && diasRestantes < 0;
 
+  const getImageSrc = (path) => {
+    if (!path) return "/img/default-project.png";
+    if (path.startsWith('http') || path.startsWith('/')) return path;
+    if (path.startsWith('img/')) return `/${path}`;
+    return `/storage/${path}`;
+  };
+
   return (
     <div className="flex flex-col gap-4 rounded-xl bg-[#fcfaf8] dark:bg-[#1F2937] overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 group h-full">
       {/* Imagen */}
-      <div
-        className="w-full bg-center bg-no-repeat aspect-video bg-cover"
-        style={{
-          backgroundImage: `url('${imagen_portada
-            ? (imagen_portada.startsWith('http') ? imagen_portada : `/storage/${imagen_portada}`)
-            : "/img/default-project.png"
-            }')`,
-        }}
-      />
+      <div className="w-full aspect-video bg-gray-200 dark:bg-gray-700 relative overflow-hidden">
+        <img
+          src={getImageSrc(imagen_portada)}
+          alt={titulo}
+          className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.onerror = null; // Prevent loop
+            e.target.src = "/img/logo.png"; // Fallback to existing image
+          }}
+        />
+        {/* DEBUG: Show path on screen temporarily */}
+        {/* <div className="absolute top-0 left-0 bg-black/80 text-white text-[10px] p-1 z-50">
+            {getImageSrc(imagen_portada)}
+        </div> */}
+      </div>
 
       <div className="flex flex-col gap-4 px-4 flex-1">
         <div className="flex flex-col gap-1">
