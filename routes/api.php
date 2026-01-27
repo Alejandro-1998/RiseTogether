@@ -40,8 +40,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/proyectos/{id}/seguir', [ProyectoController::class, 'seguir']);
     Route::delete('/proyectos/{id}/seguir', [ProyectoController::class, 'dejarDeSeguir']);
     Route::middleware(['auth:sanctum'])->post('/pagos/iniciar', [PaymentController::class, 'iniciarPago']);
-    Route::get('/users', [UserController::class, 'index']); // Admin USERS list
-    Route::get('/admin/proyectos', [ProyectoController::class, 'indexAdmin']); // Admin PROJECTS list
-    Route::get('/admin/stats', [App\Http\Controllers\AdminController::class, 'stats']);
+    
+    // Admin Routes
+    Route::middleware(['role:admin'])->group(function () {
+        Route::get('/users', [UserController::class, 'index']); // Admin USERS list
+        Route::get('/admin/proyectos', [ProyectoController::class, 'indexAdmin']); // Admin PROJECTS list
+        Route::get('/admin/stats', [App\Http\Controllers\AdminController::class, 'stats']);
+    });
+
     Route::post('/logout', [LoginController::class, 'logout']);
 });

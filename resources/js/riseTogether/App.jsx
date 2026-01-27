@@ -16,6 +16,7 @@ import SobreNosotrosPage from "./pages/public/SobreNosotrosPage";
 import ContactoPage from "./pages/public/ContactoPage";
 import AvisoLegalPage from "./pages/public/AvisoLegalPage";
 
+import RequireAdmin from "./components/RequireAdmin";
 
 // RUTAS //
 function App() {
@@ -33,8 +34,12 @@ function App() {
           {/* Registro */}
           <Route path="/registro" element={<RegistroPage />} />
 
-          {/* Admin */}
-          <Route path="/administrador" element={<AdminDashboard />} />
+          {/* RUTAS PROTEGIDAS ADMIN */}
+          <Route element={<RequireAdmin />}>
+            <Route path="/administrador" element={<AdminDashboard />} />
+            <Route path="/administrador/usuarios" element={<AdminGestionUsuarios />} />
+            <Route path="/administrador/proyectos" element={<AdminGestionProyectos />} />
+          </Route>
 
           {/* Crear Proyecto */}
           <Route path="/crear-proyecto" element={<CrearProyectoPage />} />
@@ -47,12 +52,6 @@ function App() {
 
           {/* Proyecto */}
           <Route path="/proyecto/:id" element={<ProyectoPage />} />
-
-          {/* Usuarios Seccion Administrador */}
-          <Route path="/administrador/usuarios" element={<AdminGestionUsuarios />} />
-
-          {/* Proyecto Seccion Administrador */}
-          <Route path="/administrador/proyectos" element={<AdminGestionProyectos />} />
 
           {/* Proyecto Sobre Nosotros */}
           <Route path="/about" element={<SobreNosotrosPage />} />
