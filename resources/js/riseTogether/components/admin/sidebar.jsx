@@ -11,15 +11,8 @@ export default function Sidebar() {
     "flex items-center gap-3 px-3 py-2 rounded-2xl text-sm font-bold bg-[#f2780d]/20 text-[#f2780d]";
 
   return (
-    <aside className="w-64 shrink-0 bg-white dark:bg-gray-900/50 border-r border-gray-200 dark:border-gray-800 flex flex-col fixed h-full">
-      {/* Logo */}
-      <Link className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-gray-800 h-16" to="/">
-        <img
-          src="/img/logo.png"
-          className="h-9 w-auto object-contain"
-          alt="RiseTogether"
-        />
-      </Link>
+    <aside className="w-64 shrink-0 bg-white dark:bg-gray-900/50 border-r border-gray-200 dark:border-gray-800 flex flex-col sticky top-[73px] h-[calc(100vh-73px)] overflow-y-auto">
+      {/* Menu starts directly, Logo is in Header */}
 
       {/* Menú 1*/}
       <nav className="flex-1 px-2 py-4 space-y-2 text-sm">

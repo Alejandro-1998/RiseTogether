@@ -9,10 +9,10 @@ export default function TablaUsuarios({ usuarios = [], onEdit, onDelete }) {
   };
 
   const badgeRol = (rol) => {
-    const base = "px-3 py-1 rounded-full text-xs font-bold inline-flex";
-    if (rol === "Admin") return `${base} bg-[#ff7a00]/15 text-[#ffb066]`;
-    if (rol === "Creador") return `${base} bg-blue-500/15 text-blue-300`;
-    return `${base} bg-white/10 text-white`;
+    const base = "px-3 py-1 rounded-full text-xs font-bold inline-flex border";
+    if (rol === "Admin") return `${base} bg-[#ff7a00]/10 text-[#ff7a00] border-[#ff7a00]/20`;
+    if (rol === "Usuario") return `${base} bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-300 border-blue-200 dark:border-blue-500/20`;
+    return `${base} bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/10`;
   };
 
   return (

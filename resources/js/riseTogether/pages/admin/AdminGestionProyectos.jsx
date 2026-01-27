@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import Sidebar from "../../components/admin/sidebar";
-import Header from "../../components/admin/header_admin";
+import HeaderPublic from "../../components/public/header_public";
 import TablaProyectos from "../../components/admin/tabla_proyectos";
 import ModalProyecto from "../../components/admin/modal_proyecto";
 import ConfirmDelete from "../../components/admin/confirm_delete";
@@ -108,76 +108,79 @@ export default function AdminGestionProyectos() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
-      <Sidebar />
+    <div className="min-h-screen flex flex-col bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
+      <HeaderPublic />
 
-      <div className="ml-64 w-full">
-        <Header />
+      <div className="flex flex-1">
+        <Sidebar />
 
-        <main className="p-6">
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-            <div>
-              <h1 className="text-3xl font-bold">Gestión de proyectos</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                Gestiona proyectos: crear, editar, eliminar y filtrar por estado.
-              </p>
+        <div className="flex-1 w-full">
+
+          <main className="p-6">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+              <div>
+                <h1 className="text-3xl font-bold">Gestión de proyectos</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  Gestiona proyectos: crear, editar, eliminar y filtrar por estado.
+                </p>
+              </div>
+
+              <button
+                onClick={abrirCrear}
+                className="rounded-xl bg-[#f2780d] px-5 py-2 font-bold text-white hover:brightness-110 transition"
+              >
+                + Crear proyecto
+              </button>
             </div>
 
-            <button
-              onClick={abrirCrear}
-              className="rounded-xl bg-[#f2780d] px-5 py-2 font-bold text-white hover:brightness-110 transition"
-            >
-              + Crear proyecto
-            </button>
-          </div>
+            {/* Toolbar */}
+            <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between mb-4">
+              <div className="relative w-full md:max-w-md">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                  search
+                </span>
+                <input
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  placeholder="Buscar por nombre, creador o categoría..."
+                  className="w-full pl-10 pr-3 py-2 rounded-xl bg-white dark:bg-[#1a120d] border border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-[#f2780d]/30"
+                />
+              </div>
 
-          {/* Toolbar */}
-          <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between mb-4">
-            <div className="relative w-full md:max-w-md">
-              <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                search
-              </span>
-              <input
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Buscar por nombre, creador o categoría..."
-                className="w-full pl-10 pr-3 py-2 rounded-xl bg-white dark:bg-[#1a120d] border border-gray-200 dark:border-gray-800 outline-none focus:ring-2 focus:ring-[#f2780d]/30"
-              />
+              <div className="flex gap-2 flex-wrap">
+                <SelectEstado value={estado} onChange={setEstado} />
+              </div>
             </div>
 
-            <div className="flex gap-2 flex-wrap">
-              <SelectEstado value={estado} onChange={setEstado} />
-            </div>
-          </div>
+            {/* Tabla */}
+            <TablaProyectos
+              proyectos={proyectosFiltrados}
+              onEdit={abrirEditar}
+              onDelete={pedirBorrar}
+            />
+          </main>
+        </div>
 
-          {/* Tabla */}
-          <TablaProyectos
-            proyectos={proyectosFiltrados}
-            onEdit={abrirEditar}
-            onDelete={pedirBorrar}
-          />
-        </main>
+        <ModalProyecto
+          open={openModal}
+          modo={modo}
+          proyecto={seleccionado}
+          onClose={() => setOpenModal(false)}
+          onSave={guardarProyecto}
+        />
+
+        <ConfirmDelete
+          open={openDelete}
+          titulo="Eliminar proyecto"
+          descripcion={
+            aBorrar
+              ? `Vas a eliminar "${aBorrar.nombre}". Esta acción no se puede deshacer.`
+              : ""
+          }
+          onCancel={() => setOpenDelete(false)}
+          onConfirm={confirmarBorrar}
+        />
       </div>
-
-      <ModalProyecto
-        open={openModal}
-        modo={modo}
-        proyecto={seleccionado}
-        onClose={() => setOpenModal(false)}
-        onSave={guardarProyecto}
-      />
-
-      <ConfirmDelete
-        open={openDelete}
-        titulo="Eliminar proyecto"
-        descripcion={
-          aBorrar
-            ? `Vas a eliminar "${aBorrar.nombre}". Esta acción no se puede deshacer.`
-            : ""
-        }
-        onCancel={() => setOpenDelete(false)}
-        onConfirm={confirmarBorrar}
-      />
     </div>
   );
 }

@@ -34,9 +34,12 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::get('/user/profile', [UserController::class, 'show']);
     Route::put('/user/profile', [UserController::class, 'update']);
+    Route::put('/users/{id}', [UserController::class, 'updateAdmin']);
+    Route::delete('/users/{id}', [UserController::class, 'destroy']);
     Route::post('/proyectos', [ProyectoController::class, 'store']);
     Route::post('/proyectos/{id}/seguir', [ProyectoController::class, 'seguir']);
     Route::delete('/proyectos/{id}/seguir', [ProyectoController::class, 'dejarDeSeguir']);
     Route::middleware(['auth:sanctum'])->post('/pagos/iniciar', [PaymentController::class, 'iniciarPago']);
+    Route::get('/users', [UserController::class, 'index']); // Admin USERS list
     Route::post('/logout', [LoginController::class, 'logout']);
 });
