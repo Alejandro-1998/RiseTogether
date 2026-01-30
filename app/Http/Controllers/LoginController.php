@@ -20,8 +20,8 @@ class LoginController extends Controller
     public function registro(Request $request)
     {
         $atributos = $request->validate([
-            'nombreUsuario' => ['required', 'string', 'max:255', 'unique:users'],
-            'nombreCompleto' => ['nullable', 'string', 'max:255'],
+            'nombreUsuario' => ['required', 'string', 'max:30', 'unique:users'],
+            'nombreCompleto' => ['nullable', 'string', 'max:30'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'string', 'min:6', 'confirmed'],
             'terminos' => ['accepted']
@@ -82,7 +82,7 @@ class LoginController extends Controller
 
         $cookieXsrf = Cookie::make('XSRF-TOKEN', '', -1, $path, $domain, $secure, false, false, $sameSite);
         $cookieSession = Cookie::make(config('session.cookie'), '', -1, $path, $domain, $secure, $httpOnly, false, $sameSite);
-        
+
         // Queue them to ensure they are attached to headers
         Cookie::queue($cookieXsrf);
         Cookie::queue($cookieSession);

@@ -54,6 +54,8 @@ export default function FormularioRegistro() {
       newErrors.nombreUsuario = ["El nombre de usuario es obligatorio."];
     } else if (!/^[a-zA-Z0-9]+$/.test(form.nombreUsuario)) {
       newErrors.nombreUsuario = ["El nombre de usuario solo puede contener letras y números."];
+    } else if (form.nombreUsuario.length > 30) {
+      newErrors.nombreUsuario = ["El nombre de usuario no puede tener más de 30 caracteres."];
     }
 
     if (!form.email) {
@@ -172,6 +174,7 @@ export default function FormularioRegistro() {
               className="w-full bg-transparent text-sm outline-none placeholder:text-[#b59b8a]"
               placeholder="tu nombre de usuario"
               autoComplete="username"
+              maxLength={30}
               required
             />
           </div>

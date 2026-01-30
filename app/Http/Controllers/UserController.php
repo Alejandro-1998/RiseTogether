@@ -58,14 +58,14 @@ class UserController extends Controller
     private function processUpdate(Request $request, User $usuario)
     {
         $validaciones = $request->validate([
-            'nombreUsuario' => ['required', 'string', 'max:255', Rule::unique('users')->ignore($usuario->id)],
-            'nombreCompleto' => ['nullable', 'string', 'max:255'],
+            'nombreUsuario' => ['required', 'string', 'max:30', Rule::unique('users')->ignore($usuario->id)],
+            'nombreCompleto' => ['nullable', 'string', 'max:30'],
             'email' => ['sometimes', 'string', 'email', 'max:255', Rule::unique('users')->ignore($usuario->id)],
             'dni' => ['nullable', 'string', 'max:9', Rule::unique('users')->ignore($usuario->id)],
-            'fechaNacimiento' => ['nullable', 'date'],
+            'fechaNacimiento' => ['nullable', 'date', 'before_or_equal:today'],
             'direccion' => ['nullable', 'string', 'max:255'],
             'biografia' => ['nullable', 'string'],
-            'numeroCuenta' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($usuario->id)],
+            'numeroCuenta' => ['nullable', 'string', 'size:24', 'regex:/^ES[0-9]{22}$/', Rule::unique('users')->ignore($usuario->id)],
             // 'role' => ... if you want to update roles
         ]);
 
@@ -83,12 +83,20 @@ class UserController extends Controller
              }
         }
 
-        // Logic split from original update method if different validation needed
-        // but for now reusing basic update logic minus password/current_password for simplicity
-        
-        // Remove password fields if not handling them here or make them optional
-        // For admin update, usually we don't ask for current_password of the USER.
-        
+        // Logic for password update
+        if ($request->filled('current_password')) {
+            $request->validate([
+                'current_password' => ['required', 'current_password'],
+                'password' => ['required', 'string', 'min:8', 'confirmed'],
+            ], [
+                'current_password.current_password' => 'La contraseña actual no es correcta.',
+                'password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
+                'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+            ]);
+
+            $validaciones['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+        }
+
         $usuario->update($validaciones);
 
         return response()->json([
