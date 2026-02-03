@@ -1,15 +1,27 @@
+
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
 
-// ✅ Card reutilizable para valores
+// --- Valores por defecto (Fallback) ---
+const DEFAULT_CONTENT = {
+    about_hero_badge: "Nuestra historia",
+    about_hero_title: "Nuestra Historia de Impacto",
+    about_hero_text: "RiseTogether nació con una idea simple: conectar sueños con oportunidades. Creemos que cada gran idea merece la oportunidad de brillar, sin importar de dónde venga.",
+    about_mission_title: "Nuestra Misión",
+    about_mission_text: "Democratizar el acceso a la financiación para creadores, innovadores y soñadores de todo el mundo. Queremos ser el trampolín que convierte ideas en realidad.",
+    about_mission_highlight: "Hemos ayudado a financiar más de 500 proyectos en el último año.",
+    about_values_title: "Nuestros Valores",
+    about_values_subtitle: "Los principios que guían cada paso que damos."
+};
+
+// --- Componentes Auxiliares ---
+
 function ValorCard({ icon, title, text }) {
     return (
         <div className="p-8 bg-white dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 rounded-xl hover:border-[#f2780d]/50 transition-all group">
-            <span className="material-symbols-outlined text-[#f2780d] mb-4 group-hover:scale-110 transition-transform">
-                {icon}
-            </span>
+            <span className="material-symbols-outlined text-[#f2780d] mb-4 group-hover:scale-110 transition-transform">{icon}</span>
             <h3 className="text-xl font-bold mb-2">{title}</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400">{text}</p>
         </div>
@@ -28,11 +40,9 @@ function Paso({ n, title, text }) {
     );
 }
 
-// ✅ Componente listo para admins (foto + nombre + rol)
 function AdminCard({ admin }) {
-    const name = admin?.name || "Administrador";
-    const roleLabel = admin?.roleLabel || "Administrador";
-    const img = admin?.avatarUrl || "/img/admin-placeholder.png"; // 👈 placeholder local (ponlo si quieres)
+    const { name = "Administrador", roleLabel = "Administrador", avatarUrl } = admin || {};
+    const img = avatarUrl || "/img/admin-placeholder.png";
 
     return (
         <div className="flex flex-col items-center text-center gap-4">
@@ -48,25 +58,22 @@ function AdminCard({ admin }) {
     );
 }
 
+// --- Componente Principal ---
+
 export default function AboutPage() {
     const [team, setTeam] = useState([]);
-    const [content, setContent] = useState({});
+    const [content, setContent] = useState(DEFAULT_CONTENT); // Inicializar con defaults
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await window.axios.get('/api/about-us');
-                setTeam(response.data.team);
-                setContent(response.data.content);
-            } catch (error) {
-                console.error("Error fetching about us data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
+        window.axios.get('/api/about-us')
+            .then(response => {
+                setTeam(response.data.team || []);
+                // Fusionar defaults con datos de API para asegurar que no haya nulos
+                setContent(prev => ({ ...prev, ...response.data.content }));
+            })
+            .catch(error => console.error("Error fetching about data:", error))
+            .finally(() => setLoading(false));
     }, []);
 
     if (loading) {
@@ -86,7 +93,7 @@ export default function AboutPage() {
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
                     <div className="flex flex-col gap-6">
                         <span className="inline-block px-3 py-1 text-xs font-bold tracking-widest uppercase text-[#f2780d] bg-[#f2780d]/10 rounded-full w-fit">
-                            {content.about_hero_badge || "Nuestra historia"}
+                            {content.about_hero_badge}
                         </span>
 
                         <h1 dangerouslySetInnerHTML={{ __html: content.about_hero_title }} className="text-5xl md:text-6xl font-black leading-[1.1] tracking-tight text-[#1c140d] dark:text-white" />
@@ -112,9 +119,7 @@ export default function AboutPage() {
                         <div className="absolute -inset-4 bg-[#f2780d]/20 rounded-xl blur-2xl group-hover:bg-[#f2780d]/30 transition-all" />
                         <div
                             className="relative h-[400px] w-full bg-cover bg-center rounded-xl shadow-2xl border-4 border-white dark:border-gray-800"
-                            style={{
-                                backgroundImage: `url('${content.about_hero_image}')`,
-                            }}
+                            style={{ backgroundImage: `url('/img/grupo.png')` }}
                         />
                     </div>
                 </section>
@@ -150,26 +155,10 @@ export default function AboutPage() {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <ValorCard
-                            icon="visibility"
-                            title="Transparencia"
-                            text="Comunicación abierta y reportes honestos en cada paso del camino."
-                        />
-                        <ValorCard
-                            icon="groups"
-                            title="Comunidad"
-                            text="Creemos en el poder colectivo para generar cambios reales."
-                        />
-                        <ValorCard
-                            icon="lightbulb"
-                            title="Innovación"
-                            text="Creamos herramientas mejores para ayudar a impulsar ideas."
-                        />
-                        <ValorCard
-                            icon="public"
-                            title="Inclusión"
-                            text="Una plataforma donde la financiación sea accesible para todos."
-                        />
+                        <ValorCard icon="visibility" title="Transparencia" text="Comunicación abierta y reportes honestos en cada paso del camino." />
+                        <ValorCard icon="groups" title="Comunidad" text="Creemos en el poder colectivo para generar cambios reales." />
+                        <ValorCard icon="lightbulb" title="Innovación" text="Creamos herramientas mejores para ayudar a impulsar ideas." />
+                        <ValorCard icon="public" title="Inclusión" text="Una plataforma donde la financiación sea accesible para todos." />
                     </div>
                 </section>
 
@@ -178,36 +167,20 @@ export default function AboutPage() {
                     <h2 className="text-3xl font-bold text-center mb-16">Cómo funciona</h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-                        <Paso
-                            n="1"
-                            title="Crea un proyecto"
-                            text="Define tus objetivos, fija tu meta y cuenta tu historia al mundo."
-                        />
-                        <Paso
-                            n="2"
-                            title="Comparte con la comunidad"
-                            text="Usa nuestras herramientas para llegar a personas que creen en tu idea."
-                        />
-                        <Paso
-                            n="3"
-                            title="Alcanza tu meta"
-                            text="Recauda fondos, comparte actualizaciones y hazlo realidad."
-                        />
+                        <Paso n="1" title="Crea un proyecto" text="Define tus objetivos, fija tu meta y cuenta tu historia al mundo." />
+                        <Paso n="2" title="Comparte con la comunidad" text="Usa nuestras herramientas para llegar a personas que creen en tu idea." />
+                        <Paso n="3" title="Alcanza tu meta" text="Recauda fondos, comparte actualizaciones y hazlo realidad." />
                     </div>
                 </section>
 
                 {/* EQUIPO (Admins) */}
                 <section className="mb-24">
-                    <h2 className="text-3xl font-bold text-center mb-12">
-                        Conoce al equipo
-                    </h2>
-
+                    <h2 className="text-3xl font-bold text-center mb-12">Conoce al equipo</h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {team.map((admin) => (
                             <AdminCard key={admin.id} admin={admin} />
                         ))}
                     </div>
-
                     {team.length === 0 && (
                         <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
                             No se encontraron administradores.
@@ -218,10 +191,7 @@ export default function AboutPage() {
                 {/* CTA FINAL */}
                 <section className="mb-12">
                     <div className="bg-[#f2780d]/10 dark:bg-[#f2780d]/5 rounded-xl p-12 text-center flex flex-col items-center gap-8 border border-[#f2780d]/20">
-                        <h2 className="text-4xl font-black max-w-2xl">
-                            ¿Lista/o para marcar la diferencia?
-                        </h2>
-
+                        <h2 className="text-4xl font-black max-w-2xl">¿Lista/o para marcar la diferencia?</h2>
                         <div className="flex flex-wrap justify-center gap-4">
                             <Link to="/crear-proyecto" className="px-10 py-4 bg-[#f2780d] text-white font-bold rounded-xl text-lg hover:scale-105 transition-transform">
                                 Lanza tu proyecto
