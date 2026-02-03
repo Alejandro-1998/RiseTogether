@@ -20,6 +20,7 @@ Route::get('/proyectos/destacados', [ProyectoController::class, 'proyectosDestac
 Route::get('/proyectos/historias-exito', [ProyectoController::class, 'historiasExito']);
 Route::get('/comentarios/relevantes', [ComentarioController::class, 'comentariosRelevantes']);
 Route::get('/categorias', [CategoriaController::class, 'index']);
+Route::get('/about-us', [\App\Http\Controllers\AboutUsController::class, 'index']);
 Route::get('/users/{id}', [UserController::class, 'show']); // Perfil público
 
 // Proyectos

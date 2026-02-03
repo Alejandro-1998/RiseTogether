@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
 
@@ -46,16 +48,34 @@ function AdminCard({ admin }) {
     );
 }
 
-export default function AboutPage({ admins = [] }) {
-    // ✅ Si aún no estás trayendo admins desde Laravel, usamos fallback de 4 “huecos”
-    const adminsFinal = admins?.length
-        ? admins.slice(0, 4)
-        : [
-            { id: 1, name: "Administrador 1", roleLabel: "Admin", avatarUrl: "/img/admin-placeholder.png" },
-            { id: 2, name: "Administrador 2", roleLabel: "Admin", avatarUrl: "/img/admin-placeholder.png" },
-            { id: 3, name: "Administrador 3", roleLabel: "Admin", avatarUrl: "/img/admin-placeholder.png" },
-            { id: 4, name: "Administrador 4", roleLabel: "Admin", avatarUrl: "/img/admin-placeholder.png" },
-        ];
+export default function AboutPage() {
+    const [team, setTeam] = useState([]);
+    const [content, setContent] = useState({});
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await window.axios.get('/api/about-us');
+                setTeam(response.data.team);
+                setContent(response.data.content);
+            } catch (error) {
+                console.error("Error fetching about us data:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-[#f9f8f6] dark:bg-[#120c07]">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#f2780d]"></div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-[#f9f8f6] dark:bg-[#120c07] text-[#1c140d] dark:text-gray-100 transition-colors duration-300 min-h-screen">
@@ -66,23 +86,23 @@ export default function AboutPage({ admins = [] }) {
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
                     <div className="flex flex-col gap-6">
                         <span className="inline-block px-3 py-1 text-xs font-bold tracking-widest uppercase text-[#f2780d] bg-[#f2780d]/10 rounded-full w-fit">
-                            Nuestra historia
+                            {content.about_hero_badge || "Nuestra historia"}
                         </span>
 
-                        <h1 className="text-5xl md:text-6xl font-black leading-[1.1] tracking-tight text-[#1c140d] dark:text-white">
-                            Impulsando <span className="text-[#f2780d]">sueños</span>, juntos
-                        </h1>
+                        <h1 dangerouslySetInnerHTML={{ __html: content.about_hero_title }} className="text-5xl md:text-6xl font-black leading-[1.1] tracking-tight text-[#1c140d] dark:text-white" />
 
                         <p className="text-lg md:text-xl text-[#9c7049] dark:text-gray-400 leading-relaxed max-w-lg">
-                            Una plataforma moderna de crowdfunding basada en transparencia, innovación
-                            y el poder de la comunidad. Únete a miles de creadores generando impacto.
+                            {content.about_hero_text}
                         </p>
 
                         <div className="flex flex-wrap gap-4 pt-4">
-                            <button className="px-8 py-4 bg-[#f2780d] text-white font-bold rounded-xl text-lg hover:translate-y-[-2px] transition-all shadow-xl shadow-[#f2780d]/20">
+                            <Link to="/proyectos" className="px-8 py-4 bg-[#f2780d] text-white font-bold rounded-xl text-lg hover:translate-y-[-2px] transition-all shadow-xl shadow-[#f2780d]/20">
                                 Explorar campañas
-                            </button>
-                            <button className="px-8 py-4 bg-[#f4ede7] dark:bg-gray-800 text-[#1c140d] dark:text-white font-bold rounded-xl text-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-all">
+                            </Link>
+                            <button
+                                onClick={() => document.getElementById('mision').scrollIntoView({ behavior: 'smooth' })}
+                                className="px-8 py-4 bg-[#f4ede7] dark:bg-gray-800 text-[#1c140d] dark:text-white font-bold rounded-xl text-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+                            >
                                 Nuestra visión
                             </button>
                         </div>
@@ -93,15 +113,14 @@ export default function AboutPage({ admins = [] }) {
                         <div
                             className="relative h-[400px] w-full bg-cover bg-center rounded-xl shadow-2xl border-4 border-white dark:border-gray-800"
                             style={{
-                                backgroundImage:
-                                    "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBkLgXbLpfrHiwIVGjDc9O6bYOVk1oAnqdLyoieStMVXhxVfpj57IUS_9NfTb78kh9cNGj3_nRRQ_TYnJSdAFr_EXtjCPqjmQGI1scYaElczyILKxdEJXpbm5EiWhjaYOoGx2x30P_nbGYzIzvnfXBc9P9mHPdaUZDRoYVnNA-h4fhby-s56gVlzqBw6clq55B5JoCkqkWZ8ZPI7nhFRchpWSwBBU-rkGF6wGhWCNlPBEDnUwVSmsMN6hTcw9WqtAUUqwhsWkSt7Uc')",
+                                backgroundImage: `url('${content.about_hero_image}')`,
                             }}
                         />
                     </div>
                 </section>
 
                 {/* MISIÓN */}
-                <section className="mb-24">
+                <section id="mision" className="mb-24">
                     <div className="bg-white dark:bg-gray-900/50 border border-gray-100 dark:border-gray-800 rounded-xl p-8 md:p-12 flex flex-col md:flex-row gap-10 items-center">
                         <div className="w-full md:w-1/3 aspect-square bg-[#f2780d]/5 rounded-xl flex items-center justify-center">
                             <span className="material-symbols-outlined text-[120px] text-[#f2780d]">
@@ -110,15 +129,12 @@ export default function AboutPage({ admins = [] }) {
                         </div>
 
                         <div className="flex-1 space-y-4">
-                            <h2 className="text-3xl font-bold">Nuestra misión</h2>
+                            <h2 className="text-3xl font-bold">{content.about_mission_title}</h2>
                             <p className="text-xl text-[#9c7049] dark:text-gray-400 leading-relaxed">
-                                RiseTogether nace para conectar a personas con ideas con una comunidad
-                                dispuesta a apoyarlas. Creemos que cuando la gente se une, lo imposible
-                                se vuelve alcanzable. Nuestro objetivo es democratizar el acceso a la financiación
-                                para cualquiera, en cualquier lugar.
+                                {content.about_mission_text}
                             </p>
                             <p className="text-lg font-medium text-[#f2780d]">
-                                Un mundo donde cada gran idea encuentre su impulso.
+                                {content.about_mission_highlight}
                             </p>
                         </div>
                     </div>
@@ -127,9 +143,9 @@ export default function AboutPage({ admins = [] }) {
                 {/* VALORES */}
                 <section className="mb-24">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Nuestros valores</h2>
+                        <h2 className="text-3xl md:text-4xl font-bold mb-4">{content.about_values_title}</h2>
                         <p className="text-gray-500 dark:text-gray-400">
-                            Los principios que guían cada decisión que tomamos.
+                            {content.about_values_subtitle}
                         </p>
                     </div>
 
@@ -187,14 +203,16 @@ export default function AboutPage({ admins = [] }) {
                     </h2>
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        {adminsFinal.map((admin) => (
+                        {team.map((admin) => (
                             <AdminCard key={admin.id} admin={admin} />
                         ))}
                     </div>
 
-                    <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
-                        *Este bloque está preparado para mostrar automáticamente a los 4 usuarios con rol administrador.
-                    </p>
+                    {team.length === 0 && (
+                        <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-6">
+                            No se encontraron administradores.
+                        </p>
+                    )}
                 </section>
 
                 {/* CTA FINAL */}
@@ -205,12 +223,12 @@ export default function AboutPage({ admins = [] }) {
                         </h2>
 
                         <div className="flex flex-wrap justify-center gap-4">
-                            <button className="px-10 py-4 bg-[#f2780d] text-white font-bold rounded-xl text-lg hover:scale-105 transition-transform">
+                            <Link to="/crear-proyecto" className="px-10 py-4 bg-[#f2780d] text-white font-bold rounded-xl text-lg hover:scale-105 transition-transform">
                                 Lanza tu proyecto
-                            </button>
-                            <button className="px-10 py-4 bg-white dark:bg-gray-800 text-[#1c140d] dark:text-white font-bold rounded-xl text-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-all border border-[#f2780d]/20">
+                            </Link>
+                            <Link to="/proyectos" className="px-10 py-4 bg-white dark:bg-gray-800 text-[#1c140d] dark:text-white font-bold rounded-xl text-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-all border border-[#f2780d]/20">
                                 Explorar proyectos
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </section>
