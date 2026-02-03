@@ -19,7 +19,7 @@ class ProyectoController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Proyecto::with('categoria');
+        $query = Proyecto::with(['categoria', 'user']);
 
         if ($request->has('categoria_id')) {
             $query->where('categoria_id', $request->categoria_id);

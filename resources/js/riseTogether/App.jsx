@@ -15,6 +15,7 @@ import AdminGestionUsuarios from "./pages/admin/AdminGestionUsuarios";
 import SobreNosotrosPage from "./pages/public/SobreNosotrosPage";
 import ContactoPage from "./pages/public/ContactoPage";
 import AvisoLegalPage from "./pages/public/AvisoLegalPage";
+import EventosPage from "./pages/public/EventosPage";
 
 import RequireAdmin from "./components/RequireAdmin";
 
@@ -58,6 +59,9 @@ function App() {
 
           {/* Contacto */}
           <Route path="/contacto" element={<ContactoPage />} />
+
+          {/* Eventos */}
+          <Route path="/eventos" element={<EventosPage />} />
 
           {/* Aviso Legal */}
           <Route path="/aviso-legal" element={<AvisoLegalPage />} />

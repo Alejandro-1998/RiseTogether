@@ -27,7 +27,7 @@ export default function FooterPublic() {
               {["Proyectos", "Eventos"].map((item) => (
                 <li key={item}>
                   <Link
-                    to="/proyectos"
+                    to={item === "Eventos" ? "/eventos" : "/proyectos"}
                     className="text-sm text-[#9c7049] transition-colors hover:text-[#f2780d] dark:text-[#a18a7a] dark:hover:text-[#f2780d]"
                   >
                     {item}
