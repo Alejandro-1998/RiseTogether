@@ -55,7 +55,7 @@ function App() {
           <Route path="/proyecto/:id" element={<ProyectoPage />} />
 
           {/* Proyecto Sobre Nosotros */}
-          <Route path="/about" element={<SobreNosotrosPage />} />
+          <Route path="/sobre-nosotros" element={<SobreNosotrosPage />} />
 
           {/* Contacto */}
           <Route path="/contacto" element={<ContactoPage />} />
