@@ -44,7 +44,7 @@ export default function FooterPublic() {
             </h3>
             <ul className="mt-4 space-y-2">
               {[
-                { label: "Nosotros", to: "/about" },
+                { label: "Nosotros", to: "/sobre-nosotros" },
                 { label: "Profesiones", to: "#" },
                 { label: "Noticias", to: "#" },
               ].map((l) => (

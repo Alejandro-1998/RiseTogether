@@ -272,8 +272,16 @@ export default function ProyectoPage() {
 
                 {/* About Author Section */}
                 <div className="mt-12 rounded-3xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-6 flex flex-col sm:flex-row items-start gap-6 not-prose bg-[#ffffff] dark:bg-[#1a120d]">
-                  <div className="h-20 w-20 rounded-full bg-[#f2780d]/10 flex items-center justify-center text-3xl font-black text-[#f2780d]">
-                    {autorInicial}
+                  <div className="h-20 w-20 rounded-full bg-[#f2780d]/10 flex items-center justify-center text-3xl font-black text-[#f2780d] overflow-hidden">
+                    {proyecto.user?.profile_photo_url ? (
+                      <img
+                        src={proyecto.user.profile_photo_url}
+                        alt={autorNombre}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      autorInicial
+                    )}
                   </div>
                   <div className="flex-1">
                     <h4 className="text-xl font-bold text-[#1c140d] dark:text-white">
