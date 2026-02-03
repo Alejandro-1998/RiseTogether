@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -66,10 +67,19 @@ class UserController extends Controller
             'direccion' => ['nullable', 'string', 'max:255'],
             'biografia' => ['nullable', 'string'],
             'numeroCuenta' => ['nullable', 'string', 'size:24', 'regex:/^ES[0-9]{22}$/', Rule::unique('users')->ignore($usuario->id)],
-            // 'role' => ... if you want to update roles
+            'photo' => ['nullable', 'image', 'max:2048'], // 2MB Max
         ]);
 
-    if ($request->has('role')) {
+        if ($request->hasFile('photo')) {
+            if ($usuario->profile_photo_path) {
+                Storage::disk('public')->delete($usuario->profile_photo_path);
+            }
+
+            $path = $request->file('photo')->store('profile-photos', 'public');
+            $validaciones['profile_photo_path'] = $path;
+        }
+
+        if ($request->has('role')) {
              $nombreRol = $request->role; // 'admin' or 'usuario' or others
              
              // Ensure role exists to prevent 500 error

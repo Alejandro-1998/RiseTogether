@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import useAuth from "../../hooks/useAuth";
 
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
@@ -17,6 +18,7 @@ import ActividadReciente from "../../components/cards/actividad_reciente";
 
 export default function UsuarioPage() {
   const { id } = useParams();
+  const { setUser } = useAuth();
   const [pestana, setPestana] = useState("resumen"); // resumen | creados | apoyados | actividad | ajustes
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -95,6 +97,10 @@ export default function UsuarioPage() {
 
   const manejarActualizacionUsuario = (usuarioActualizado) => {
     setUsuario(usuarioActualizado);
+    // Actualizar estado global si es mi propio perfil
+    if (soyYo) {
+      setUser(usuarioActualizado);
+    }
   };
 
   if (cargando) return <div className="flex h-screen items-center justify-center">Cargando...</div>;
@@ -107,7 +113,7 @@ export default function UsuarioPage() {
     username: `@${usuario.nombreUsuario}`,
     ubicacion: usuario.direccion || 'Ubicación no disponible',
     // Use placeholders if no image (can be improved later with real uploads)
-    avatarUrl: usuario.foto_perfil || "https://lh3.googleusercontent.com/aida-public/AB6AXuAwEbSTOFIZFktpB4uQ9wkgVgm1FHWTJGJlmEo1BAQcRlSTEAO0PgIU5vdw-gEqAAVE-_pXNfGYGtBW1aCjUlYkMFRwkyEWJrATqoTqeQpkcl2BtOUklo_9cDlw7Hok_IuK-_FHaGGSBBrU9zUIeyy4qILrxeJIbhQst1dCo39DWRzQd7DubZdv9otAhmsJQfjsWtZ-aDvEBMjKIKcOoP0t6iEW_vpEXt2a-oOpZ4Hj7OmMw8Z-KhrlNBAyBLCKUlZEyW4Fyb-44dw",
+    avatarUrl: usuario.profile_photo_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(usuario.nombreUsuario) + "&color=7F9CF5&background=EBF4FF",
     bannerUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuBy9Wss6EBRoR7h3QbFmEUvv8yYqAkAHJvQHJolGdmXUU6eXj62XpZQgfUVzCZc_WAkapFJSxbovCIb8D6h1bJuSDKxqfJ4V_yk2h8nqIHtI9nLhgyOcT53RH09ZVWxNLRGtdS2oSMEiBHj80gbB_GA0-YUwB0eHspnjYbceQyZkw4youOQoQbZVoFUDclCl2oYNu4YiR7rSoGVBeJ_qZmW7JTnrRzGW1VoYcG0_ujIk9svn-s5mIUa7t86AR_qaPxqgKf3BmSvolw"
   };
 

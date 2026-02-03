@@ -14,7 +14,7 @@ export default function HeaderPublic({ isAuth }) {
     });
   }, []);
 
-  const { isAuth: authState, logout } = useAuth();
+  const { isAuth: authState, logout, user } = useAuth();
   // Allow prop override, otherwise use hook
   const authenticated = isAuth !== undefined ? isAuth : authState;
 
@@ -69,13 +69,22 @@ export default function HeaderPublic({ isAuth }) {
 
                 {/* Círculo de perfil (visual, no click) */}
                 <div
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4ede7] text-[#1c140d] cursor-pointer dark:bg-[#2a2017] dark:text-[#fcfaf8]"
+                  className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4ede7] text-[#1c140d] cursor-pointer dark:bg-[#2a2017] dark:text-[#fcfaf8] overflow-hidden"
                   title="Sesión Iniciada"
                 >
                   <Link
                     to="/usuario"
+                    className="w-full h-full flex items-center justify-center"
                   >
-                    <span className="material-symbols-outlined">person</span>
+                    {user?.profile_photo_url ? (
+                      <img
+                        src={user.profile_photo_url}
+                        alt={user.nombreUsuario}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="material-symbols-outlined">person</span>
+                    )}
                   </Link>
                 </div>
 

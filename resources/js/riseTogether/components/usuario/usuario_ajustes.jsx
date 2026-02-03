@@ -14,6 +14,8 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
         password: '',
         password_confirmation: ''
     });
+    const [photo, setPhoto] = useState(null);
+    const [photoPreview, setPhotoPreview] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [errors, setErrors] = useState({});
 
@@ -30,6 +32,7 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
                 password: '',
                 password_confirmation: ''
             });
+            setPhotoPreview(user.profile_photo_url || null);
         }
     }, [user]);
 
@@ -45,7 +48,6 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
             [name]: value
         });
 
-        // Clear error for this field when user types
         if (errors[name]) {
             setErrors({
                 ...errors,
@@ -54,10 +56,18 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
         }
     };
 
+    const handlePhotoChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setPhoto(file);
+            setPhotoPreview(URL.createObjectURL(file));
+        }
+    };
+
     const scrollToTopWithOffset = () => {
         if (formRef.current) {
             const yCoordinate = formRef.current.getBoundingClientRect().top + window.scrollY;
-            const yOffset = -150; // Scroll up 150px from the form top to show tabs
+            const yOffset = -150;
             window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' });
         }
     };
@@ -71,21 +81,23 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
         'numeroCuenta',
         'current_password',
         'password',
-        'password_confirmation'
+        'password_confirmation',
+        'photo'
     ];
 
     const scrollToFirstError = (currentErrors) => {
         const firstErrorField = fieldOrder.find(field => currentErrors[field]);
         if (firstErrorField) {
-            const element = document.querySelector(`[name="${firstErrorField}"]`);
+            const selector = firstErrorField === 'photo' ? '#photo-section' : `[name="${firstErrorField}"]`;
+            const element = document.querySelector(selector);
             if (element) {
                 const yCoordinate = element.getBoundingClientRect().top + window.scrollY;
-                const yOffset = -200; // Offset ensuring the label is visible
+                const yOffset = -200;
                 window.scrollTo({ top: yCoordinate + yOffset, behavior: 'smooth' });
-                return true; // Found and scrolled
+                return true;
             }
         }
-        return false; // Not found
+        return false;
     };
 
     const handleSubmit = async (e) => {
@@ -93,32 +105,54 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
         setErrors({});
         setSuccessMessage('');
 
+        const data = new FormData();
+        data.append('_method', 'PUT'); // Spoof PUT method
+
+        for (const key in formData) {
+            if (formData[key] !== null) {
+                // Should only append passwords if they are not empty, but controller handles empty logic or validation handles it
+                // To avoid sending 'undefined' or 'null' strings
+                data.append(key, formData[key] === null ? '' : formData[key]);
+            }
+        }
+
+        if (photo) {
+            data.append('photo', photo);
+        }
+
         try {
-            const response = await axios.put('/api/user/profile', formData);
+            // Send as POST with _method=PUT
+            const response = await axios.post('/api/user/profile', data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
             if (onUserUpdate) {
                 onUserUpdate(response.data.user);
             }
             setSuccessMessage('Perfil actualizado correctamente.');
-            // Clear password fields after success/update
             setFormData(prev => ({
                 ...prev,
                 current_password: '',
                 password: '',
                 password_confirmation: ''
             }));
+            setPhoto(null); // Reset file input
+            // Update preview to the returned user URL (in case backend processed it)
+            if (response.data.user.profile_photo_url) {
+                setPhotoPreview(response.data.user.profile_photo_url);
+            }
+
             setTimeout(() => setSuccessMessage(''), 3000);
             scrollToTopWithOffset();
         } catch (err) {
             console.error("Error updating profile:", err);
             if (err.response && err.response.data.errors) {
                 setErrors(err.response.data.errors);
-                // Try scrolling to first error, fall back to top if not found
                 if (!scrollToFirstError(err.response.data.errors)) {
                     scrollToTopWithOffset();
                 }
             } else {
-                setSuccessMessage(''); // Ensure no success message
-                // Generic error could be handled if needed, or mapped to a general field
+                setSuccessMessage('');
                 alert('Error al actualizar el perfil. Por favor inténtalo de nuevo.');
                 scrollToTopWithOffset();
             }
@@ -136,6 +170,33 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-8">
+                {/* Photo Upload Section */}
+                <div className="flex flex-col items-center justify-center mb-6" id="photo-section">
+                    <div className="relative group">
+                        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#f2780d] bg-gray-100 dark:bg-gray-700">
+                            {photoPreview ? (
+                                <img src={photoPreview} alt="Profile" className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-gray-400 text-4xl">
+                                    <span className="material-symbols-outlined text-6xl">person</span>
+                                </div>
+                            )}
+                        </div>
+                        <label htmlFor="photo-upload" className="absolute bottom-0 right-0 w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                            <span className="material-symbols-outlined text-[#f2780d] text-lg">photo_camera</span>
+                        </label>
+                        <input
+                            id="photo-upload"
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePhotoChange}
+                            className="hidden"
+                        />
+                    </div>
+                    {errors.photo && <p className="text-red-500 text-xs mt-2">{errors.photo}</p>}
+                    <p className="text-xs text-gray-500 mt-2">Haz clic en la cámara para subir una foto nueva.</p>
+                </div>
+
                 {/* General Info */}
                 <div className="space-y-6">
                     <h4 className="text-md font-semibold text-gray-800 dark:text-gray-200 border-b pb-2">Información General</h4>
@@ -213,7 +274,6 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
                             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Confirmar Nueva Contraseña</label>
                             <input type="password" name="password_confirmation" value={formData.password_confirmation} onChange={handleInputChange}
                                 className={`w-full rounded-xl border ${errors.password ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'} dark:bg-gray-700 dark:text-white shadow-sm focus:border-[#f2780d] focus:ring focus:ring-[#f2780d] focus:ring-opacity-50 py-3 px-4`} />
-                            {/* Typically confirmation error comes in 'password' field, but we can check if there's a specific one if strict */}
                         </div>
                     </div>
                 </div>

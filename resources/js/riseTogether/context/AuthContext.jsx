@@ -81,7 +81,8 @@ export const AuthProvider = ({ children }) => {
                 logout,
                 isLoading,
                 errors,
-                getUser
+                getUser,
+                setUser // Exposed to allow manual updates
             }}
         >
             {children}

@@ -13,6 +13,8 @@ export default function useAuth() {
         login: context.login,
         register: context.register,
         logout: context.logout,
-        errors: context.errors
+        errors: context.errors,
+        getUser: context.getUser,
+        setUser: context.setUser
     };
 }
