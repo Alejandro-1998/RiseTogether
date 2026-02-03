@@ -33,6 +33,7 @@ class User extends Authenticatable
         'direccion',
         'numeroCuenta',
         'biografia',
+        'profile_photo_path',
     ];
 
     /**
@@ -45,11 +46,18 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $appends = ['roles_list'];
+    protected $appends = ['roles_list', 'profile_photo_url'];
 
     public function getRolesListAttribute()
     {
         return $this->getRoleNames();
+    }
+
+    public function getProfilePhotoUrlAttribute()
+    {
+        return $this->profile_photo_path
+                    ? asset('storage/' . $this->profile_photo_path)
+                    : 'https://ui-avatars.com/api/?name='.urlencode($this->nombreUsuario).'&color=7F9CF5&background=EBF4FF';
     }
 
     /**
