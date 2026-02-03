@@ -160,7 +160,7 @@ export default function AdminGestionUsuarios() {
 
           <main className="p-6">
             {/* CABECERA (igual que proyectos) */}
-            <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
               <div>
                 <p className="text-3xl font-bold leading-tight tracking-tight">
                   Gestión de usuarios
@@ -172,7 +172,7 @@ export default function AdminGestionUsuarios() {
 
               <button
                 onClick={abrirCrear}
-                className="px-5 py-2.5 rounded-xl font-semibold bg-[#ff7a00] hover:opacity-90 text-white shadow"
+                className="rounded-xl bg-[#f2780d] px-5 py-2 font-bold text-white hover:brightness-110 transition"
               >
                 + Crear usuario
               </button>

@@ -3,7 +3,7 @@ export default function TablaProyectos({ proyectos = [], onEdit, onDelete }) {
     <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-black/20 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm">
-          <thead className="bg-[#1e293b] text-white">
+          <thead className="bg-[#f2780d]/20 dark:bg-[#f2780d]/10 text-[#1e293b] dark:text-[#f2780d]">
             <tr>
               <Th>Nombre</Th>
               <Th>Creador</Th>
