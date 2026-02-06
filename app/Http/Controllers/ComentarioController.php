@@ -131,4 +131,41 @@ class ComentarioController extends Controller
 
         return response()->json($comentarios);
     }
+    /**
+     * Obtener comentarios de un proyecto específico.
+     */
+    public function getProjectComments($projectId)
+    {
+        // Fetch all comments for the project with user data
+        $allComments = Comentario::with('user')
+            ->where('idProyecto', $projectId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Build a tree structure
+        $commentsById = [];
+        $rootComments = [];
+
+        // First pass: Index by ID and initialize relations
+        foreach ($allComments as $comment) {
+            $comment->setRelation('comentarios_respuesta', collect([])); // Initialize as empty collection
+            $commentsById[$comment->id] = $comment;
+        }
+
+        // Second pass: Link children to parents
+        foreach ($allComments as $comment) {
+            if ($comment->idComentario) {
+                // It's a reply
+                if (isset($commentsById[$comment->idComentario])) {
+                    $parent = $commentsById[$comment->idComentario];
+                    $parent->comentarios_respuesta->push($comment);
+                }
+            } else {
+                // It's a root comment
+                $rootComments[] = $comment;
+            }
+        }
+
+        return response()->json(array_values($rootComments));
+    }
 }

@@ -8,6 +8,7 @@ import FooterPublic from "../../components/public/footer_public";
 import PortadaProyecto from "../../components/proyecto/portada_proyecto";
 import ObjetivosProyecto from "../../components/proyecto/objetivos_proyecto";
 import RecompensaCard from "../../components/proyecto/recompensa_card";
+import ComentariosTab from "../../components/proyecto/ComentariosTab";
 
 export default function ProyectoPage() {
   const { id } = useParams();
@@ -336,12 +337,7 @@ export default function ProyectoPage() {
             )}
 
             {pestana === "comentarios" && (
-              <div className="not-prose rounded-3xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-6">
-                <p className="font-bold text-lg">Comentarios</p>
-                <p className="text-sm text-[#9c7049] dark:text-[#9c7049]/80 mt-1">
-                  Sé el primero en dejar un comentario.
-                </p>
-              </div>
+              <ComentariosTab proyectoId={proyecto.id} />
             )}
           </div>
         </div>
