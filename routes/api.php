@@ -25,6 +25,7 @@ Route::get('/users/{id}', [UserController::class, 'show']); // Perfil público
 // Proyectos
 Route::get('/proyectos', [ProyectoController::class, 'index']);
 Route::get('/proyectos/{id}', [ProyectoController::class, 'show']);
+Route::get('/proyectos/{id}/comentarios', [ComentarioController::class, 'getProjectComments']);
 
 /// RUTAS PROTEGIDAS DE API ///
 
@@ -49,4 +50,5 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/logout', [LoginController::class, 'logout']);
+    Route::post('/comentarios', [ComentarioController::class, 'store']);
 });
