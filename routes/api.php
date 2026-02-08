@@ -52,4 +52,5 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/logout', [LoginController::class, 'logout']);
     Route::post('/comentarios', [ComentarioController::class, 'store']);
+    Route::post('/comentarios/{id}/like', [ComentarioController::class, 'toggleLike']);
 });

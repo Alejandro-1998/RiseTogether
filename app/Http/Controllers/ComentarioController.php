@@ -120,11 +120,13 @@ class ComentarioController extends Controller
      */
     public function comentariosRelevantes()
     {
-         $comentarios = Comentario::with('user')
+        $comentarios = Comentario::with('user')
             ->where('estado', 'aprobado')
-            ->withCount(['estrellasRecibidas as estrellas_recientes' => function ($query) {
-                $query->where('created_at', '>=', now()->subDays(7));
-            }])
+            ->withCount([
+                'estrellasRecibidas as estrellas_recientes' => function ($query) {
+                    $query->where('created_at', '>=', now()->subDays(7));
+                }
+            ])
             ->orderBy('estrellas_recientes', 'desc')
             ->limit(3)
             ->get();
@@ -132,23 +134,69 @@ class ComentarioController extends Controller
         return response()->json($comentarios);
     }
     /**
+     * Toggle like for a comment.
+     */
+    public function toggleLike($id)
+    {
+        $comentario = Comentario::findOrFail($id);
+        $user = Auth::user();
+
+        // Check if already liked
+        $existingLike = \App\Models\ComentarioEstrella::where('user_id', $user->id)
+            ->where('comentario_id', $comentario->id)
+            ->first();
+
+        if ($existingLike) {
+            $existingLike->delete();
+            $liked = false;
+        } else {
+            \App\Models\ComentarioEstrella::create([
+                'user_id' => $user->id,
+                'comentario_id' => $comentario->id,
+            ]);
+            $liked = true;
+        }
+
+        return response()->json([
+            'liked' => $liked,
+            'likes_count' => $comentario->estrellasRecibidas()->count()
+        ]);
+    }
+
+    /**
      * Obtener comentarios de un proyecto específico.
      */
     public function getProjectComments($projectId)
     {
-        // Fetch all comments for the project with user data
+        $userId = Auth::id();
+
+        // Fetch all comments for the project with user data and like counts
         $allComments = Comentario::with('user')
             ->where('idProyecto', $projectId)
+            ->withCount(['estrellasRecibidas as likes_count'])
             ->orderBy('created_at', 'desc')
             ->get();
+
+        // Check if current user liked each comment
+        // Efficient way: get all likes for these comments by this user
+        $userLikes = [];
+        if ($userId) {
+            $commentIds = $allComments->pluck('id');
+            $userLikes = \App\Models\ComentarioEstrella::where('user_id', $userId)
+                ->whereIn('comentario_id', $commentIds)
+                ->pluck('comentario_id')
+                ->flip()
+                ->toArray();
+        }
 
         // Build a tree structure
         $commentsById = [];
         $rootComments = [];
 
-        // First pass: Index by ID and initialize relations
+        // First pass: Index by ID and initialize relations and attributes
         foreach ($allComments as $comment) {
             $comment->setRelation('comentarios_respuesta', collect([])); // Initialize as empty collection
+            $comment->is_liked = isset($userLikes[$comment->id]);
             $commentsById[$comment->id] = $comment;
         }
 

@@ -36,6 +36,34 @@ const CommentItem = ({
     const [showReplies, setShowReplies] = useState(false);
     const hasReplies = comentario.comentarios_respuesta && comentario.comentarios_respuesta.length > 0;
 
+    const [likes, setLikes] = useState(comentario.likes_count || 0);
+    const [isLiked, setIsLiked] = useState(comentario.is_liked || false);
+    const [likeLoading, setLikeLoading] = useState(false);
+
+    const handleLike = async () => {
+        if (!isAuth) return;
+        if (likeLoading) return;
+
+        const previousLikes = likes;
+        const previousIsLiked = isLiked;
+
+        // Optimistic update
+        setIsLiked(!isLiked);
+        setLikes(isLiked ? likes - 1 : likes + 1);
+        setLikeLoading(true);
+
+        try {
+            await axios.post(`/api/comentarios/${comentario.id}/like`);
+        } catch (error) {
+            // Revert
+            setIsLiked(previousIsLiked);
+            setLikes(previousLikes);
+            console.error("Error liking comment:", error);
+        } finally {
+            setLikeLoading(false);
+        }
+    };
+
     return (
         <div className={`flex flex-col gap-2 ${isReply ? 'mt-3 pt-3 border-t border-[#eceae8] dark:border-[#3a2c20]' : 'p-4 bg-white dark:bg-[#1a120d] rounded-2xl border border-[#eceae8] dark:border-[#3a2c20]'}`}>
             <div className="flex gap-3">
@@ -72,6 +100,20 @@ const CommentItem = ({
                     </p>
 
                     <div className="flex items-center gap-4 mt-2">
+                        {/* Like Button */}
+                        <button
+                            onClick={handleLike}
+                            disabled={!isAuth}
+                            className={`group flex items-center gap-1.5 text-xs font-semibold transition-colors ${isLiked ? 'text-[#f2780d]' : 'text-[#9c7049] hover:text-[#f2780d]'
+                                } ${!isAuth ? 'opacity-50 cursor-default' : ''}`}
+                            title={!isAuth ? "Inicia sesión para dar me gusta" : ""}
+                        >
+                            <span className={`material-symbols-outlined text-[18px] ${isLiked ? 'font-variation-fill' : ''}`} style={isLiked ? { fontVariationSettings: "'FILL' 1" } : {}}>
+                                thumb_up
+                            </span>
+                            <span>{likes}</span>
+                        </button>
+
                         {/* Toggle Replies Button */}
                         {hasReplies && (
                             <button
