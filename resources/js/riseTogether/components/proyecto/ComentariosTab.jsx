@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import useAuth from "../../hooks/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const formatearFecha = (fecha) => {
     if (!fecha) return "";
@@ -65,7 +65,10 @@ const CommentItem = ({
     };
 
     return (
-        <div className={`flex flex-col gap-2 ${isReply ? 'mt-3 pt-3 border-t border-[#eceae8] dark:border-[#3a2c20]' : 'p-4 bg-white dark:bg-[#1a120d] rounded-2xl border border-[#eceae8] dark:border-[#3a2c20]'}`}>
+        <div
+            id={`comment-${comentario.id}`}
+            className={`flex flex-col gap-2 ${isReply ? 'mt-3 pt-3 border-t border-[#eceae8] dark:border-[#3a2c20]' : 'p-4 bg-white dark:bg-[#1a120d] rounded-2xl border border-[#eceae8] dark:border-[#3a2c20]'}`}
+        >
             <div className="flex gap-3">
                 {/* Column for Avatar and Vertical Line */}
                 <div className="flex flex-col items-center">
@@ -205,6 +208,7 @@ const CommentItem = ({
 
 export default function ComentariosTab({ proyectoId }) {
     const { user, isAuth } = useAuth();
+    const location = useLocation();
     const [comentarios, setComentarios] = useState([]);
     const [mensaje, setMensaje] = useState("");
     const [loading, setLoading] = useState(true);
@@ -218,6 +222,22 @@ export default function ComentariosTab({ proyectoId }) {
     useEffect(() => {
         cargarComentarios();
     }, [proyectoId]);
+
+    // Handle scroll to comment from hash
+    useEffect(() => {
+        if (!loading && comentarios.length > 0 && location.hash) {
+            const id = location.hash.substring(1); // remove '#'
+            const element = document.getElementById(id);
+            if (element) {
+                setTimeout(() => {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    // Optional: Highlight effect
+                    element.classList.add('bg-[#f2780d]/10');
+                    setTimeout(() => element.classList.remove('bg-[#f2780d]/10'), 2000);
+                }, 500); // Small delay to ensure rendering
+            }
+        }
+    }, [loading, comentarios, location.hash]);
 
     const cargarComentarios = async () => {
         try {
