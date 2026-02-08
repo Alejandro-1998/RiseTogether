@@ -121,7 +121,7 @@ class ComentarioController extends Controller
     public function comentariosRelevantes()
     {
         $comentarios = Comentario::with('user')
-            ->where('estado', 'aprobado')
+            // ->where('estado', 'aprobado') // Commented out to show all comments for now
             ->withCount([
                 'estrellasRecibidas as estrellas_recientes' => function ($query) {
                     $query->where('created_at', '>=', now()->subDays(7));
