@@ -20,6 +20,7 @@ Route::get('/proyectos/destacados', [ProyectoController::class, 'proyectosDestac
 Route::get('/proyectos/historias-exito', [ProyectoController::class, 'historiasExito']);
 Route::get('/comentarios/relevantes', [ComentarioController::class, 'comentariosRelevantes']);
 Route::get('/categorias', [CategoriaController::class, 'index']);
+Route::get('/eventos', [App\Http\Controllers\EventoController::class, 'index']);
 Route::get('/about-us', [\App\Http\Controllers\AboutUsController::class, 'index']);
 Route::get('/users/{id}', [UserController::class, 'show']); // Perfil público
 
@@ -48,6 +49,16 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/users', [UserController::class, 'index']); // Admin USERS list
         Route::get('/admin/proyectos', [ProyectoController::class, 'indexAdmin']); // Admin PROJECTS list
         Route::get('/admin/stats', [App\Http\Controllers\AdminController::class, 'stats']);
+
+        // Categorias CRUD
+        Route::post('/categorias', [CategoriaController::class, 'store']);
+        Route::put('/categorias/{id}', [CategoriaController::class, 'update']);
+        Route::delete('/categorias/{id}', [CategoriaController::class, 'destroy']);
+
+        // Eventos CRUD
+        Route::post('/eventos', [App\Http\Controllers\EventoController::class, 'store']);
+        Route::put('/eventos/{id}', [App\Http\Controllers\EventoController::class, 'update']);
+        Route::delete('/eventos/{id}', [App\Http\Controllers\EventoController::class, 'destroy']);
     });
 
     Route::post('/logout', [LoginController::class, 'logout']);

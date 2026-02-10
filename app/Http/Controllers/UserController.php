@@ -68,6 +68,17 @@ class UserController extends Controller
             'biografia' => ['nullable', 'string'],
             'numeroCuenta' => ['nullable', 'string', 'size:24', 'regex:/^ES[0-9]{22}$/', Rule::unique('users')->ignore($usuario->id)],
             'photo' => ['nullable', 'image', 'max:2048'], // 2MB Max
+            'banner_photo' => ['nullable', 'image', 'max:4096'], // 4MB Max for banner
+        ], [
+            'nombreUsuario.required' => 'El nombre de usuario es obligatorio.',
+            'nombreUsuario.unique' => 'Este nombre de usuario ya está en uso.',
+            'email.email' => 'El correo electrónico no es válido.',
+            'email.unique' => 'Este correo electrónico ya está registrado.',
+            'dni.max' => 'El DNI no puede tener más de 9 caracteres.',
+            'dni.unique' => 'Este DNI ya está registrado.',
+            'numeroCuenta.size' => 'El número de cuenta debe tener exactamente 24 caracteres.',
+            'numeroCuenta.regex' => 'El formato del número de cuenta es inválido (debe empezar por ES seguido de 22 dígitos).',
+            'numeroCuenta.unique' => 'Este número de cuenta ya está asociado a otro usuario.',
         ]);
 
         if ($request->hasFile('photo')) {
@@ -77,6 +88,15 @@ class UserController extends Controller
 
             $path = $request->file('photo')->store('profile-photos', 'public');
             $validaciones['profile_photo_path'] = $path;
+        }
+
+        if ($request->hasFile('banner_photo')) {
+            if ($usuario->banner_photo_path) {
+                Storage::disk('public')->delete($usuario->banner_photo_path);
+            }
+
+            $path = $request->file('banner_photo')->store('profile-banners', 'public');
+            $validaciones['banner_photo_path'] = $path;
         }
 
         if ($request->has('role')) {
@@ -100,6 +120,7 @@ class UserController extends Controller
                 'password' => ['required', 'string', 'min:8', 'confirmed'],
             ], [
                 'current_password.current_password' => 'La contraseña actual no es correcta.',
+                'password.required' => 'La nueva contraseña es obligatoria.',
                 'password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
                 'password.confirmed' => 'La confirmación de la contraseña no coincide.',
             ]);

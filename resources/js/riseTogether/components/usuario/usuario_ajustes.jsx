@@ -16,6 +16,8 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
     });
     const [photo, setPhoto] = useState(null);
     const [photoPreview, setPhotoPreview] = useState(null);
+    const [banner, setBanner] = useState(null);
+    const [bannerPreview, setBannerPreview] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [errors, setErrors] = useState({});
 
@@ -33,6 +35,7 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
                 password_confirmation: ''
             });
             setPhotoPreview(user.profile_photo_url || null);
+            setBannerPreview(user.banner_photo_url || null);
         }
     }, [user]);
 
@@ -61,6 +64,14 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
         if (file) {
             setPhoto(file);
             setPhotoPreview(URL.createObjectURL(file));
+        }
+    };
+
+    const handleBannerChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setBanner(file);
+            setBannerPreview(URL.createObjectURL(file));
         }
     };
 
@@ -119,6 +130,9 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
         if (photo) {
             data.append('photo', photo);
         }
+        if (banner) {
+            data.append('banner_photo', banner);
+        }
 
         try {
             // Send as POST with _method=PUT
@@ -137,9 +151,13 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
                 password_confirmation: ''
             }));
             setPhoto(null); // Reset file input
+            setBanner(null);
             // Update preview to the returned user URL (in case backend processed it)
             if (response.data.user.profile_photo_url) {
                 setPhotoPreview(response.data.user.profile_photo_url);
+            }
+            if (response.data.user.banner_photo_url) {
+                setBannerPreview(response.data.user.banner_photo_url);
             }
 
             setTimeout(() => setSuccessMessage(''), 3000);
@@ -171,30 +189,60 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
 
             <form onSubmit={handleSubmit} className="space-y-8">
                 {/* Photo Upload Section */}
-                <div className="flex flex-col items-center justify-center mb-6" id="photo-section">
-                    <div className="relative group">
-                        <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#f2780d] bg-gray-100 dark:bg-gray-700">
-                            {photoPreview ? (
-                                <img src={photoPreview} alt="Profile" className="w-full h-full object-cover" />
+                {/* Photos Section */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    {/* Profile Photo */}
+                    <div className="flex flex-col items-center justify-center" id="photo-section">
+                        <p className="mb-4 font-semibold text-gray-700 dark:text-gray-300">Foto de Perfil</p>
+                        <div className="relative group">
+                            <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-[#f2780d] bg-gray-100 dark:bg-gray-700">
+                                {photoPreview ? (
+                                    <img src={photoPreview} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-4xl">
+                                        <span className="material-symbols-outlined text-6xl">person</span>
+                                    </div>
+                                )}
+                            </div>
+                            <label htmlFor="photo-upload" className="absolute bottom-0 right-0 w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+                                <span className="material-symbols-outlined text-[#f2780d] text-lg">photo_camera</span>
+                            </label>
+                            <input
+                                id="photo-upload"
+                                type="file"
+                                accept="image/*"
+                                onChange={handlePhotoChange}
+                                className="hidden"
+                            />
+                        </div>
+                        {errors.photo && <p className="text-red-500 text-xs mt-2">{errors.photo}</p>}
+                    </div>
+
+                    {/* Banner Photo */}
+                    <div className="flex flex-col items-center justify-center" id="banner-section">
+                        <p className="mb-4 font-semibold text-gray-700 dark:text-gray-300">Banner del Perfil</p>
+                        <div className="relative group w-full max-w-sm h-32 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-[#f2780d] transition bg-gray-50 dark:bg-gray-800">
+                            {bannerPreview ? (
+                                <img src={bannerPreview} alt="Banner" className="w-full h-full object-cover" />
                             ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-400 text-4xl">
-                                    <span className="material-symbols-outlined text-6xl">person</span>
+                                <div className="w-full h-full flex flex-col items-center justify-center text-gray-400">
+                                    <span className="material-symbols-outlined text-4xl mb-1">wallpaper</span>
+                                    <span className="text-xs">Subir banner</span>
                                 </div>
                             )}
+                            <label htmlFor="banner-upload" className="absolute inset-0 flex items-center justify-center cursor-pointer bg-black/0 hover:bg-black/10 transition">
+                                {/* Invisible overlay for click */}
+                            </label>
+                            <input
+                                id="banner-upload"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleBannerChange}
+                                className="hidden"
+                            />
                         </div>
-                        <label htmlFor="photo-upload" className="absolute bottom-0 right-0 w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-600 flex items-center justify-center cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                            <span className="material-symbols-outlined text-[#f2780d] text-lg">photo_camera</span>
-                        </label>
-                        <input
-                            id="photo-upload"
-                            type="file"
-                            accept="image/*"
-                            onChange={handlePhotoChange}
-                            className="hidden"
-                        />
+                        {errors.banner_photo && <p className="text-red-500 text-xs mt-2">{errors.banner_photo}</p>}
                     </div>
-                    {errors.photo && <p className="text-red-500 text-xs mt-2">{errors.photo}</p>}
-                    <p className="text-xs text-gray-500 mt-2">Haz clic en la cámara para subir una foto nueva.</p>
                 </div>
 
                 {/* General Info */}

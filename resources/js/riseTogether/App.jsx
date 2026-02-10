@@ -12,6 +12,10 @@ import UsuarioPage from "./pages/public/UsuarioPage";
 import ProyectoPage from "./pages/public/ProyectoPage";
 import AdminGestionProyectos from "./pages/admin/AdminGestionProyectos";
 import AdminGestionUsuarios from "./pages/admin/AdminGestionUsuarios";
+import AdminCategorias from "./pages/admin/AdminCategorias";
+import AdminEventos from "./pages/admin/AdminEventos";
+import AdminPagos from "./pages/admin/AdminPagos";
+
 import SobreNosotrosPage from "./pages/public/SobreNosotrosPage";
 import ContactoPage from "./pages/public/ContactoPage";
 import AvisoLegalPage from "./pages/public/AvisoLegalPage";
@@ -40,6 +44,9 @@ function App() {
             <Route path="/administrador" element={<AdminDashboard />} />
             <Route path="/administrador/usuarios" element={<AdminGestionUsuarios />} />
             <Route path="/administrador/proyectos" element={<AdminGestionProyectos />} />
+            <Route path="/administrador/categorias" element={<AdminCategorias />} />
+            <Route path="/administrador/eventos" element={<AdminEventos />} />
+            <Route path="/administrador/pagos" element={<AdminPagos />} />
           </Route>
 
           {/* Crear Proyecto */}

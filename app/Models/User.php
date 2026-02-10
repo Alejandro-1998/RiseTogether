@@ -34,6 +34,7 @@ class User extends Authenticatable
         'numeroCuenta',
         'biografia',
         'profile_photo_path',
+        'banner_photo_path',
     ];
 
     /**
@@ -46,7 +47,7 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $appends = ['roles_list', 'profile_photo_url'];
+    protected $appends = ['roles_list', 'profile_photo_url', 'banner_photo_url'];
 
     public function getRolesListAttribute()
     {
@@ -58,6 +59,13 @@ class User extends Authenticatable
         return $this->profile_photo_path
                     ? asset('storage/' . $this->profile_photo_path)
                     : 'https://ui-avatars.com/api/?name='.urlencode($this->nombreUsuario).'&color=7F9CF5&background=EBF4FF';
+    }
+
+    public function getBannerPhotoUrlAttribute()
+    {
+        return $this->banner_photo_path
+                    ? asset('storage/' . $this->banner_photo_path)
+                    : null; // Or a default banner URL
     }
 
     /**
