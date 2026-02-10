@@ -14,7 +14,7 @@ class AboutUsController extends Controller
                 'id' => $user->id,
                 'name' => $user->nombreCompleto ?? $user->nombreUsuario,
                 'roleLabel' => 'Administrador',
-                'avatarUrl' => $user->avatar ?? 'https://ui-avatars.com/api/?name=' . urlencode($user->nombreUsuario) . '&background=f2780d&color=fff',
+                'avatarUrl' => $user->profile_photo_url,
             ];
         });
 

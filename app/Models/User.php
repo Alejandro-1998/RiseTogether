@@ -58,7 +58,7 @@ class User extends Authenticatable
     {
         return $this->profile_photo_path
                     ? asset('storage/' . $this->profile_photo_path)
-                    : 'https://ui-avatars.com/api/?name='.urlencode($this->nombreUsuario).'&color=7F9CF5&background=EBF4FF';
+                    : 'https://ui-avatars.com/api/?name='.urlencode($this->nombreUsuario).'&color=fff&background=f2780d';
     }
 
     public function getBannerPhotoUrlAttribute()

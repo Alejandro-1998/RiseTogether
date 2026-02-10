@@ -46,10 +46,16 @@ function AdminCard({ admin }) {
 
     return (
         <div className="flex flex-col items-center text-center gap-4">
-            <div
-                className="size-32 rounded-full overflow-hidden border-4 border-white dark:border-gray-800 shadow-xl bg-cover bg-center"
-                style={{ backgroundImage: `url('${img}')` }}
-            />
+            <div className="size-32 rounded-full overflow-hidden border-4 border-white dark:border-gray-800 shadow-xl bg-gray-200 dark:bg-gray-800">
+                <img
+                    src={img}
+                    alt={name}
+                    className="h-full w-full object-cover"
+                    onError={(e) => {
+                        e.target.src = "/img/admin-placeholder.png";
+                    }}
+                />
+            </div>
             <div>
                 <h4 className="font-bold">{name}</h4>
                 <p className="text-sm text-[#f2780d]">{roleLabel}</p>

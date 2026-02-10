@@ -23,6 +23,12 @@ export default function ProyectoPage() {
   const [donationError, setDonationError] = useState("");
 
   useEffect(() => {
+    if (location.hash && location.hash.startsWith("#comment-")) {
+      setPestana("comentarios");
+    }
+  }, [location.hash]);
+
+  useEffect(() => {
     const params = new URLSearchParams(location.search);
     const estadoPago = params.get("pago");
     if (estadoPago === "exito") {
