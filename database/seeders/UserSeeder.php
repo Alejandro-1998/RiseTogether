@@ -109,7 +109,7 @@ class UserSeeder extends Seeder
         User::firstOrCreate(
             ['email' => 'virginia.millan@davante.es'],
             [
-                'dni' => '12345678E',
+                'dni' => '12345678I',
                 'nombreUsuario' => 'Virginia',
                 'nombreCompleto' => 'Virginia Millán',
                 'password' => bcrypt('password'),
