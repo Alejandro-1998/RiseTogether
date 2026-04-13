@@ -50,12 +50,12 @@ class UserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'fali@example.com'],
+            ['email' => 'rafael@example.com'],
             [
                 'dni' => '12345678E',
-                'nombreUsuario' => 'Fali',
+                'nombreUsuario' => 'Rafael',
                 'nombreCompleto' => 'Rafael de la Fuente López',
-                'password' => bcrypt('fali123'),
+                'password' => bcrypt('rafael123'),
                 'fechaNacimiento' => '1990-01-01',
                 'direccion' => 'Calle Falsa 123',
                 'numeroCuenta' => 'ES12345678901234567894',
@@ -66,6 +66,8 @@ class UserSeeder extends Seeder
         User::where('id', 2)->first()->assignRole('admin');
         User::where('id', 3)->first()->assignRole('admin');
         User::where('id', 4)->first()->assignRole('admin');
+
+        
 
         // Usuarios aleatorios
         User::factory(5)->create();
