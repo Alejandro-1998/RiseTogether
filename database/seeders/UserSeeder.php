@@ -67,7 +67,62 @@ class UserSeeder extends Seeder
         User::where('id', 3)->first()->assignRole('admin');
         User::where('id', 4)->first()->assignRole('admin');
 
-        
+        User::firstOrCreate(
+            ['email' => 'javier.ruiz@davante.com'],
+            [
+                'dni' => '12345678E',
+                'nombreUsuario' => 'Javier',
+                'nombreCompleto' => 'Javier Ruiz',
+                'password' => bcrypt('password'),
+                'fechaNacimiento' => '1990-01-01',
+                'direccion' => 'Calle Falsa 123',
+                'numeroCuenta' => 'ES12345678901234567894',
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'pablo.santaella@davante.com'],
+            [
+                'dni' => '12345678E',
+                'nombreUsuario' => 'Pablo',
+                'nombreCompleto' => 'Pablo Santaella',
+                'password' => bcrypt('password'),
+                'fechaNacimiento' => '1990-01-01',
+                'direccion' => 'Calle Falsa 123',
+                'numeroCuenta' => 'ES12345678901234567894',
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'sergio.diaz@davante.com'],
+            [
+                'dni' => '12345678E',
+                'nombreUsuario' => 'Sergio',
+                'nombreCompleto' => 'Sergio Díaz',
+                'password' => bcrypt('password'),
+                'fechaNacimiento' => '1990-01-01',
+                'direccion' => 'Calle Falsa 123',
+                'numeroCuenta' => 'ES12345678901234567894',
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'virginia.millan@davante.com'],
+            [
+                'dni' => '12345678E',
+                'nombreUsuario' => 'Virginia',
+                'nombreCompleto' => 'Virginia Millán',
+                'password' => bcrypt('password'),
+                'fechaNacimiento' => '1990-01-01',
+                'direccion' => 'Calle Falsa 123',
+                'numeroCuenta' => 'ES12345678901234567894',
+            ]
+        );
+
+        User::where('id', 5)->first()->assignRole('admin');
+        User::where('id', 6)->first()->assignRole('admin');
+        User::where('id', 7)->first()->assignRole('admin');
+        User::where('id', 8)->first()->assignRole('admin');
 
         // Usuarios aleatorios
         User::factory(5)->create();
