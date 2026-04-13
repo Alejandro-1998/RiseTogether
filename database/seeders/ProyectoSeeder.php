@@ -23,7 +23,49 @@ class ProyectoSeeder extends Seeder
             'categoria_id'          => 6,
             'titulo'                => 'Eco-City Garden: Jardines Urbanos',
             'slug'                  => Str::slug('eco-city-garden-jardines-urbanos'),
-            'descripcion'           => 'Este proyecto busca instalar jardines en 10 edificios del centro...',
+            'descripcion'           => 'Eco-City Garden: Jardines Urbanos es un proyecto de crowdfunding que nace como respuesta a uno de los grandes desafíos de las ciudades modernas: la desconexión entre las personas y la naturaleza, y la necesidad urgente de sistemas alimentarios más sostenibles, locales y accesibles.
+
+🌱 Visión del proyecto
+
+Eco-City Garden busca transformar pequeños espacios urbanos —balcones, patios, azoteas o jardines comunitarios— en microecosistemas productivos. La idea central es democratizar el acceso al cultivo de alimentos frescos mediante kits de jardinería modulares, ecológicos y fáciles de usar, diseñados especialmente para entornos urbanos.
+
+La imagen representa uno de los prototipos: una cama de cultivo elevada de madera, dividida en compartimentos, que permite organizar distintas plantas (hierbas aromáticas, vegetales de hoja, tomates, chiles, etc.) en un mismo espacio optimizado. Este diseño no solo facilita el mantenimiento, sino que también fomenta prácticas como la rotación de cultivos y la biodiversidad en miniatura.
+
+🧩 ¿Qué ofrece Eco-City Garden?
+
+El proyecto se centra en un kit integral de jardín urbano, que incluye:
+
+- Estructura modular de madera sostenible: resistente, estética y fácil de montar sin herramientas complejas.
+- Sistema de compartimentos inteligentes: permite separar cultivos según sus necesidades (agua, luz, nutrientes).
+- Sustrato orgánico optimizado: mezcla rica en nutrientes, lista para usar.
+- Selección de semillas ecológicas: adaptadas a climas urbanos y ciclos cortos.
+- Guía educativa interactiva: acceso a contenido digital con instrucciones paso a paso, calendario de siembra y consejos de cuidado.
+- Herramientas básicas de jardinería: como pala, guantes y marcadores de cultivo.
+
+Eco-City Garden no es solo un producto, sino una iniciativa con impacto medible:
+
+- Reducción de la huella de carbono: al fomentar el consumo de alimentos cultivados localmente.
+- Educación ambiental: especialmente dirigida a familias y escuelas urbanas.
+- Bienestar emocional: el contacto con la naturaleza reduce el estrés y mejora la calidad de vida.
+- Comunidades más fuertes: promueve la creación de huertos comunitarios y redes de intercambio.
+
+Lo que diferencia a Eco-City Garden de otros proyectos similares es su enfoque en la simplicidad + diseño + educación:
+
+- Sistema pensado para principiantes absolutos.
+- Diseño compacto ideal para espacios pequeños.
+- Integración con una app (en desarrollo) que guía al usuario según clima, ubicación y tipo de cultivo.
+- Posibilidad de expansión modular (añadir más unidades con el tiempo).
+
+Los fondos se destinarán a:
+
+- Producción sostenible a escala.
+- Desarrollo tecnológico (app y sistema inteligente).
+- Logística y distribución.
+- Programas educativos en comunidades vulnerables.
+
+Eco-City Garden aspira a convertirse en una red global de microhuertos urbanos interconectados, donde cada usuario no solo cultive alimentos, sino que también forme parte de un movimiento hacia ciudades más verdes, resilientes y autosuficientes.
+
+En esencia, este proyecto convierte un simple cajón de cultivo en una herramienta de cambio urbano, ambiental y social. No se trata solo de plantar alimentos, sino de cultivar conciencia. 🌿',
             'objetivo_financiacion' => 15000.00,
             'cantidad_recaudada'    => 8500.00,
             'fecha_limite'          => now()->addDays(30),

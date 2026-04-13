@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('idProyecto');
             $table->string('nombreRecompensa');
             $table->decimal('costoRecompensa');
-            $table->text('descripcionRecompensa');
+            $table->longText('descripcionRecompensa');
             $table->enum('tipoEntrega', ['digital', 'fisica', 'mixta', 'desbloqueo'])->default('fisica');
             $table->timestamps();
             $table->softDeletes();
