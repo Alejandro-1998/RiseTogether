@@ -70,7 +70,7 @@ class UserSeeder extends Seeder
         User::firstOrCreate(
             ['email' => 'javier.ruiz@davante.es'],
             [
-                'dni' => '12345678E',
+                'dni' => '12345678F',
                 'nombreUsuario' => 'Javier',
                 'nombreCompleto' => 'Javier Ruiz',
                 'password' => bcrypt('password'),
@@ -83,7 +83,7 @@ class UserSeeder extends Seeder
         User::firstOrCreate(
             ['email' => 'pablo.santaella@davante.es'],
             [
-                'dni' => '12345678E',
+                'dni' => '12345678G',
                 'nombreUsuario' => 'Pablo',
                 'nombreCompleto' => 'Pablo Santaella',
                 'password' => bcrypt('password'),
@@ -96,7 +96,7 @@ class UserSeeder extends Seeder
         User::firstOrCreate(
             ['email' => 'sergio.diaz@davante.es'],
             [
-                'dni' => '12345678E',
+                'dni' => '12345678H',
                 'nombreUsuario' => 'Sergio',
                 'nombreCompleto' => 'Sergio Díaz',
                 'password' => bcrypt('password'),
