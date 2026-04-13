@@ -76,7 +76,7 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'fechaNacimiento' => '1990-01-01',
                 'direccion' => 'Calle Falsa 123',
-                'numeroCuenta' => 'ES12345678901234567894',
+                'numeroCuenta' => 'ES12345678901234567834',
             ]
         );
 
@@ -89,7 +89,7 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'fechaNacimiento' => '1990-01-01',
                 'direccion' => 'Calle Falsa 123',
-                'numeroCuenta' => 'ES12345678901234567894',
+                'numeroCuenta' => 'ES12345678901234567835',
             ]
         );
 
@@ -102,7 +102,7 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'fechaNacimiento' => '1990-01-01',
                 'direccion' => 'Calle Falsa 123',
-                'numeroCuenta' => 'ES12345678901234567894',
+                'numeroCuenta' => 'ES12345678901234567836',
             ]
         );
 
@@ -115,7 +115,7 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('password'),
                 'fechaNacimiento' => '1990-01-01',
                 'direccion' => 'Calle Falsa 123',
-                'numeroCuenta' => 'ES12345678901234567894',
+                'numeroCuenta' => 'ES12345678901234567813',
             ]
         );
 
