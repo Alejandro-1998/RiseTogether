@@ -22,7 +22,7 @@ export default function RecompensaCard({ recompensa, onSupport }) {
       <div className="flex-1">
         <p className="text-2xl font-bold text-[#1c140d] dark:text-white">{precio} €</p>
         <p className="mt-1 font-bold text-[#1c140d] dark:text-white">{titulo}</p>
-        <p className="mt-2 text-sm text-[#9c7049] dark:text-[#9c7049]/80">{descripcion}</p>
+        <p className="mt-2 text-sm text-[#9c7049] dark:text-[#9c7049]/80 whitespace-pre-line">{descripcion}</p>
       </div>
 
       <button
