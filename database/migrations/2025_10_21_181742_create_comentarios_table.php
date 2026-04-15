@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('idUsuario');
             $table->unsignedBigInteger('idProyecto');
+            $table->unsignedBigInteger('idActualizacion')->nullable();
             $table->unsignedBigInteger('idComentario')->nullable();
             $table->text('mensaje');
             $table->dateTime('fechaHora');
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->foreign('idProyecto')->references('id')->on('proyectos')->onDelete('cascade');
+            $table->foreign('idActualizacion')->references('id')->on('proyecto_actualizaciones')->onDelete('cascade');
             $table->foreign('idUsuario')->references('id')->on('users');
             $table->foreign('idComentario')->references('id')->on('comentarios');
         });

@@ -32,6 +32,7 @@ class ComentarioController extends Controller
     {
         $request->validate([
             'idProyecto' => 'required|exists:proyectos,id',
+            'idActualizacion' => 'nullable|exists:proyecto_actualizaciones,id',
             'idComentario' => 'nullable|exists:comentarios,id',
             'mensaje' => 'required|string|min:3|max:1000',
             'fechaHora' => 'required|date',
@@ -53,6 +54,7 @@ class ComentarioController extends Controller
         $comentario = Comentario::create([
             'idUsuario' => Auth::id(),
             'idProyecto' => $request->idProyecto,
+            'idActualizacion' => $request->idActualizacion,
             'idComentario' => $request->idComentario,
             'mensaje' => $request->mensaje,
             'fechaHora' => $request->fechaHora,

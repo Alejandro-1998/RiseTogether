@@ -9,6 +9,7 @@ import PortadaProyecto from "../../components/proyecto/portada_proyecto";
 import ObjetivosProyecto from "../../components/proyecto/objetivos_proyecto";
 import RecompensaCard from "../../components/proyecto/recompensa_card";
 import ComentariosTab from "../../components/proyecto/ComentariosTab";
+import ActualizacionesTab from "../../components/proyecto/ActualizacionesTab";
 
 export default function ProyectoPage() {
   const { id } = useParams();
@@ -325,12 +326,10 @@ export default function ProyectoPage() {
             )}
 
             {pestana === "actualizaciones" && (
-              <div className="not-prose rounded-3xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-6">
-                <p className="font-bold text-lg">Actualizaciones</p>
-                <p className="text-sm text-[#9c7049] dark:text-[#9c7049]/80 mt-1">
-                  No hay actualizaciones publicadas todavía.
-                </p>
-              </div>
+                <ActualizacionesTab 
+                    proyectoId={proyecto.id} 
+                    isOwner={user?.id === proyecto.user_id} 
+                />
             )}
 
             {pestana === "faq" && (
