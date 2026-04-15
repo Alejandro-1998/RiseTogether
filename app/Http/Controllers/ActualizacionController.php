@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Http\Controllers;
+
 use App\Models\Proyecto;
 use App\Models\ProyectoActualizacion;
 use App\Models\Comentario;
