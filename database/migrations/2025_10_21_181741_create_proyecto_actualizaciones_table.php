@@ -11,16 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('recompensas', function (Blueprint $table) {
+        Schema::create('proyecto_actualizaciones', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('idProyecto');
-            $table->string('nombreRecompensa');
-            $table->decimal('costoRecompensa');
-            $table->longText('descripcionRecompensa');
-            $table->enum('tipoEntrega', ['digital', 'fisica', 'mixta', 'desbloqueo'])->default('fisica');
+            $table->string('titulo');
+            $table->text('contenido');
             $table->timestamps();
             $table->softDeletes();
-
             $table->foreign('idProyecto')->references('id')->on('proyectos')->onDelete('cascade');
         });
     }
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('recompensas');
+        Schema::dropIfExists('proyecto_actualizaciones');
     }
 };

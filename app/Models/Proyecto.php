@@ -51,6 +51,11 @@ class Proyecto extends Model
         return $this->hasMany(Recompensa::class, 'idProyecto');
     }
 
+    function actualizaciones()
+    {
+        return $this->hasMany(ProyectoActualizacion::class, 'idProyecto');
+    }
+
     function facturas()
     {
         return $this->hasMany(Factura::class);

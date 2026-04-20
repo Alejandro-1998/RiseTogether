@@ -50,12 +50,12 @@ class UserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'fali@example.com'],
+            ['email' => 'rafael@example.com'],
             [
                 'dni' => '12345678E',
-                'nombreUsuario' => 'Fali',
+                'nombreUsuario' => 'Rafael',
                 'nombreCompleto' => 'Rafael de la Fuente López',
-                'password' => bcrypt('fali123'),
+                'password' => bcrypt('rafael123'),
                 'fechaNacimiento' => '1990-01-01',
                 'direccion' => 'Calle Falsa 123',
                 'numeroCuenta' => 'ES12345678901234567894',
@@ -66,6 +66,63 @@ class UserSeeder extends Seeder
         User::where('id', 2)->first()->assignRole('admin');
         User::where('id', 3)->first()->assignRole('admin');
         User::where('id', 4)->first()->assignRole('admin');
+
+        User::firstOrCreate(
+            ['email' => 'javier.ruiz@davante.es'],
+            [
+                'dni' => '12345678F',
+                'nombreUsuario' => 'Javier',
+                'nombreCompleto' => 'Javier Ruiz',
+                'password' => bcrypt('password'),
+                'fechaNacimiento' => '1990-01-01',
+                'direccion' => 'Calle Falsa 123',
+                'numeroCuenta' => 'ES12345678901234567834',
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'pablo.santaella@davante.es'],
+            [
+                'dni' => '12345678G',
+                'nombreUsuario' => 'Pablo',
+                'nombreCompleto' => 'Pablo Santaella',
+                'password' => bcrypt('password'),
+                'fechaNacimiento' => '1990-01-01',
+                'direccion' => 'Calle Falsa 123',
+                'numeroCuenta' => 'ES12345678901234567835',
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'sergio.diaz@davante.es'],
+            [
+                'dni' => '12345678H',
+                'nombreUsuario' => 'Sergio',
+                'nombreCompleto' => 'Sergio Díaz',
+                'password' => bcrypt('password'),
+                'fechaNacimiento' => '1990-01-01',
+                'direccion' => 'Calle Falsa 123',
+                'numeroCuenta' => 'ES12345678901234567836',
+            ]
+        );
+
+        User::firstOrCreate(
+            ['email' => 'virginia.millan@davante.es'],
+            [
+                'dni' => '12345678I',
+                'nombreUsuario' => 'Virginia',
+                'nombreCompleto' => 'Virginia Millán',
+                'password' => bcrypt('password'),
+                'fechaNacimiento' => '1990-01-01',
+                'direccion' => 'Calle Falsa 123',
+                'numeroCuenta' => 'ES12345678901234567813',
+            ]
+        );
+
+        User::where('id', 5)->first()->assignRole('admin');
+        User::where('id', 6)->first()->assignRole('admin');
+        User::where('id', 7)->first()->assignRole('admin');
+        User::where('id', 8)->first()->assignRole('admin');
 
         // Usuarios aleatorios
         User::factory(5)->create();

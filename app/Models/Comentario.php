@@ -17,6 +17,7 @@ class Comentario extends Model
     protected $fillable = [
         'idUsuario',
         'idProyecto',
+        'idActualizacion',
         'idComentario',
         'mensaje',
         'fechaHora',
@@ -42,6 +43,11 @@ class Comentario extends Model
     function proyectos()
     {
         return $this->hasMany(Proyecto::class);
+    }
+
+    function actualizacion()
+    {
+        return $this->belongsTo(ProyectoActualizacion::class, 'idActualizacion');
     }
 
     public function estrellasRecibidas()

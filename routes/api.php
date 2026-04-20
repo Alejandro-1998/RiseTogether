@@ -8,6 +8,7 @@ use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\EventoController;
 
 /// RUTAS PÚBLICAS DE API ///
 
@@ -20,7 +21,12 @@ Route::get('/proyectos/destacados', [ProyectoController::class, 'proyectosDestac
 Route::get('/proyectos/historias-exito', [ProyectoController::class, 'historiasExito']);
 Route::get('/comentarios/relevantes', [ComentarioController::class, 'comentariosRelevantes']);
 Route::get('/categorias', [CategoriaController::class, 'index']);
-Route::get('/eventos', [App\Http\Controllers\EventoController::class, 'index']);
+Route::get('/eventos', [EventoController::class, 'index']);
+Route::get('/eventos/active', [EventoController::class, 'active']);
+Route::get('/eventos/upcoming', [EventoController::class, 'upcoming']);
+Route::get('/eventos/{id}/leaderboard', [EventoController::class, 'leaderboard']);
+Route::get('/eventos/{id}/stats', [EventoController::class, 'stats']);
+Route::get('/eventos/{id}/user-impact', [EventoController::class, 'userImpact'])->middleware('auth:sanctum');
 Route::get('/about-us', [\App\Http\Controllers\AboutUsController::class, 'index']);
 Route::get('/users/{id}', [UserController::class, 'show']); // Perfil público
 
@@ -64,4 +70,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout']);
     Route::post('/comentarios', [ComentarioController::class, 'store']);
     Route::post('/comentarios/{id}/like', [ComentarioController::class, 'toggleLike']);
+
+    // Updates
+    Route::post('/proyectos/{id}/actualizaciones', [\App\Http\Controllers\ActualizacionController::class, 'store']);
 });
+
+// Updates (Public)
+Route::get('/proyectos/{id}/actualizaciones', [\App\Http\Controllers\ActualizacionController::class, 'index']);
+Route::get('/actualizaciones/{id}', [\App\Http\Controllers\ActualizacionController::class, 'show']);
