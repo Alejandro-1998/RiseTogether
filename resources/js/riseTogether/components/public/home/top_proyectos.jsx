@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import ProyectoCard from "../../cards/ProyectoCard"; // Asegúrate que la ruta es correcta
+import { Link } from "react-router-dom";
 
 export default function TopProyectos() {
   const [proyectos, setProyectos] = useState([]);
@@ -23,8 +24,14 @@ export default function TopProyectos() {
       <section className="px-6">
         <div className="mx-auto max-w-[1200px]">
           <div className="rounded-3xl bg-gray-100 p-10 shadow-sm dark:bg-[#2a2017] sm:p-14">
-            <h2 className="mb-10 text-center text-3xl font-bold leading-tight tracking-tight text-[#1c140d] dark:text-[#fcfaf8]">
-              Proyectos del mes
+            <h2 className="mb-10 text-center">
+              <Link 
+                to="/eventos" 
+                className="text-3xl font-bold leading-tight tracking-tight text-[#1c140d] dark:text-[#fcfaf8] hover:text-[#f27f0d] dark:hover:text-[#f27f0d] transition-colors inline-flex items-center gap-2 group"
+              >
+                Proyectos del mes
+                <span className="material-symbols-outlined text-gray-400 group-hover:text-[#f27f0d] transition-colors">chevron_right</span>
+              </Link>
             </h2>
 
             <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">

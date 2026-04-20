@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Evento;
+use App\Models\Proyecto;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class EventoController extends Controller
 {
@@ -13,8 +16,108 @@ class EventoController extends Controller
      */
     public function index()
     {
-        $eventos = Evento::all();
+        $eventos = Evento::with('finalidades')->get();
         return response()->json($eventos);
+    }
+
+    /**
+     * Get the currently active event.
+     */
+    public function active()
+    {
+        $now = Carbon::now();
+        $evento = Evento::where('fechaInicio', '<=', $now)
+            ->where('fechaFinal', '>=', $now)
+            ->with('finalidades')
+            ->first();
+
+        return response()->json($evento);
+    }
+
+    /**
+     * Get upcoming events.
+     */
+    public function upcoming()
+    {
+        $now = Carbon::now();
+        $eventos = Evento::where('fechaInicio', '>', $now)
+            ->with('finalidades')
+            ->orderBy('fechaInicio', 'asc')
+            ->take(3)
+            ->get();
+
+        return response()->json($eventos);
+    }
+
+    /**
+     * Get the leaderboard for a specific event.
+     */
+    public function leaderboard(Request $request, $id)
+    {
+        $evento = Evento::findOrFail($id);
+        
+        $query = $evento->proyectos()->with(['user', 'categoria']);
+
+        // Filtrar por categoría si se proporciona
+        if ($request->has('categoria') && $request->categoria != 'Todas las Categorías') {
+            $query->whereHas('categoria', function($q) use ($request) {
+                $q->where('nombre', $request->categoria);
+            });
+        }
+
+        $projects = $query->get()->map(function($proyecto) {
+            return $proyecto;
+        })->sortByDesc('cantidad_recaudada')->values();
+
+        return response()->json($projects);
+    }
+
+    /**
+     * Get global stats for a specific event.
+     */
+    public function stats($id)
+    {
+        $evento = Evento::findOrFail($id);
+        $proyectos = $evento->proyectos();
+        
+        $stats = [
+            'total_recaudado' => $proyectos->sum('cantidad_recaudada'),
+            'total_proyectos' => $proyectos->count(),
+            'total_donantes' => \App\Models\Donacion::whereIn('idProyecto', $proyectos->pluck('proyectos.id'))->distinct('idUsuario')->count(),
+        ];
+
+        return response()->json($stats);
+    }
+
+    /**
+     * Get the impact of the authenticated user in a specific event.
+     */
+    public function userImpact($id)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json([
+                'proyectos_seguidos' => 0,
+                'total_aportado' => 0,
+                'proyectos_apoyados' => 0
+            ]);
+        }
+
+        $evento = Evento::findOrFail($id);
+        $proyectosIds = $evento->proyectos()->pluck('proyectos.id');
+
+        $proyectosSeguidos = $user->proyectos()->whereIn('idProyecto', $proyectosIds)->count();
+        
+        $donaciones = $user->donaciones()->whereIn('idProyecto', $proyectosIds);
+        $totalAportado = $donaciones->sum('cantidadDonada');
+        $proyectosApoyados = $donaciones->distinct('idProyecto')->count();
+
+        return response()->json([
+            'proyectos_seguidos' => $proyectosSeguidos,
+            'total_aportado' => $totalAportado,
+            'proyectos_apoyados' => $proyectosApoyados
+        ]);
     }
 
     /**
