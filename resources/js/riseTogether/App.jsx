@@ -20,6 +20,7 @@ import SobreNosotrosPage from "./pages/public/SobreNosotrosPage";
 import ContactoPage from "./pages/public/ContactoPage";
 import AvisoLegalPage from "./pages/public/AvisoLegalPage";
 import EventosPage from "./pages/public/EventosPage";
+import BuscarUsuariosPage from "./pages/public/BuscarUsuariosPage";
 
 import RequireAdmin from "./components/RequireAdmin";
 
@@ -54,6 +55,9 @@ function App() {
 
           {/* Descubrir Proyectos */}
           <Route path="/proyectos" element={<ProyectosPage />} />
+
+          {/* Buscar Usuarios */}
+          <Route path="/usuarios" element={<BuscarUsuariosPage />} />
 
           {/* Usuario */}
           <Route path="/usuario/:id?" element={<UsuarioPage />} />

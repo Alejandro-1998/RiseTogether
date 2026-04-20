@@ -9,6 +9,7 @@ use App\Http\Controllers\CategoriaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\EventoController;
+use App\Http\Controllers\SeguidorController;
 
 /// RUTAS PÚBLICAS DE API ///
 
@@ -28,7 +29,10 @@ Route::get('/eventos/{id}/leaderboard', [EventoController::class, 'leaderboard']
 Route::get('/eventos/{id}/stats', [EventoController::class, 'stats']);
 Route::get('/eventos/{id}/user-impact', [EventoController::class, 'userImpact'])->middleware('auth:sanctum');
 Route::get('/about-us', [\App\Http\Controllers\AboutUsController::class, 'index']);
+Route::get('/user/search', [UserController::class, 'search']); // Buscar usuarios
 Route::get('/users/{id}', [UserController::class, 'show']); // Perfil público
+Route::get('/user/{id}/seguidores', [SeguidorController::class, 'getSeguidores']);
+Route::get('/user/{id}/seguidos', [SeguidorController::class, 'getSeguidos']);
 
 // Proyectos
 Route::get('/proyectos', [ProyectoController::class, 'index']);
@@ -48,8 +52,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/proyectos', [ProyectoController::class, 'store']);
     Route::post('/proyectos/{id}/seguir', [ProyectoController::class, 'seguir']);
     Route::delete('/proyectos/{id}/seguir', [ProyectoController::class, 'dejarDeSeguir']);
+    
+    // Follows de Usuarios
+    Route::post('/users/{id}/follow', [SeguidorController::class, 'alternarSeguir']);
+    Route::get('/users/{id}/check-follow', [SeguidorController::class, 'verificarSeguimiento']);
     Route::middleware(['auth:sanctum'])->post('/pagos/iniciar', [PaymentController::class, 'iniciarPago']);
     
+    // Chat Privado
+    Route::get('/chat/{userId}', [\App\Http\Controllers\ChatPrivadoController::class, 'getMensajes']);
+    Route::post('/chat/{userId}', [\App\Http\Controllers\ChatPrivadoController::class, 'sendMensaje']);
+
     // Admin Routes
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/users', [UserController::class, 'index']); // Admin USERS list

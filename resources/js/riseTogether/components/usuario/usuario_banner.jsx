@@ -1,4 +1,4 @@
-export default function UsuarioBanner({ usuario }) {
+export default function UsuarioBanner({ usuario, soyYo, alAlternarSeguimiento }) {
   return (
     <div className="relative mb-20">
       <div
@@ -31,15 +31,24 @@ export default function UsuarioBanner({ usuario }) {
             </div>
           </div>
 
+          {!soyYo && (
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto mb-5">
-            <button className="flex min-w-[84px] items-center justify-center overflow-hidden rounded-2xl h-10 px-6 bg-[#f2780d] text-white text-sm font-bold w-full sm:w-auto shadow-sm hover:opacity-90">
-              Seguir
+            <button 
+              onClick={alAlternarSeguimiento}
+              className={`flex min-w-[84px] items-center justify-center overflow-hidden rounded-2xl h-10 px-6 text-sm font-bold w-full sm:w-auto shadow-sm hover:opacity-90 transition-colors ${
+                usuario.siguiendo 
+                  ? "bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white" 
+                  : "bg-[#f2780d] text-white"
+              }`}
+            >
+              {usuario.siguiendo ? "Siguiendo" : "Seguir"}
             </button>
 
             <button className="flex min-w-[84px] items-center justify-center overflow-hidden rounded-2xl h-10 px-6 border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] text-sm font-medium w-full sm:w-auto hover:bg-black/5 dark:hover:bg-white/5">
               Enviar mensaje
             </button>
           </div>
+          )}
         </div>
       </div>
     </div>

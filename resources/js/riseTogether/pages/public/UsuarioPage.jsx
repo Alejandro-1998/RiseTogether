@@ -5,6 +5,7 @@ import useAuth from "../../hooks/useAuth";
 
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
+import PrivateChat from "../../components/chat/PrivateChat";
 
 import UsuarioBanner from "../../components/usuario/usuario_banner";
 import EstadisticasUsuario from "../../components/cards/estadisticas_usuario";
@@ -18,14 +19,79 @@ import ActividadReciente from "../../components/cards/actividad_reciente";
 
 export default function UsuarioPage() {
   const { id } = useParams();
-  const { setUser } = useAuth();
+  const { setUser, user: currentUser } = useAuth();
   const [pestana, setPestana] = useState("resumen"); // resumen | creados | apoyados | actividad | ajustes
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [soyYo, setSoyYo] = useState(false);
+  const [chatUser, setChatUser] = useState(null);
   const [proyectosCreados, setProyectosCreados] = useState([]);
   const [proyectosSeguidos, setProyectosSeguidos] = useState([]);
   const [cargandoProyectos, setCargandoProyectos] = useState(false);
+  const [usuariosSeguidores, setUsuariosSeguidores] = useState([]);
+  const [usuariosSeguidos, setUsuariosSeguidos] = useState([]);
+  const [cargandoListas, setCargandoListas] = useState(false);
+  const [mensajeNotificacion, setMensajeNotificacion] = useState(null);
+
+  const mostrarNotificacion = (msg) => {
+    setMensajeNotificacion(msg);
+    setTimeout(() => setMensajeNotificacion(null), 3000);
+  };
+
+  const alternarSeguimientoPerfil = async () => {
+    try {
+      const res = await axios.post(`/api/users/${usuario.id}/follow`);
+      const estaSiguiendo = res.data.siguiendo;
+      
+      if (estaSiguiendo) {
+        mostrarNotificacion("Has empezado a seguir a este usuario");
+      } else {
+        mostrarNotificacion("Has dejado de seguir a este usuario");
+      }
+
+      setUsuario({
+        ...usuario, 
+        siguiendo: estaSiguiendo,
+        seguidores_count: estaSiguiendo 
+          ? (usuario.seguidores_count || 0) + 1 
+          : Math.max(0, (usuario.seguidores_count || 1) - 1)
+      });
+    } catch (error) {
+      console.error("Error al seguir/dejar de seguir al usuario:", error);
+    }
+  };
+
+  const alternarSeguirLista = async (targetUserId, tipo) => {
+    try {
+      const res = await axios.post(`/api/users/${targetUserId}/follow`);
+      const estaSiguiendo = res.data.siguiendo;
+      
+      const updateList = (list) => list.map(u => 
+        u.id === targetUserId ? { ...u, siguiendo: estaSiguiendo } : u
+      );
+
+      if (tipo === 'seguidores') {
+        setUsuariosSeguidores(updateList(usuariosSeguidores));
+      } else {
+        setUsuariosSeguidos(updateList(usuariosSeguidos));
+      }
+
+      if (soyYo) {
+        setUsuario(prev => ({
+          ...prev,
+          seguidos_count: estaSiguiendo ? (prev.seguidos_count || 0) + 1 : Math.max(0, (prev.seguidos_count || 1) - 1)
+        }));
+      }
+
+      if (estaSiguiendo) {
+        mostrarNotificacion("Has empezado a seguir a este usuario");
+      } else {
+        mostrarNotificacion("Has dejado de seguir a este usuario");
+      }
+    } catch (error) {
+      console.error("Error al seguir/dejar de seguir en la lista:", error);
+    }
+  };
 
   useEffect(() => {
     obtenerUsuario();
@@ -37,6 +103,12 @@ export default function UsuarioPage() {
     }
     if (pestana === "actividad") {
       obtenerProyectosSeguidos();
+    }
+    if (pestana === "seguidores" && usuario) {
+      obtenerUsuariosSeguidores();
+    }
+    if (pestana === "seguidos" && usuario) {
+      obtenerUsuariosSeguidos();
     }
   }, [pestana, usuario]);
 
@@ -95,6 +167,30 @@ export default function UsuarioPage() {
     }
   };
 
+  const obtenerUsuariosSeguidores = async () => {
+    setCargandoListas(true);
+    try {
+      const res = await axios.get(`/api/user/${usuario.id}/seguidores`);
+      setUsuariosSeguidores(res.data);
+    } catch (error) {
+      console.error("Error obteniendo seguidores:", error);
+    } finally {
+      setCargandoListas(false);
+    }
+  };
+
+  const obtenerUsuariosSeguidos = async () => {
+    setCargandoListas(true);
+    try {
+      const res = await axios.get(`/api/user/${usuario.id}/seguidos`);
+      setUsuariosSeguidos(res.data);
+    } catch (error) {
+      console.error("Error obteniendo seguidos:", error);
+    } finally {
+      setCargandoListas(false);
+    }
+  };
+
   const manejarActualizacionUsuario = (usuarioActualizado) => {
     setUsuario(usuarioActualizado);
     // Actualizar estado global si es mi propio perfil
@@ -125,8 +221,8 @@ export default function UsuarioPage() {
   const estadisticas = [
     { value: usuario.proyectos_creados_count?.toString() || "0", label: "Proyectos creados" },
     { value: proyectosApoyadosUnicos.toString(), label: "Proyectos apoyados" },
-    { value: usuario.followers_count?.toString() || "0", label: "Seguidores" },
-    { value: JSON.parse(localStorage.getItem("seguidos"))?.length.toString() || "0", label: "Siguiendo" },
+    { value: usuario.seguidores_count?.toString() || "0", label: "Seguidores" },
+    { value: usuario.seguidos_count?.toString() || "0", label: "Siguiendo" },
   ];
 
   const proyectoDestacado = {
@@ -152,7 +248,7 @@ export default function UsuarioPage() {
       <HeaderPublic />
 
       <main className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-        <UsuarioBanner usuario={usuarioMapeado} />
+        <UsuarioBanner usuario={usuarioMapeado} soyYo={soyYo} alAlternarSeguimiento={alternarSeguimientoPerfil} />
 
         {/* Estadísticas */}
         {/* Top Section: Stats Left | Info Right */}
@@ -288,12 +384,127 @@ export default function UsuarioPage() {
                 </div>
               )}
 
+              {pestana === "seguidores" && (
+                <div className="space-y-4">
+                  <h3 className="font-bold text-xl">Seguidores</h3>
+                  {cargandoListas ? (
+                    <p>Cargando seguidores...</p>
+                  ) : usuariosSeguidores.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {usuariosSeguidores.map((u) => (
+                        <div key={u.id} className="flex flex-col gap-4 p-5 bg-white dark:bg-[#2d2d2d] rounded-2xl border border-[#e8dace] dark:border-[#374151] shadow-sm transition hover:-translate-y-1 h-full">
+                          <div className="flex items-center gap-4 overflow-hidden">
+                            <img src={u.profile_photo_url || `https://ui-avatars.com/api/?name=${u.nombreUsuario}`} alt={u.nombreUsuario} className="w-14 h-14 rounded-full object-cover border border-gray-100 shrink-0" />
+                            <div className="truncate min-w-0">
+                              <a href={`/usuario/${u.id}`} className="font-bold hover:underline truncate block text-[#1c140d] dark:text-white">
+                                {u.nombreCompleto || u.nombreUsuario}
+                              </a>
+                              <p className="text-sm text-[#f2780d] truncate">@{u.nombreUsuario}</p>
+                            </div>
+                          </div>
+                          
+                          {currentUser && currentUser.id !== u.id && (
+                            <div className="flex gap-2 w-full mt-auto pt-2">
+                              <button 
+                                onClick={() => alternarSeguirLista(u.id, "seguidores")}
+                                className={`flex flex-1 items-center justify-center h-10 px-4 rounded-xl font-bold text-xs transition-colors ${
+                                  u.siguiendo 
+                                    ? "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700" 
+                                    : "bg-[#f2780d] text-white hover:bg-[#d96a0a]"
+                                }`}
+                              >
+                                {u.siguiendo ? "Siguiendo" : "Seguir"}
+                              </button>
+  
+                              <button 
+                                onClick={() => setChatUser(u)}
+                                className="flex flex-1 items-center justify-center h-10 px-4 rounded-xl font-bold text-xs border border-[#e8dace] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-[#1c140d] dark:text-white"
+                              >
+                                Chat
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] p-6 text-sm text-[#6b7280]">
+                      Aún no tiene seguidores.
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {pestana === "seguidos" && (
+                <div className="space-y-4">
+                  <h3 className="font-bold text-xl">Usuarios seguidos</h3>
+                  {cargandoListas ? (
+                    <p>Cargando seguidos...</p>
+                  ) : usuariosSeguidos.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {usuariosSeguidos.map((u) => (
+                        <div key={u.id} className="flex flex-col gap-4 p-5 bg-white dark:bg-[#2d2d2d] rounded-2xl border border-[#e8dace] dark:border-[#374151] shadow-sm transition hover:-translate-y-1 h-full">
+                          <div className="flex items-center gap-4 overflow-hidden">
+                            <img src={u.profile_photo_url || `https://ui-avatars.com/api/?name=${u.nombreUsuario}`} alt={u.nombreUsuario} className="w-14 h-14 rounded-full object-cover border border-gray-100 shrink-0" />
+                            <div className="truncate min-w-0">
+                              <a href={`/usuario/${u.id}`} className="font-bold hover:underline truncate block text-[#1c140d] dark:text-white">
+                                {u.nombreCompleto || u.nombreUsuario}
+                              </a>
+                              <p className="text-sm text-[#f2780d] truncate">@{u.nombreUsuario}</p>
+                            </div>
+                          </div>
+                          
+                          {currentUser && currentUser.id !== u.id && (
+                            <div className="flex gap-2 w-full mt-auto pt-2">
+                              <button 
+                                onClick={() => alternarSeguirLista(u.id, "seguidos")}
+                                className={`flex flex-1 items-center justify-center h-10 px-4 rounded-xl font-bold text-xs transition-colors ${
+                                  u.siguiendo 
+                                    ? "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700" 
+                                    : "bg-[#f2780d] text-white hover:bg-[#d96a0a]"
+                                }`}
+                              >
+                                {u.siguiendo ? "Siguiendo" : "Seguir"}
+                              </button>
+  
+                              <button 
+                                onClick={() => setChatUser(u)}
+                                className="flex flex-1 items-center justify-center h-10 px-4 rounded-xl font-bold text-xs border border-[#e8dace] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-[#1c140d] dark:text-white"
+                              >
+                                Chat
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] p-6 text-sm text-[#6b7280]">
+                      No sigue a ningún usuario todavía.
+                    </div>
+                  )}
+                </div>
+              )}
+
               {pestana === "ajustes" && soyYo && (
                 <UsuarioAjustes user={usuario} onUserUpdate={manejarActualizacionUsuario} />
               )}
             </section>
           </div>
         </div>
+
+        {/* Notificación Toast */}
+        {mensajeNotificacion && (
+          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-green-500 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-3 animate-fade-in-up">
+            <span className="material-symbols-outlined">check_circle</span>
+            <span className="font-medium text-sm">{mensajeNotificacion}</span>
+          </div>
+        )}
+
+        {/* Modal Chat */}
+        {chatUser && (
+          <PrivateChat destUser={chatUser} onClose={() => setChatUser(null)} />
+        )}
       </main>
 
       <FooterPublic />

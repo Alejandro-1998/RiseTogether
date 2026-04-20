@@ -4,6 +4,8 @@ export default function UsuarioTabs({ tab, setTab, isMe, user }) {
     { id: "creados", label: "Proyectos creados" },
     { id: "apoyados", label: "Proyectos apoyados" },
     { id: "actividad", label: "Proyectos seguidos" },
+    { id: "seguidores", label: "Seguidores" },
+    { id: "seguidos", label: "Seguidos" },
     ...(isMe ? [{ id: "ajustes", label: "Ajustes" }] : []),
   ];
 

@@ -13,13 +13,13 @@ export default function BuscarUsuariosPage() {
   const [usuarios, setUsuarios] = useState([]);
   const [cargando, setCargando] = useState(false);
   const [chatUser, setChatUser] = useState(null);
-  const [toastMessage, setToastMessage] = useState(null);
+  const [mensajeNotificacion, setMensajeNotificacion] = useState(null);
   
   const navigate = useNavigate();
 
-  const showToast = (msg) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+  const mostrarNotificacion = (msg) => {
+    setMensajeNotificacion(msg);
+    setTimeout(() => setMensajeNotificacion(null), 3000);
   };
 
   useEffect(() => {
@@ -55,16 +55,18 @@ export default function BuscarUsuariosPage() {
     buscarUsuarios(query);
   };
 
-  const toggleFollowListUser = async (targetUserId) => {
+  const alternarSeguirUsuario = async (targetUserId) => {
     try {
       const res = await axios.post(`/api/users/${targetUserId}/follow`);
-      const isFollowingNow = res.data.is_following;
+      const estaSiguiendoAhora = res.data.siguiendo;
       
-      if (isFollowingNow) {
-        showToast("Has empezado a seguir a este usuario");
+      if (estaSiguiendoAhora) {
+        mostrarNotificacion("Has empezado a seguir a este usuario");
+      } else {
+        mostrarNotificacion("Has dejado de seguir a este usuario");
       }
 
-      setUsuarios(usuarios.map(u => u.id === targetUserId ? { ...u, is_following: isFollowingNow } : u));
+      setUsuarios(usuarios.map(u => u.id === targetUserId ? { ...u, siguiendo: estaSiguiendoAhora } : u));
     } catch (error) {
       console.error("Error al seguir/dejar de seguir en la lista:", error);
     }
@@ -121,14 +123,14 @@ export default function BuscarUsuariosPage() {
                 {currentUser && currentUser.id !== u.id && (
                   <div className="flex flex-col gap-2 mt-2">
                     <button 
-                      onClick={() => toggleFollowListUser(u.id)}
-                      className={`w-full flex items-center justify-center rounded-xl h-10 px-4 text-sm font-bold shadow-sm hover:opacity-90 transition-colors ${
-                        u.is_following 
-                        ? "bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white" 
-                        : "bg-[#f2780d] text-white"
+                      onClick={() => alternarSeguirUsuario(u.id)}
+                      className={`h-10 px-6 rounded-2xl font-bold text-sm transition-colors ${
+                        u.siguiendo 
+                          ? "bg-gray-200 text-gray-800 hover:bg-gray-300 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700" 
+                          : "bg-[#f2780d] text-white hover:bg-[#d96a0a]"
                       }`}
                     >
-                      {u.is_following ? "Siguiendo" : "Seguir"}
+                      {u.siguiendo ? "Siguiendo" : "Seguir"}
                     </button>
 
                     <button 
@@ -156,10 +158,10 @@ export default function BuscarUsuariosPage() {
         )}
 
         {/* Notificación Toast */}
-        {toastMessage && (
+        {mensajeNotificacion && (
           <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 bg-green-500 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-3 animate-fade-in-up">
             <span className="material-symbols-outlined">check_circle</span>
-            <span className="font-medium text-sm">{toastMessage}</span>
+            <span className="font-medium text-sm">{mensajeNotificacion}</span>
           </div>
         )}
 

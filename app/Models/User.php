@@ -105,4 +105,14 @@ class User extends Authenticatable
     {
         return $this->hasMany(Donacion::class, 'idUsuario');
     }
+
+    public function seguidos()
+    {
+        return $this->belongsToMany(User::class, 'usuarios_seguidores', 'id_seguidor', 'id_seguido');
+    }
+
+    public function seguidores()
+    {
+        return $this->belongsToMany(User::class, 'usuarios_seguidores', 'id_seguido', 'id_seguidor');
+    }
 }

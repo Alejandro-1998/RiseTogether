@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class SeguidorController extends Controller
 {
-    public function toggleFollow($id)
+    public function alternarSeguir($id)
     {
         $userToFollow = User::findOrFail($id);
         /** @var \App\Models\User $currentUser */
@@ -20,10 +20,10 @@ class SeguidorController extends Controller
 
         if ($currentUser->seguidos()->where('users.id', $id)->exists()) {
             $currentUser->seguidos()->detach($id);
-            return response()->json(['message' => 'Dejaste de seguir a este usuario.', 'is_following' => false]);
+            return response()->json(['message' => 'Dejaste de seguir a este usuario.', 'siguiendo' => false]);
         } else {
             $currentUser->seguidos()->attach($id);
-            return response()->json(['message' => 'Ahora sigues a este usuario.', 'is_following' => true]);
+            return response()->json(['message' => 'Ahora sigues a este usuario.', 'siguiendo' => true]);
         }
     }
 
@@ -39,7 +39,7 @@ class SeguidorController extends Controller
         }
         
         $seguidores->transform(function ($u) use ($seguidosIds) {
-            $u->is_following = in_array($u->id, $seguidosIds);
+            $u->siguiendo = in_array($u->id, $seguidosIds);
             return $u;
         });
         
@@ -58,18 +58,18 @@ class SeguidorController extends Controller
         }
         
         $seguidos->transform(function ($u) use ($seguidosIds) {
-            $u->is_following = in_array($u->id, $seguidosIds);
+            $u->siguiendo = in_array($u->id, $seguidosIds);
             return $u;
         });
         
         return response()->json($seguidos);
     }
 
-    public function checkFollowStatus($id)
+    public function verificarSeguimiento($id)
     {
         /** @var \App\Models\User $currentUser */
         $currentUser = Auth::user();
-        $isFollowing = $currentUser->seguidos()->where('users.id', $id)->exists();
-        return response()->json(['is_following' => $isFollowing]);
+        $estaSiguiendo = $currentUser->seguidos()->where('users.id', $id)->exists();
+        return response()->json(['siguiendo' => $estaSiguiendo]);
     }
 }

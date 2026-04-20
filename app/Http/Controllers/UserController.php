@@ -26,18 +26,36 @@ class UserController extends Controller
         $user = $id ? User::where('id', $id)->orWhere('nombreUsuario', $id)->firstOrFail() : $request->user();
 
         if ($user) {
-            $user->loadCount('proyectosCreados');
+            $user->loadCount(['proyectosCreados', 'seguidores', 'seguidos']);
             $user->load(['donaciones.proyectos.categoria', 'donaciones.recompensas', 'proyectos']);
-            
-            $totalFollowers = 0;
-            foreach ($user->proyectosCreados as $proyecto) {
-                // Sum 'seguidores' column
-                $totalFollowers += $proyecto->seguidores;
+
+            if (Auth::check()) {
+                $user->siguiendo = Auth::user()->seguidos()->where('users.id', $user->id)->exists();
+            } else {
+                $user->siguiendo = false;
             }
-            $user->followers_count = $totalFollowers;
         }
 
         return response()->json($user);
+    }
+
+    public function search(Request $request)
+    {
+        $query = $request->query('query', '');
+        
+        $users = User::where('nombreUsuario', 'like', "%{$query}%")
+                     ->orWhere('nombreCompleto', 'like', "%{$query}%")
+                     ->get();
+
+        if (Auth::check()) {
+            $seguidosIds = Auth::user()->seguidos()->pluck('users.id')->toArray();
+            $users->transform(function ($u) use ($seguidosIds) {
+                $u->siguiendo = in_array($u->id, $seguidosIds);
+                return $u;
+            });
+        }
+
+        return response()->json($users);
     }
 
     public function update(Request $request)

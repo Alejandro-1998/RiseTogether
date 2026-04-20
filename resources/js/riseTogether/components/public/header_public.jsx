@@ -58,6 +58,12 @@ export default function HeaderPublic({ isAuth }) {
         {/* Botones derecha */}
         <div className="flex flex-1 items-center justify-end gap-2">
           <div className="hidden items-center justify-end gap-3 md:flex">
+            <Link
+              to="/usuarios"
+              className="flex h-10 min-w-[130px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+            >
+              Comunidad
+            </Link>
             {authenticated ? (
               <>
                 <Link
