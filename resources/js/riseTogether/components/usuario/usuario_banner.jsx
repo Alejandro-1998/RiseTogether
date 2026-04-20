@@ -1,4 +1,4 @@
-export default function UsuarioBanner({ usuario, soyYo, alAlternarSeguimiento }) {
+export default function UsuarioBanner({ usuario, soyYo, alAlternarSeguimiento, alIniciarChat }) {
   return (
     <div className="relative mb-20">
       <div
@@ -44,7 +44,10 @@ export default function UsuarioBanner({ usuario, soyYo, alAlternarSeguimiento })
               {usuario.siguiendo ? "Siguiendo" : "Seguir"}
             </button>
 
-            <button className="flex min-w-[84px] items-center justify-center overflow-hidden rounded-2xl h-10 px-6 border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] text-sm font-medium w-full sm:w-auto hover:bg-black/5 dark:hover:bg-white/5">
+            <button 
+              onClick={alIniciarChat}
+              className="flex min-w-[84px] items-center justify-center overflow-hidden rounded-2xl h-10 px-6 border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] text-sm font-medium w-full sm:w-auto hover:bg-black/5 dark:hover:bg-white/5"
+            >
               Enviar mensaje
             </button>
           </div>
