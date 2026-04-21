@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import Sidebar from "../../components/admin/sidebar";
+import toast from "react-hot-toast";
 import HeaderPublic from "../../components/public/header_public";
 
 import TablaEventos from "../../components/admin/tabla_eventos";
@@ -17,6 +18,34 @@ export default function AdminEventos() {
 
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [eventoDelete, setEventoDelete] = useState(null);
+
+    // Premium Toast Style
+    const premiumToast = {
+        success: (msg) => toast.success(msg, {
+            style: {
+                borderRadius: '16px',
+                background: '#1c140d',
+                color: '#fff',
+                border: '1px solid rgba(242, 127, 13, 0.2)',
+                padding: '16px',
+                fontWeight: 'bold',
+            },
+            iconTheme: {
+                primary: '#f27f0d',
+                secondary: '#fff',
+            },
+        }),
+        error: (msg) => toast.error(msg, {
+            style: {
+                borderRadius: '16px',
+                background: '#1c140d',
+                color: '#fff',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                padding: '16px',
+                fontWeight: 'bold',
+            },
+        }),
+    };
 
     useEffect(() => {
         fetchEventos();
@@ -88,12 +117,13 @@ export default function AdminEventos() {
                         setEventos((prev) =>
                             prev.map((e) => (e.id === eventoEdit.id ? res.data : e))
                         );
+                        premiumToast.success("Evento actualizado correctamente.");
                         setModalOpen(false);
                         setEventoEdit(null);
                     })
                     .catch((err) => {
                         console.error(err);
-                        alert("Error al actualizar el evento.");
+                        premiumToast.error("Error al actualizar el evento.");
                     });
             } else {
                 // Crear
@@ -101,12 +131,13 @@ export default function AdminEventos() {
                     .post("/api/eventos", payload)
                     .then((res) => {
                         setEventos((prev) => [...prev, res.data]);
+                        premiumToast.success("Evento creado con éxito.");
                         setModalOpen(false);
                         setEventoEdit(null);
                     })
                     .catch((err) => {
                         console.error(err);
-                        alert("Error al crear el evento. Revisa los datos (fechas, etc).");
+                        premiumToast.error("Error al crear el evento. Revisa los datos.");
                     });
             }
         });
@@ -120,12 +151,13 @@ export default function AdminEventos() {
                 .delete(`/api/eventos/${eventoDelete.id}`)
                 .then(() => {
                     setEventos((prev) => prev.filter((e) => e.id !== eventoDelete.id));
+                    premiumToast.success("Evento eliminado.");
                     setConfirmOpen(false);
                     setEventoDelete(null);
                 })
                 .catch((err) => {
                     console.error(err);
-                    alert("Error al eliminar el evento.");
+                    premiumToast.error("Error al eliminar el evento.");
                 });
         });
     };

@@ -18,14 +18,8 @@ class Evento extends Model
         'nombre',
         'fechaInicio',
         'fechaFinal',
-        'cantidadMaxParticipantes',
-        'idFinalidad'
+        'cantidadMaxParticipantes'
     ];
-
-    function finalidades()
-    {
-        return $this->belongsTo(Finalidad::class);
-    }
 
     function proyectos()
     {

@@ -19,7 +19,7 @@ import ActividadReciente from "../../components/cards/actividad_reciente";
 
 export default function UsuarioPage() {
   const { id } = useParams();
-  const { setUser, user: currentUser } = useAuth();
+  const { setUser, user: currentUser, isLoading: authLoading } = useAuth();
   const [pestana, setPestana] = useState("resumen"); // resumen | creados | apoyados | actividad | ajustes
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
@@ -94,8 +94,11 @@ export default function UsuarioPage() {
   };
 
   useEffect(() => {
-    obtenerUsuario();
-  }, [id]);
+    if (!authLoading) {
+      obtenerUsuario();
+      setSoyYo(!id);
+    }
+  }, [id, authLoading, currentUser]);
 
   useEffect(() => {
     if (pestana === "creados" && usuario) {
@@ -115,16 +118,20 @@ export default function UsuarioPage() {
   const obtenerUsuario = async () => {
     setCargando(true);
     try {
-      // Si hay ID, buscamos ese usuario (público). Si no, perfil propio (me).
-      const endpoint = id ? `/api/users/${id}` : '/api/user/profile';
-      const response = await axios.get(endpoint);
-      setUsuario(response.data);
-
-      // Determinar si soy yo (si no hay ID, es mi perfil. Si hay ID, habría q comparar con mi auth ID, pero por simplicidad: sin ID = yo)
-      // Ajuste: Si navego a /usuario/MI_ID desde fuera, debería detectarlo.
-      // Pero de momento: sin ID -> soy yo. Con ID -> es otro (o yo visto públicamente).
+      if (!id) {
+        if (!currentUser) {
+          setUsuario(null);
+          return;
+        }
+        // Utilizar el endpoint del profile para cargar todos los detalles
+        const response = await axios.get('/api/user/profile');
+        setUsuario(response.data);
+      } else {
+        // Viendo un perfil público
+        const response = await axios.get(`/api/users/${id}`);
+        setUsuario(response.data);
+      }
       setSoyYo(!id);
-
     } catch (error) {
       console.error("Error obteniendo usuario:", error);
     } finally {
@@ -199,7 +206,7 @@ export default function UsuarioPage() {
     }
   };
 
-  if (cargando) return <div className="flex h-screen items-center justify-center">Cargando...</div>;
+  if (cargando || authLoading) return <div className="flex h-screen items-center justify-center">Cargando...</div>;
   if (!usuario) return <div className="flex h-screen items-center justify-center">Usuario no encontrado. <a href="/login" className="ml-2 text-blue-500">Iniciar Sesión</a></div>;
 
   // Map API data to component expectations

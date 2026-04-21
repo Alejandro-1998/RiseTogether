@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import toast from "react-hot-toast";
 import useAuth from "../../hooks/useAuth";
 
 // Formateador de fecha similar al de ComentariosTab
@@ -57,6 +58,34 @@ export default function ActualizacionesTab({ proyectoId, isOwner }) {
         e.preventDefault();
         if (!titulo.trim() || !contenido.trim()) return;
 
+        // Premium Toast Style
+        const premiumToast = {
+            success: (msg) => toast.success(msg, {
+                style: {
+                    borderRadius: '16px',
+                    background: '#1c140d',
+                    color: '#fff',
+                    border: '1px solid rgba(242, 127, 13, 0.2)',
+                    padding: '16px',
+                    fontWeight: 'bold',
+                },
+                iconTheme: {
+                    primary: '#f27f0d',
+                    secondary: '#fff',
+                },
+            }),
+            error: (msg) => toast.error(msg, {
+                style: {
+                    borderRadius: '16px',
+                    background: '#1c140d',
+                    color: '#fff',
+                    border: '1px solid rgba(239, 68, 68, 0.2)',
+                    padding: '16px',
+                    fontWeight: 'bold',
+                },
+            }),
+        };
+
         setSubmitting(true);
         try {
             await axios.post(`/api/proyectos/${proyectoId}/actualizaciones`, {
@@ -66,10 +95,11 @@ export default function ActualizacionesTab({ proyectoId, isOwner }) {
             setTitulo("");
             setContenido("");
             setIsCreating(false);
+            premiumToast.success("¡Actualización publicada!");
             cargarActualizaciones();
         } catch (err) {
             console.error("Error creando actualización:", err);
-            alert("No se pudo publicar la actualización.");
+            premiumToast.error("No se pudo publicar la actualización.");
         } finally {
             setSubmitting(false);
         }

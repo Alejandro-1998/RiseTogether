@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 export default function UsuarioAjustes({ user, onUserUpdate }) {
     const formRef = useRef(null);
@@ -111,6 +112,34 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
         return false;
     };
 
+    // Premium Toast Style
+    const premiumToast = {
+        success: (msg) => toast.success(msg, {
+            style: {
+                borderRadius: '16px',
+                background: '#1c140d',
+                color: '#fff',
+                border: '1px solid rgba(242, 127, 13, 0.2)',
+                padding: '16px',
+                fontWeight: 'bold',
+            },
+            iconTheme: {
+                primary: '#f27f0d',
+                secondary: '#fff',
+            },
+        }),
+        error: (msg) => toast.error(msg, {
+            style: {
+                borderRadius: '16px',
+                background: '#1c140d',
+                color: '#fff',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                padding: '16px',
+                fontWeight: 'bold',
+            },
+        }),
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrors({});
@@ -121,8 +150,6 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
 
         for (const key in formData) {
             if (formData[key] !== null) {
-                // Should only append passwords if they are not empty, but controller handles empty logic or validation handles it
-                // To avoid sending 'undefined' or 'null' strings
                 data.append(key, formData[key] === null ? '' : formData[key]);
             }
         }
@@ -135,7 +162,6 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
         }
 
         try {
-            // Send as POST with _method=PUT
             const response = await axios.post('/api/user/profile', data, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
@@ -143,16 +169,15 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
             if (onUserUpdate) {
                 onUserUpdate(response.data.user);
             }
-            setSuccessMessage('Perfil actualizado correctamente.');
+            premiumToast.success('Perfil actualizado correctamente.');
             setFormData(prev => ({
                 ...prev,
                 current_password: '',
                 password: '',
                 password_confirmation: ''
             }));
-            setPhoto(null); // Reset file input
+            setPhoto(null);
             setBanner(null);
-            // Update preview to the returned user URL (in case backend processed it)
             if (response.data.user.profile_photo_url) {
                 setPhotoPreview(response.data.user.profile_photo_url);
             }
@@ -170,8 +195,7 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
                     scrollToTopWithOffset();
                 }
             } else {
-                setSuccessMessage('');
-                alert('Error al actualizar el perfil. Por favor inténtalo de nuevo.');
+                premiumToast.error('Error al actualizar el perfil. Por favor inténtalo de nuevo.');
                 scrollToTopWithOffset();
             }
         }

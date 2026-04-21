@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
 import axios from "axios";
+import toast from "react-hot-toast";
 import useAuth from "../../hooks/useAuth";
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
@@ -29,16 +30,43 @@ export default function ProyectoPage() {
     }
   }, [location.hash]);
 
+  // Premium Toast Style
+  const premiumToast = {
+    success: (msg) => toast.success(msg, {
+        style: {
+            borderRadius: '16px',
+            background: '#1c140d',
+            color: '#fff',
+            border: '1px solid rgba(242, 127, 13, 0.2)',
+            padding: '16px',
+            fontWeight: 'bold',
+        },
+        iconTheme: {
+            primary: '#f27f0d',
+            secondary: '#fff',
+        },
+    }),
+    error: (msg) => toast.error(msg, {
+        style: {
+            borderRadius: '16px',
+            background: '#1c140d',
+            color: '#fff',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            padding: '16px',
+            fontWeight: 'bold',
+        },
+    }),
+  };
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const estadoPago = params.get("pago");
     if (estadoPago === "exito") {
-      // Simple alert for now, can be replaced with a toast
-      alert("¡Gracias por tu apoyo! El pago se ha realizado correctamente.");
+      premiumToast.success("¡Gracias por tu apoyo! El pago se ha realizado correctamente.");
     } else if (estadoPago === "fallido") {
-      alert("El pago no se pudo completar.");
+      premiumToast.error("El pago no se pudo completar.");
     } else if (estadoPago === "error") {
-      alert("Hubo un error al procesar el pago.");
+      premiumToast.error("Hubo un error al procesar el pago.");
     }
   }, [location]);
 
@@ -141,11 +169,11 @@ export default function ProyectoPage() {
         window.location.href = data.url;
       } else {
         console.error("Error iniciando pago:", data);
-        alert("Error al iniciar el pago: " + (data.message || "Error desconocido"));
+        premiumToast.error(data.message || "Error al iniciar el pago.");
       }
     } catch (error) {
       console.error("Error pago:", error);
-      alert("Error de conexión al procesar el pago. Asegúrate de haber iniciado sesión.");
+      premiumToast.error("Error de conexión al procesar el pago. Asegúrate de haber iniciado sesión.");
     }
   };
 

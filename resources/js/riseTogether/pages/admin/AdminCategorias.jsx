@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import Sidebar from "../../components/admin/sidebar";
+import toast from "react-hot-toast";
 import HeaderPublic from "../../components/public/header_public";
 
 import TablaCategorias from "../../components/admin/tabla_categorias";
@@ -17,6 +18,34 @@ export default function AdminCategorias() {
 
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [categoriaDelete, setCategoriaDelete] = useState(null);
+
+    // Premium Toast Style
+    const premiumToast = {
+        success: (msg) => toast.success(msg, {
+            style: {
+                borderRadius: '16px',
+                background: '#1c140d',
+                color: '#fff',
+                border: '1px solid rgba(242, 127, 13, 0.2)',
+                padding: '16px',
+                fontWeight: 'bold',
+            },
+            iconTheme: {
+                primary: '#f27f0d',
+                secondary: '#fff',
+            },
+        }),
+        error: (msg) => toast.error(msg, {
+            style: {
+                borderRadius: '16px',
+                background: '#1c140d',
+                color: '#fff',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                padding: '16px',
+                fontWeight: 'bold',
+            },
+        }),
+    };
 
     useEffect(() => {
         fetchCategorias();
@@ -73,12 +102,13 @@ export default function AdminCategorias() {
                         setCategorias((prev) =>
                             prev.map((c) => (c.id === categoriaEdit.id ? res.data : c))
                         );
+                        premiumToast.success("Categoría actualizada.");
                         setModalOpen(false);
                         setCategoriaEdit(null);
                     })
                     .catch((err) => {
                         console.error(err);
-                        alert("Error al actualizar la categoría. Revisa que el nombre no esté duplicado.");
+                        premiumToast.error("Error al actualizar la categoría. Revisa duplicados.");
                     });
             } else {
                 // Crear
@@ -86,12 +116,13 @@ export default function AdminCategorias() {
                     .post("/api/categorias", dataToSend)
                     .then((res) => {
                         setCategorias((prev) => [...prev, res.data]);
+                        premiumToast.success("Categoría creada con éxito.");
                         setModalOpen(false);
                         setCategoriaEdit(null);
                     })
                     .catch((err) => {
                         console.error(err);
-                        alert("Error al crear la categoría. Revisa que el nombre no esté duplicado.");
+                        premiumToast.error("Error al crear la categoría. Revisa duplicados.");
                     });
             }
         });
@@ -105,12 +136,13 @@ export default function AdminCategorias() {
                 .delete(`/api/categorias/${categoriaDelete.id}`)
                 .then(() => {
                     setCategorias((prev) => prev.filter((c) => c.id !== categoriaDelete.id));
+                    premiumToast.success("Categoría eliminada.");
                     setConfirmOpen(false);
                     setCategoriaDelete(null);
                 })
                 .catch((err) => {
                     console.error(err);
-                    alert("Error al eliminar la categoría.");
+                    premiumToast.error("Error al eliminar la categoría.");
                 });
         });
     };

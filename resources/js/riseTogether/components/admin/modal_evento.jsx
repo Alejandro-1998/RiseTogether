@@ -5,7 +5,6 @@ export default function ModalEvento({ open, onClose, evento, onSave }) {
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaFinal, setFechaFinal] = useState("");
     const [cantidadMaxParticipantes, setCantidadMaxParticipantes] = useState("");
-    const [idFinalidad, setIdFinalidad] = useState(""); // Assuming simple input for now or select if we had data
 
     useEffect(() => {
         if (evento) {
@@ -13,13 +12,11 @@ export default function ModalEvento({ open, onClose, evento, onSave }) {
             setFechaInicio(evento.fechaInicio || "");
             setFechaFinal(evento.fechaFinal || "");
             setCantidadMaxParticipantes(evento.cantidadMaxParticipantes || "");
-            setIdFinalidad(evento.idFinalidad || "1"); // Default to 1 for now if missing
         } else {
             setNombre("");
             setFechaInicio("");
             setFechaFinal("");
             setCantidadMaxParticipantes("");
-            setIdFinalidad("1");
         }
     }, [evento, open]);
 
@@ -32,7 +29,6 @@ export default function ModalEvento({ open, onClose, evento, onSave }) {
             fechaInicio,
             fechaFinal,
             cantidadMaxParticipantes: cantidadMaxParticipantes || null,
-            idFinalidad: idFinalidad || 1, // Ensure ID is sent
         });
     };
 
@@ -91,29 +87,16 @@ export default function ModalEvento({ open, onClose, evento, onSave }) {
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                                Max. Participantes
-                            </label>
-                            <input
-                                type="number"
-                                value={cantidadMaxParticipantes}
-                                onChange={(e) => setCantidadMaxParticipantes(e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 focus:border-[#f2780d] outline-none"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                                ID Finalidad (Ref)
-                            </label>
-                            <input
-                                type="number"
-                                value={idFinalidad}
-                                onChange={(e) => setIdFinalidad(e.target.value)}
-                                className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 focus:border-[#f2780d] outline-none"
-                            />
-                        </div>
+                    <div>
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                            Max. Participantes
+                        </label>
+                        <input
+                            type="number"
+                            value={cantidadMaxParticipantes}
+                            onChange={(e) => setCantidadMaxParticipantes(e.target.value)}
+                            className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 focus:border-[#f2780d] outline-none"
+                        />
                     </div>
                 </div>
 

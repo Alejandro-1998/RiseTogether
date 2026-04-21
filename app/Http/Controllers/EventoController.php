@@ -16,8 +16,23 @@ class EventoController extends Controller
      */
     public function index()
     {
-        $eventos = Evento::with('finalidades')->get();
+        $eventos = Evento::all();
         return response()->json($eventos);
+    }
+
+    /**
+     * Clean dummy events with latin text
+     */
+    public function cleanDummyEvents()
+    {
+        // Delete events whose names contain latin identifiers or specific dummy data
+        $deleted = Evento::whereIn('id', [2, 3, 4])
+                         ->orWhere('nombre', 'like', '%Ut eos%')
+                         ->orWhere('nombre', 'like', '%Iure nihil%')
+                         ->orWhere('nombre', 'like', '%Dolor%')
+                         ->delete();
+                         
+        return response()->json(['message' => "Se eliminaron $deleted eventos de prueba."]);
     }
 
     /**
@@ -28,7 +43,6 @@ class EventoController extends Controller
         $now = Carbon::now();
         $evento = Evento::where('fechaInicio', '<=', $now)
             ->where('fechaFinal', '>=', $now)
-            ->with('finalidades')
             ->first();
 
         return response()->json($evento);
@@ -41,7 +55,6 @@ class EventoController extends Controller
     {
         $now = Carbon::now();
         $eventos = Evento::where('fechaInicio', '>', $now)
-            ->with('finalidades')
             ->orderBy('fechaInicio', 'asc')
             ->take(3)
             ->get();
@@ -121,6 +134,55 @@ class EventoController extends Controller
     }
 
     /**
+     * Inscribe a project to a specific event
+     */
+    public function inscribirProject(Request $request, $id)
+    {
+        $request->validate([
+            'proyecto_id' => 'required|exists:proyectos,id',
+        ]);
+
+        $evento = Evento::findOrFail($id);
+        
+        // Verify event hasn't finished yet (Allow Pre-registration)
+        $now = Carbon::now();
+        if ($evento->fechaFinal < $now) {
+            return response()->json(['message' => 'El evento ya ha finalizado.'], 400);
+        }
+
+        // Verify project belongs to user
+        $proyecto = Proyecto::where('id', $request->proyecto_id)
+                            ->where('user_id', Auth::id())
+                            ->first();
+                            
+        if (!$proyecto) {
+            return response()->json(['message' => 'No tienes permisos para inscribir este proyecto.'], 403);
+        }
+
+        // Attach safely
+        if (!$evento->proyectos()->where('idProyecto', $proyecto->id)->exists()) {
+            
+            // CHECK: A project can ONLY be in ONE active or upcoming event at a time.
+            $alreadyInEvent = \DB::table('proyectos_eventos')
+                ->join('eventos', 'proyectos_eventos.idEvento', '=', 'eventos.id')
+                ->where('proyectos_eventos.idProyecto', $proyecto->id)
+                ->where('eventos.fechaFinal', '>=', $now)
+                ->whereNull('eventos.deleted_at')
+                ->exists();
+
+            if ($alreadyInEvent) {
+                return response()->json(['message' => 'Este proyecto ya está inscrito en otro evento activo o próximo.'], 400);
+            }
+
+            // Depending on relationship, we might need to use attach
+            $evento->proyectos()->attach($proyecto->id);
+            return response()->json(['message' => 'Proyecto inscrito exitosamente.']);
+        }
+
+        return response()->json(['message' => 'El proyecto ya estaba inscrito en este evento.'], 400);
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -138,15 +200,12 @@ class EventoController extends Controller
             'fechaInicio' => 'required|date',
             'fechaFinal' => 'required|date|after:fechaInicio',
             'cantidadMaxParticipantes' => 'nullable|integer|min:1',
-            'idFinalidad' => 'required|exists:finalidades,id',
         ], [
             'nombre.required' => 'El nombre del evento es obligatorio.',
             'fechaInicio.required' => 'La fecha de inicio es obligatoria.',
             'fechaFinal.required' => 'La fecha de fin es obligatoria.',
             'fechaFinal.after' => 'La fecha de fin debe ser posterior a la de inicio.',
             'cantidadMaxParticipantes.integer' => 'La cantidad de participantes debe ser un número entero.',
-            'idFinalidad.required' => 'La finalidad es obligatoria.',
-            'idFinalidad.exists' => 'La finalidad seleccionada no existe.',
         ]);
 
         $evento = Evento::create([
@@ -154,7 +213,6 @@ class EventoController extends Controller
             'fechaInicio' => $request->fechaInicio,
             'fechaFinal' => $request->fechaFinal,
             'cantidadMaxParticipantes' => $request->cantidadMaxParticipantes,
-            'idFinalidad' => $request->idFinalidad,
         ]);
 
         return response()->json($evento, 201);
@@ -189,15 +247,12 @@ class EventoController extends Controller
             'fechaInicio' => 'required|date',
             'fechaFinal' => 'required|date|after:fechaInicio',
             'cantidadMaxParticipantes' => 'nullable|integer|min:1',
-            'idFinalidad' => 'required|exists:finalidades,id',
         ], [
             'nombre.required' => 'El nombre del evento es obligatorio.',
             'fechaInicio.required' => 'La fecha de inicio es obligatoria.',
             'fechaFinal.required' => 'La fecha de fin es obligatoria.',
             'fechaFinal.after' => 'La fecha de fin debe ser posterior a la de inicio.',
             'cantidadMaxParticipantes.integer' => 'La cantidad de participantes debe ser un número entero.',
-            'idFinalidad.required' => 'La finalidad es obligatoria.',
-            'idFinalidad.exists' => 'La finalidad seleccionada no existe.',
         ]);
 
         $evento->update([
@@ -205,7 +260,6 @@ class EventoController extends Controller
             'fechaInicio' => $request->fechaInicio,
             'fechaFinal' => $request->fechaFinal,
             'cantidadMaxParticipantes' => $request->cantidadMaxParticipantes,
-            'idFinalidad' => $request->idFinalidad,
         ]);
 
         return response()->json($evento);
@@ -220,5 +274,24 @@ class EventoController extends Controller
         $evento->delete();
 
         return response()->json(null, 204);
+    }
+
+    /**
+     * Obtener proyectos del usuario autenticado para inscripción.
+     */
+    public function misProyectos(Request $request)
+    {
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+        if (!$user) {
+            \Illuminate\Support\Facades\Log::warning("misProyectos called without user session.");
+            return response()->json([], 401);
+        }
+
+        $proyectos = $user->proyectosCreados()->get()->values();
+        
+        \Illuminate\Support\Facades\Log::info("User ID {$user->id} fetching its projects. Found: " . count($proyectos));
+
+        return response()->json($proyectos);
     }
 }

@@ -2,6 +2,7 @@
 import { useMemo, useState, useEffect } from "react";
 
 import Sidebar from "../../components/admin/sidebar";
+import toast from "react-hot-toast";
 import HeaderPublic from "../../components/public/header_public";
 
 import TablaUsuarios from "../../components/admin/tabla_usuarios";
@@ -64,6 +65,34 @@ export default function AdminGestionUsuarios() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [usuarioDelete, setUsuarioDelete] = useState(null);
 
+  // Premium Toast Style
+  const premiumToast = {
+    success: (msg) => toast.success(msg, {
+        style: {
+            borderRadius: '16px',
+            background: '#1c140d',
+            color: '#fff',
+            border: '1px solid rgba(242, 127, 13, 0.2)',
+            padding: '16px',
+            fontWeight: 'bold',
+        },
+        iconTheme: {
+            primary: '#f27f0d',
+            secondary: '#fff',
+        },
+    }),
+    error: (msg) => toast.error(msg, {
+        style: {
+            borderRadius: '16px',
+            background: '#1c140d',
+            color: '#fff',
+            border: '1px solid rgba(239, 68, 68, 0.2)',
+            padding: '16px',
+            fontWeight: 'bold',
+        },
+    }),
+  };
+
   const usuariosFiltrados = useMemo(() => {
     const q = busqueda.trim().toLowerCase();
 
@@ -111,12 +140,13 @@ export default function AdminGestionUsuarios() {
             setUsuarios((prev) =>
               prev.map((u) => (u.id === usuarioEdit.id ? { ...u, ...payload } : u))
             );
+            premiumToast.success("Usuario actualizado.");
             setModalOpen(false);
             setUsuarioEdit(null);
           })
           .catch(err => {
             console.error(err);
-            alert("Error al actualizar usuario. Revisa la consola.");
+            premiumToast.error("Error al actualizar usuario.");
           });
       } else {
         // Create Logic (Simulated for now as backend create is not requested yet)
@@ -126,6 +156,7 @@ export default function AdminGestionUsuarios() {
           fecha: new Date().toISOString().slice(0, 10),
         };
         setUsuarios((prev) => [nuevo, ...prev]);
+        premiumToast.success("Usuario creado (simulado).");
         setModalOpen(false);
         setUsuarioEdit(null);
       }
@@ -139,12 +170,13 @@ export default function AdminGestionUsuarios() {
       axios.default.delete(`/api/users/${usuarioDelete.id}`)
         .then(() => {
           setUsuarios((prev) => prev.filter((u) => u.id !== usuarioDelete.id));
+          premiumToast.success("Usuario eliminado.");
           setConfirmOpen(false);
           setUsuarioDelete(null);
         })
         .catch(err => {
           console.error(err);
-          alert("Error al eliminar usuario.");
+          premiumToast.error("Error al eliminar usuario.");
         });
     });
   };

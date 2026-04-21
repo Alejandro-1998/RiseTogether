@@ -64,6 +64,12 @@ export default function HeaderPublic({ isAuth }) {
             >
               Comunidad
             </Link>
+            <Link
+              to="/eventos"
+              className="flex h-10 min-w-[130px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+            >
+              Eventos
+            </Link>
             {authenticated ? (
               <>
                 <Link
@@ -115,14 +121,6 @@ export default function HeaderPublic({ isAuth }) {
                       className="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#3a2c20]"
                     >
                       Iniciar Sesión
-                    </Link>
-
-                    <Link
-                      to="/login"
-                      state={{ from: "/crear-proyecto" }}
-                      className="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
-                    >
-                      Crear Proyecto
                     </Link>
                   </>
                 ) : isLogin ? (

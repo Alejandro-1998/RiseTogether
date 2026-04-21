@@ -3,76 +3,111 @@ import { Link } from 'react-router-dom';
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
 import toast, { Toaster } from 'react-hot-toast';
+import useAuth from "../../hooks/useAuth";
+import axios from 'axios';
 
 export default function EventosPage() {
+    const { user } = useAuth();
     // Estado para datos dinámicos
     const [activeEvent, setActiveEvent] = useState(null);
     const [upcomingEvents, setUpcomingEvents] = useState([]);
+    const [featuredEvent, setFeaturedEvent] = useState(null); // The one in the Hero
     const [leaderboard, setLeaderboard] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('Todas las Categorías');
-    const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+    const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, isUpcoming: false });
     const [loading, setLoading] = useState(true);
     const [categories, setCategories] = useState([]);
     const [eventStats, setEventStats] = useState({ total_recaudado: 0, total_proyectos: 0, total_donantes: 0 });
     const [userImpact, setUserImpact] = useState({ proyectos_seguidos: 0, total_aportado: 0, proyectos_apoyados: 0 });
+    const [userProjects, setUserProjects] = useState([]);
+    const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
+    const [targetEvent, setTargetEvent] = useState(null); // The event currently chosen for enrollment
+    const [selectedProjectId, setSelectedProjectId] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Modal Helper
+    const openEnrollModal = (event) => {
+        if (!user) {
+            premiumToast.error("Debes iniciar sesión para inscribir un proyecto.");
+            return;
+        }
+        setTargetEvent(event);
+        setIsEnrollModalOpen(true);
+        
+        // RE-FETCH projects on every open for state guarantee
+        const api = window.axios;
+        if (api) {
+            api.get('/api/user/mis-proyectos').then(res => {
+                const projects = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+                setUserProjects(projects);
+            }).catch(e => console.error("Error refreshing projects on modal open", e));
+        }
+    };
 
     // Fetch Initial Data
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                // Fetch Active Event
-                const activeRes = await fetch('/api/eventos/active');
-                const activeData = await activeRes.json();
-                setActiveEvent(activeData);
+    const fetchData = useCallback(async () => {
+        try {
+            // Fetch Active Event
+            const activeRes = await axios.get('/api/eventos/active');
+            // IMPORTANT: Normalize {} to null if it's an empty object from backend
+            const activeData = (activeRes.data && activeRes.data.id) ? activeRes.data : null;
+            setActiveEvent(activeData);
 
-                // Fetch Upcoming Events
-                const upcomingRes = await fetch('/api/eventos/upcoming');
-                const upcomingData = await upcomingRes.json();
-                setUpcomingEvents(upcomingData);
+            // Fetch Upcoming Events
+            const upcomingRes = await axios.get('/api/eventos/upcoming');
+            const upcomingData = upcomingRes.data;
+            setUpcomingEvents(upcomingData);
 
-                // Fetch Categories for the filter
-                const catRes = await fetch('/api/categorias');
-                const catData = await catRes.json();
-                setCategories(catData);
+            // Fetch Categories for the filter
+            const catRes = await axios.get('/api/categorias');
+            setCategories(catRes.data);
 
-                if (activeData) {
-                    // Fetch Event Stats
-                    const statsRes = await fetch(`/api/eventos/${activeData.id}/stats`);
-                    if (statsRes.ok) {
-                        const statsData = await statsRes.json();
-                        setEventStats(statsData);
-                    }
+            // Determine Featured Event (Hero)
+            // If active exists, it's the hero. If not, the first upcoming.
+            const hero = activeData || (upcomingData && upcomingData.length > 0 ? upcomingData[0] : null);
+            setFeaturedEvent(hero);
 
-                    // Fetch User Impact if logged in
-                    const token = localStorage.getItem('token');
-                    if (token) {
-                        const impactRes = await fetch(`/api/eventos/${activeData.id}/user-impact`, {
-                            headers: { 'Authorization': `Bearer ${token}` }
-                        });
-                        if (impactRes.ok) {
-                            const impactData = await impactRes.json();
-                            setUserImpact(impactData);
-                        }
-                    }
+            if (hero) {
+                // Fetch Event Stats
+                try {
+                    const statsRes = await axios.get(`/api/eventos/${hero.id}/stats`);
+                    setEventStats(statsRes.data);
+                } catch (e) {
+                    console.error("Error fetching stats", e);
                 }
 
-                setLoading(false);
-            } catch (error) {
-                console.error("Error fetching event data:", error);
-                setLoading(false);
-            }
-        };
+                if (user) {
+                    // Fetch User Impact and User Projects if logged in
+                    try {
+                        const impactRes = await axios.get(`/api/eventos/${hero.id}/user-impact`);
+                        setUserImpact(impactRes.data);
 
+                        const projectsRes = await axios.get(`/api/user/mis-proyectos`);
+                        setUserProjects(projectsRes.data || []);
+                    } catch (e) {
+                        console.error("Error fetching user data", e);
+                    }
+                }
+            }
+
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching event data:", error);
+            setLoading(false);
+        }
+    }, [user]);
+
+    useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     // Fetch Leaderboard for Active Event
     const fetchLeaderboard = useCallback(async (eventId, category) => {
+        if (!eventId) return;
         try {
             const url = `/api/eventos/${eventId}/leaderboard${category !== 'Todas las Categorías' ? `?categoria=${encodeURIComponent(category)}` : ''}`;
-            const res = await fetch(url);
-            const data = await res.json();
-            setLeaderboard(data);
+            const res = await axios.get(url);
+            setLeaderboard(res.data);
         } catch (error) {
             console.error("Error fetching leaderboard:", error);
         }
@@ -80,29 +115,50 @@ export default function EventosPage() {
 
     // Effect for Leaderboard polling
     useEffect(() => {
-        if (activeEvent) {
-            fetchLeaderboard(activeEvent.id, selectedCategory);
-            
+        if (featuredEvent?.id) {
+            fetchLeaderboard(featuredEvent.id, selectedCategory);
+
             const interval = setInterval(() => {
-                fetchLeaderboard(activeEvent.id, selectedCategory);
+                fetchLeaderboard(featuredEvent.id, selectedCategory);
             }, 30000); // Polling cada 30 segundos
 
             return () => clearInterval(interval);
         }
-    }, [activeEvent, selectedCategory, fetchLeaderboard]);
+    }, [featuredEvent, selectedCategory, fetchLeaderboard]);
 
-    // Countdown Logic based on Active Event
+    // Countdown Logic based on Featured Event
     useEffect(() => {
-        if (!activeEvent) return;
+        if (!featuredEvent) {
+            setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isUpcoming: false });
+            return;
+        }
 
-        const targetDate = new Date(activeEvent.fechaFinal);
+        const now = new Date();
+        const startStr = featuredEvent?.fechaInicio ? featuredEvent.fechaInicio.replace(' ', 'T') : null;
+        const endStr = featuredEvent?.fechaFinal ? featuredEvent.fechaFinal.replace(' ', 'T') : null;
+
+        if (!startStr || !endStr) {
+            setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isUpcoming: false });
+            return;
+        }
+
+        const start = new Date(startStr);
+        const end = new Date(endStr);
+
+        const isUpcoming = now < start;
+        const targetDate = isUpcoming ? start : end;
+
+        if (isNaN(targetDate.getTime())) {
+            setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isUpcoming });
+            return;
+        }
 
         const calculateTime = () => {
-            const now = new Date();
-            const difference = targetDate - now;
+            const currentTime = new Date();
+            const difference = targetDate - currentTime;
 
             if (difference <= 0) {
-                setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isUpcoming });
                 return false;
             } else {
                 setTimeLeft({
@@ -110,6 +166,7 @@ export default function EventosPage() {
                     hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
                     minutes: Math.floor((difference / 1000 / 60) % 60),
                     seconds: Math.floor((difference / 1000) % 60),
+                    isUpcoming
                 });
                 return true;
             }
@@ -123,50 +180,122 @@ export default function EventosPage() {
         }, 1000);
 
         return () => clearInterval(interval);
-    }, [activeEvent]);
+    }, [featuredEvent]);
+
+    // Premium Toast Styles
+    const premiumToast = {
+        success: (msg) => toast.success(msg, {
+            style: {
+                borderRadius: '16px',
+                background: '#1c140d',
+                color: '#fff',
+                border: '1px solid rgba(242, 127, 13, 0.2)',
+                padding: '16px',
+                fontWeight: 'bold',
+            },
+            iconTheme: {
+                primary: '#f27f0d',
+                secondary: '#fff',
+            },
+        }),
+        error: (msg) => toast.error(msg, {
+            style: {
+                borderRadius: '16px',
+                background: '#1c140d',
+                color: '#fff',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                padding: '16px',
+                fontWeight: 'bold',
+            },
+        }),
+    };
 
     const handleNotify = (eventName) => {
-        toast.success(`¡Te avisaremos cuando comience ${eventName}!`, {
-            style: {
-                borderRadius: '10px',
-                background: '#333',
-                color: '#fff',
-            },
-        });
+        premiumToast.success(`¡Te avisaremos cuando comience ${eventName}!`);
     };
 
     const handleFollow = async (projectId) => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            toast.error('Inicia sesión para seguir este proyecto');
+        if (!user) {
+            premiumToast.error('Inicia sesión para seguir este proyecto');
             return;
         }
 
         try {
-            const res = await fetch(`/api/proyectos/${projectId}/seguir`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': 'application/json'
-                }
-            });
-            
-            if (res.ok) {
-                toast.success('¡Siguiendo proyecto!');
-            } else {
-                toast.error('No se pudo seguir el proyecto');
-            }
+            await window.axios.post(`/api/proyectos/${projectId}/seguir`);
+            premiumToast.success('¡Siguiendo proyecto!');
         } catch (error) {
-            toast.error('Error al intentar seguir el proyecto');
+            const message = error.response?.data?.message || 'Error al intentar seguir el proyecto';
+            premiumToast.error(message);
         }
+    };
+
+    const handleInscribir = async () => {
+        if (!selectedProjectId) {
+            premiumToast.error("Por favor selecciona un proyecto.");
+            return;
+        }
+
+        if (!user || !targetEvent) {
+            premiumToast.error("Faltan datos para la inscripción.");
+            return;
+        }
+
+        const api = window.axios;
+        setIsSubmitting(true);
+        
+        // Use toast.promise for premium UX
+        const enrollmentPromise = api.post(`/api/eventos/${targetEvent.id}/inscribir`, {
+            proyecto_id: selectedProjectId
+        });
+
+        toast.promise(
+            enrollmentPromise,
+            {
+                loading: 'Inscribiendo proyecto...',
+                success: (res) => {
+                    setIsEnrollModalOpen(false);
+                    fetchData();
+                    return res.data?.message || '¡Proyecto inscrito con éxito!';
+                },
+                error: (err) => {
+                    setIsSubmitting(false);
+                    return err.response?.data?.message || 'Error del servidor al inscribir.';
+                },
+            },
+            {
+                style: {
+                    borderRadius: '16px',
+                    background: '#1c140d',
+                    color: '#fff',
+                    border: '1px solid rgba(242, 127, 13, 0.2)',
+                    padding: '16px',
+                    fontWeight: 'bold',
+                },
+                success: {
+                    duration: 5000,
+                    icon: '🚀',
+                },
+            }
+        ).finally(() => {
+            setIsSubmitting(false);
+        });
     };
 
     return (
         <div className="bg-[#fcfaf8] dark:bg-[#1c140d] font-sans text-[#1c140d] dark:text-[#fcfaf8] transition-colors duration-200">
-            <Toaster position="bottom-right" />
             <HeaderPublic />
 
             <main className="flex-1 w-full max-w-[1400px] mx-auto px-4 md:px-10 pb-20 pt-8">
+                {/* Admin Toolbar */}
+                {user && user.roles_list && user.roles_list.includes('admin') && (
+                    <div className="mb-6 flex justify-end">
+                        <Link to="/administrador/eventos" className="inline-flex items-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-black px-6 py-2 rounded-xl font-bold shadow-md hover:scale-105 transition-transform">
+                            <span className="material-symbols-outlined">edit_calendar</span>
+                            Gestionar Eventos
+                        </Link>
+                    </div>
+                )}
+
                 {/* Event Timeline Navigation */}
                 <div className="mb-10 flex justify-center">
                     <div className="inline-flex items-center gap-2 p-1 bg-white dark:bg-[#2a221b] rounded-full border border-[#f4ede7] dark:border-[#3a2d22] shadow-sm">
@@ -179,7 +308,7 @@ export default function EventosPage() {
                 </div>
 
                 {/* Hero Section */}
-                <section className="relative py-12 md:py-20 mb-12 rounded-[2.5rem] overflow-hidden bg-linear-to-br from-[#1c140d] via-[#2a221b] to-[#1c140d] border border-white/5 shadow-2xl">
+                <section className="relative py-12 md:py-20 mb-12 rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-[#1c140d] via-[#2a221b] to-[#1c140d] border border-white/5 shadow-2xl">
                     {/* Decorative Elements */}
                     <div className="absolute top-0 left-0 w-full h-full">
                         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[50%] bg-[#f27f0d]/10 rounded-full blur-[120px]"></div>
@@ -189,24 +318,33 @@ export default function EventosPage() {
                     <div className="relative z-10 flex flex-col lg:flex-row gap-12 items-center px-8 md:px-16 text-center lg:text-left">
                         {/* Left: Info & Timer */}
                         <div className="flex-1 flex flex-col gap-8 w-full max-w-2xl">
-                            {activeEvent ? (
+                            {featuredEvent ? (
                                 <>
                                     <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
-                                        <div className="inline-flex items-center justify-center gap-x-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-2 border border-white/10">
-                                            <span className="material-symbols-outlined text-[#f27f0d] text-xl">verified</span>
-                                            <p className="text-white text-sm font-bold tracking-wide">EVENTO OFICIAL ACTIVO</p>
-                                        </div>
+                                        {activeEvent ? (
+                                            <div className="inline-flex items-center justify-center gap-x-2 rounded-full bg-white/10 backdrop-blur-md px-4 py-2 border border-white/10">
+                                                <span className="material-symbols-outlined text-[#f27f0d] text-xl">verified</span>
+                                                <p className="text-white text-sm font-bold tracking-wide">EVENTO OFICIAL ACTIVO</p>
+                                            </div>
+                                        ) : (
+                                            <div className="inline-flex items-center justify-center gap-x-2 rounded-full bg-blue-500/20 backdrop-blur-md px-4 py-2 border border-blue-500/20">
+                                                <span className="material-symbols-outlined text-blue-400 text-xl">calendar_month</span>
+                                                <p className="text-white text-sm font-bold tracking-wide uppercase">Próximo Evento - ¡Inscríbete ya!</p>
+                                            </div>
+                                        )}
                                         <div className="inline-flex items-center justify-center gap-x-2 rounded-full bg-orange-500 shadow-lg shadow-orange-500/20 px-4 py-2">
                                             <span className="material-symbols-outlined text-white text-xl">stars</span>
-                                            <p className="text-white text-sm font-black italic uppercase">Bote: {activeEvent.finalidades?.proposito || 'Premium'}</p>
+                                            <p className="text-white text-sm font-black italic uppercase">Bote: Evento Oficial</p>
                                         </div>
                                     </div>
                                     <div className="space-y-4">
                                         <h1 className="text-white text-5xl md:text-7xl font-black leading-tight tracking-[-0.04em] drop-shadow-sm">
-                                            {activeEvent.nombre}
+                                            {featuredEvent.nombre}
                                         </h1>
                                         <p className="text-gray-400 text-lg md:text-xl max-w-xl mx-auto lg:mx-0">
-                                            La batalla por el impacto ha comenzado. Apoya proyectos, escala posiciones y desbloquea recompensas exclusivas.
+                                            {activeEvent
+                                                ? "La batalla por el impacto ha comenzado. Apoya proyectos, escala posiciones y desbloquea recompensas exclusivas."
+                                                : "Prepárate para el próximo gran desafío. Inscribe tu proyecto ahora y gana visibilidad antes del lanzamiento oficial."}
                                         </p>
                                     </div>
 
@@ -227,23 +365,41 @@ export default function EventosPage() {
                                     </div>
 
                                     {/* Countdown */}
-                                    <div className="flex justify-center lg:justify-start gap-4">
-                                        {[
-                                            { val: timeLeft.days, label: 'DÍAS' },
-                                            { val: timeLeft.hours, label: 'HRS' },
-                                            { val: timeLeft.minutes, label: 'MINS' },
-                                            { val: timeLeft.seconds, label: 'SEGS', pulse: true }
-                                        ].map((item, i) => (
-                                            <div key={i} className="flex flex-col items-center gap-1.5 focus-within:">
-                                                <div className="flex h-16 w-16 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-white/10 dark:bg-black/20 border border-white/10 backdrop-blur-xl">
-                                                    <p className={`text-2xl md:text-3xl font-black ${item.pulse ? 'text-[#f27f0d] animate-pulse' : 'text-white'}`}>
-                                                        {String(item.val).padStart(2, '0')}
-                                                    </p>
+                                    <div className="flex flex-col gap-3">
+                                        <p className="text-xs font-black tracking-[0.2em] text-gray-500 uppercase flex items-center gap-2 justify-center lg:justify-start">
+                                            <span className="material-symbols-outlined text-sm">schedule</span>
+                                            {timeLeft.isUpcoming ? "Tiempo para el Inicio" : "Tiempo Restante"}
+                                        </p>
+                                        <div className="flex justify-center lg:justify-start gap-4">
+                                            {[
+                                                { val: timeLeft.days, label: 'DÍAS' },
+                                                { val: timeLeft.hours, label: 'HRS' },
+                                                { val: timeLeft.minutes, label: 'MINS' },
+                                                { val: timeLeft.seconds, label: 'SEGS', pulse: true }
+                                            ].map((item, i) => (
+                                                <div key={i} className="flex flex-col items-center gap-1.5">
+                                                    <div className="flex h-16 w-16 md:h-18 md:w-18 items-center justify-center rounded-2xl bg-white/10 dark:bg-black/20 border border-white/10 backdrop-blur-xl">
+                                                        <p className={`text-2xl md:text-3xl font-black ${item.pulse ? 'text-[#f27f0d] animate-pulse' : 'text-white'}`}>
+                                                            {String(item.val).padStart(2, '0')}
+                                                        </p>
+                                                    </div>
+                                                    <p className="text-[10px] font-black tracking-widest text-gray-500">{item.label}</p>
                                                 </div>
-                                                <p className="text-[10px] font-black tracking-widest text-gray-500">{item.label}</p>
-                                            </div>
-                                        ))}
+                                            ))}
+                                        </div>
                                     </div>
+
+                                    {/* Enroll Project Button (If authenticated) */}
+                                    {user && (
+                                        <div className="flex justify-center lg:justify-start mt-4">
+                                            <button 
+                                                onClick={() => openEnrollModal(featuredEvent)}
+                                                className="px-8 py-4 bg-white text-[#f27f0d] rounded-2xl font-black hover:scale-105 transition-transform flex items-center gap-2 border-2 border-transparent hover:border-white/50 shadow-xl shadow-white/5">
+                                                <span className="material-symbols-outlined">add_circle</span>
+                                                INSCRIBIR MI PROYECTO
+                                            </button>
+                                        </div>
+                                    )}
                                 </>
                             ) : (
                                 <div className="space-y-6">
@@ -317,7 +473,7 @@ export default function EventosPage() {
                             {/* 1st Place */}
                             {leaderboard[0] && (
                                 <div className="w-full md:w-[38%] order-1 md:order-2 z-10 scale-105 group">
-                                    <div className="relative p-8 rounded-[2.5rem] bg-linear-to-b from-white to-orange-50/50 dark:from-[#3a2d22] dark:to-[#2a221b] border-2 border-orange-500/50 shadow-2xl shadow-orange-500/20 hover:-translate-y-3 transition-all duration-500">
+                                    <div className="relative p-8 rounded-[2.5rem] bg-gradient-to-b from-white to-orange-50/50 dark:from-[#3a2d22] dark:to-[#2a221b] border-2 border-orange-500/50 shadow-2xl shadow-orange-500/20 hover:-translate-y-3 transition-all duration-500">
                                         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 size-16 rounded-full bg-orange-500 flex items-center justify-center font-black text-white border-4 border-[#fcfaf8] dark:border-[#1c140d] shadow-xl">
                                             <span className="material-symbols-outlined text-3xl">emoji_events</span>
                                         </div>
@@ -373,27 +529,35 @@ export default function EventosPage() {
                         {upcomingEvents.length > 0 ? upcomingEvents.map((event) => (
                             <div key={event.id} className="min-w-[300px] md:min-w-[350px] rounded-3xl bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] overflow-hidden flex flex-col hover:border-orange-500/50 hover:shadow-lg transition-all group">
                                 <div className="h-40 bg-gray-100 dark:bg-gray-800 relative overflow-hidden">
-                                     <div className="absolute inset-0 bg-linear-to-t from-black/20 to-transparent"></div>
-                                     <div className="absolute top-4 left-4 size-14 rounded-2xl bg-white/90 dark:bg-black/80 backdrop-blur shadow-sm p-1.5 flex flex-col items-center justify-center border border-white/20">
-                                         <span className="text-lg font-black leading-none">{new Date(event.fechaInicio).toLocaleDateString('es-ES', { day: '2-digit' })}</span>
-                                         <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{new Date(event.fechaInicio).toLocaleDateString('es-ES', { month: 'short' })}</span>
-                                     </div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                                    <div className="absolute top-4 left-4 size-14 rounded-2xl bg-white/90 dark:bg-black/80 backdrop-blur shadow-sm p-1.5 flex flex-col items-center justify-center border border-white/20">
+                                        <span className="text-lg font-black leading-none">{event.fechaInicio ? new Date(event.fechaInicio).toLocaleDateString('es-ES', { day: '2-digit' }) : '--'}</span>
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{event.fechaInicio ? new Date(event.fechaInicio).toLocaleDateString('es-ES', { month: 'short' }) : '--'}</span>
+                                    </div>
                                 </div>
                                 <div className="p-6 flex flex-col gap-4 flex-1">
                                     <div>
                                         <h3 className="font-black text-xl leading-tight group-hover:text-orange-500 transition-colors">{event.nombre}</h3>
-                                        <p className="text-sm text-gray-500 mt-2 line-clamp-2">{event.finalidades?.proposito || 'Un nuevo desafío para la comunidad.'}</p>
+                                        <p className="text-sm text-gray-500 mt-2 line-clamp-2">Un nuevo desafío para la comunidad.</p>
                                     </div>
                                     <div className="mt-auto pt-4 flex items-center justify-between border-t border-[#f4ede7] dark:border-[#3a2d22]">
                                         <div className="flex items-center gap-2">
                                             <span className="material-symbols-outlined text-lg text-gray-400 font-black">group</span>
                                             <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{event.cantidadMaxParticipantes || 'Open'} SLOTS</span>
                                         </div>
-                                        <button 
-                                            onClick={() => handleNotify(event.nombre)}
-                                            className="px-4 py-2 rounded-xl bg-orange-500/10 text-orange-600 hover:bg-orange-500 hover:text-white font-bold text-xs transition-all">
-                                            NOTIFICARME
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => handleNotify(event.nombre)}
+                                                className="p-2 rounded-xl bg-gray-100 dark:bg-white/5 text-gray-400 hover:text-orange-500 transition-all"
+                                                title="Notificarme">
+                                                <span className="material-symbols-outlined text-xl">notifications</span>
+                                            </button>
+                                            <button
+                                                onClick={() => openEnrollModal(event)}
+                                                className="px-4 py-2 rounded-xl bg-[#f27f0d] text-white hover:bg-[#f27f0d]/90 font-bold text-xs transition-all shadow-md shadow-orange-500/10">
+                                                INSCRIBIR PROYECTO
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -421,7 +585,7 @@ export default function EventosPage() {
                                 <p className="text-gray-500 mt-2 font-medium">Actualización automática cada 30s</p>
                             </div>
                             <div className="flex gap-4">
-                                <select 
+                                <select
                                     value={selectedCategory}
                                     onChange={(e) => setSelectedCategory(e.target.value)}
                                     className="bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] text-sm font-bold rounded-2xl focus:ring-orange-500 focus:border-orange-500 block px-6 py-3 shadow-sm appearance-none cursor-pointer">
@@ -449,11 +613,10 @@ export default function EventosPage() {
                                     {leaderboard.length > 0 ? leaderboard.map((project, index) => (
                                         <tr key={project.id} className="group hover:bg-[#f27f0d]/5 transition-all duration-300">
                                             <td className="px-8 py-6 text-center">
-                                                <div className={`size-10 rounded-xl mx-auto flex items-center justify-center font-black text-lg ${
-                                                    index === 0 ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 
-                                                    index === 1 ? 'bg-slate-200 text-slate-600' : 
-                                                    index === 2 ? 'bg-orange-100 text-orange-700' : 'text-gray-400'
-                                                }`}>
+                                                <div className={`size-10 rounded-xl mx-auto flex items-center justify-center font-black text-lg ${index === 0 ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' :
+                                                        index === 1 ? 'bg-slate-200 text-slate-600' :
+                                                            index === 2 ? 'bg-orange-100 text-orange-700' : 'text-gray-400'
+                                                    }`}>
                                                     {index + 1}
                                                 </div>
                                             </td>
@@ -510,7 +673,7 @@ export default function EventosPage() {
                     {/* Sidebar: Premium Components */}
                     <div className="flex flex-col gap-10">
                         {/* Dynamic User Impact Card */}
-                        <div className="rounded-[2.5rem] bg-linear-to-br from-orange-600 to-orange-400 text-white p-8 shadow-2xl shadow-orange-500/30 relative overflow-hidden group">
+                        <div className="rounded-[2.5rem] bg-gradient-to-br from-orange-600 to-orange-400 text-white p-8 shadow-2xl shadow-orange-500/30 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-3xl -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-700"></div>
                             <h3 className="font-black text-xl mb-6 relative z-10 flex items-center gap-2">
                                 <span className="material-symbols-outlined">analytics</span>
@@ -529,8 +692,8 @@ export default function EventosPage() {
                             <div className="relative z-10 p-4 rounded-2xl bg-black/10 border border-white/10">
                                 <p className="text-xs font-bold text-orange-50 flex items-center gap-2">
                                     <span className="material-symbols-outlined text-sm">info</span>
-                                    {userImpact.proyectos_seguidos > 0 
-                                        ? `Sigues a ${userImpact.proyectos_seguidos} proyectos en este evento.` 
+                                    {userImpact.proyectos_seguidos > 0
+                                        ? `Sigues a ${userImpact.proyectos_seguidos} proyectos en este evento.`
                                         : "Aún no sigues proyectos en este evento."}
                                 </p>
                             </div>
@@ -578,7 +741,7 @@ export default function EventosPage() {
                         ].map((item, i) => (
                             <div key={i} className="p-8 rounded-3xl bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] hover:border-orange-500/30 transition-all group">
                                 <h4 className="font-black text-lg mb-3 flex items-center gap-3">
-                                    <span className="size-6 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-black">{i+1}</span>
+                                    <span className="size-6 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-black">{i + 1}</span>
                                     {item.q}
                                 </h4>
                                 <p className="text-gray-500 text-sm leading-relaxed font-medium">{item.a}</p>
@@ -623,7 +786,54 @@ export default function EventosPage() {
                 </section>
             </main>
 
+            {/* Enroll Modal */}
+            {isEnrollModalOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                    <div className="bg-white dark:bg-[#1c140d] rounded-3xl p-8 max-w-md w-full shadow-2xl border border-gray-100 dark:border-white/10 animate-fade-in-up">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-2xl font-black">Inscripción Evento</h3>
+                            <button onClick={() => setIsEnrollModalOpen(false)} className="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors">
+                                <span className="material-symbols-outlined text-2xl">close</span>
+                            </button>
+                        </div>
+                        <p className="text-gray-500 mb-6 text-sm">
+                            Selecciona uno de tus proyectos para inscribirse en <span className="text-[#f27f0d] font-bold">"{targetEvent?.nombre}"</span>. 
+                            Participarás en la competición técnica y optarás a premios exclusivos.
+                            {user && <span className="block mt-1 text-[10px] opacity-30">Debug: User ID {user.id} | Proyectos: {userProjects.length}</span>}
+                        </p>
+
+                        <div className="mb-6">
+                            <label className="block text-sm font-bold mb-2">Selecciona tu proyecto:</label>
+                            <select
+                                value={selectedProjectId}
+                                onChange={(e) => setSelectedProjectId(e.target.value)}
+                                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-sm rounded-xl focus:ring-[#f27f0d] focus:border-[#f27f0d] px-4 py-3 outline-none"
+                            >
+                                <option value="" disabled>Seleccionar un proyecto</option>
+                                {userProjects.map(p => (
+                                    <option key={p.id} value={p.id}>{p.titulo}</option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <button
+                            onClick={handleInscribir}
+                            disabled={isSubmitting || !selectedProjectId}
+                            className={`w-full py-4 rounded-xl text-white font-black flex items-center justify-center gap-2 transition-all ${isSubmitting || !selectedProjectId ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#f27f0d] hover:bg-orange-600 shadow-lg shadow-orange-500/30'}`}
+                        >
+                            {isSubmitting ? (
+                                <span className="material-symbols-outlined animate-spin">refresh</span>
+                            ) : (
+                                <span className="material-symbols-outlined">rocket_launch</span>
+                            )}
+                            {isSubmitting ? 'Inscribiendo...' : 'Confirmar Inscripción'}
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <FooterPublic />
         </div>
     );
+
 }

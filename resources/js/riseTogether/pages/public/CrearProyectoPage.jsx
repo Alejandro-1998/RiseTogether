@@ -1,5 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import HeaderPublic from "../../components/public/header_public";
 import RecompensaItem from "../../components/proyecto/recompensa_item";
 import ObjetivoItem from "../../components/proyecto/objetivo_item";
@@ -79,6 +80,34 @@ export default function CrearProyectoPage() {
         ]);
     };
 
+    // Premium Toast Style
+    const premiumToast = {
+        success: (msg) => toast.success(msg, {
+            style: {
+                borderRadius: '16px',
+                background: '#1c140d',
+                color: '#fff',
+                border: '1px solid rgba(242, 127, 13, 0.2)',
+                padding: '16px',
+                fontWeight: 'bold',
+            },
+            iconTheme: {
+                primary: '#f27f0d',
+                secondary: '#fff',
+            },
+        }),
+        error: (msg) => toast.error(msg, {
+            style: {
+                borderRadius: '16px',
+                background: '#1c140d',
+                color: '#fff',
+                border: '1px solid rgba(239, 68, 68, 0.2)',
+                padding: '16px',
+                fontWeight: 'bold',
+            },
+        }),
+    };
+
     const submit = (type) => async (e) => {
         e.preventDefault();
 
@@ -105,15 +134,19 @@ export default function CrearProyectoPage() {
             });
 
             if (response.status === 201) {
-                alert(type === "draft"
+                premiumToast.success(type === "draft"
                     ? "Borrador guardado correctamente."
                     : "¡Proyecto publicado con éxito!");
-                window.location.href = '/proyectos';
+                
+                // Pequeño retardo para que se vea el toast antes de redirigir
+                setTimeout(() => {
+                    window.location.href = '/proyectos';
+                }, 1500);
             }
         } catch (error) {
-            console.log(error);
             console.error("Error creating project:", error);
-            alert("Hubo un error al guardar el proyecto. Revisa los datos.");
+            const message = error.response?.data?.message || "Hubo un error al guardar el proyecto. Revisa los datos.";
+            premiumToast.error(message);
         }
     };
 

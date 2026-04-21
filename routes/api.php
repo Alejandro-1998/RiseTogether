@@ -23,6 +23,7 @@ Route::get('/proyectos/historias-exito', [ProyectoController::class, 'historiasE
 Route::get('/comentarios/relevantes', [ComentarioController::class, 'comentariosRelevantes']);
 Route::get('/categorias', [CategoriaController::class, 'index']);
 Route::get('/eventos', [EventoController::class, 'index']);
+Route::get('/clean-events', [EventoController::class, 'cleanDummyEvents']);
 Route::get('/eventos/active', [EventoController::class, 'active']);
 Route::get('/eventos/upcoming', [EventoController::class, 'upcoming']);
 Route::get('/eventos/{id}/leaderboard', [EventoController::class, 'leaderboard']);
@@ -53,10 +54,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/proyectos/{id}/seguir', [ProyectoController::class, 'seguir']);
     Route::delete('/proyectos/{id}/seguir', [ProyectoController::class, 'dejarDeSeguir']);
     
-    // Follows de Usuarios
     Route::post('/users/{id}/follow', [SeguidorController::class, 'alternarSeguir']);
     Route::get('/users/{id}/check-follow', [SeguidorController::class, 'verificarSeguimiento']);
     Route::middleware(['auth:sanctum'])->post('/pagos/iniciar', [PaymentController::class, 'iniciarPago']);
+    
+    // Eventos (Public Authed)
+    Route::post('/eventos/{id}/inscribir', [EventoController::class, 'inscribirProject']);
+    Route::get('/user/mis-proyectos', [EventoController::class, 'misProyectos']);
     
     // Chat Privado
     Route::get('/chat/{userId}', [\App\Http\Controllers\ChatPrivadoController::class, 'getMensajes']);
