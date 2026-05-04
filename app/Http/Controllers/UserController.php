@@ -48,7 +48,9 @@ class UserController extends Controller
                      ->get();
 
         if (Auth::check()) {
-            $seguidosIds = Auth::user()->seguidos()->pluck('users.id')->toArray();
+            /** @var \App\Models\User $authUser */
+            $authUser = Auth::user();
+            $seguidosIds = $authUser->seguidos()->pluck('users.id')->toArray();
             $users->transform(function ($u) use ($seguidosIds) {
                 $u->siguiendo = in_array($u->id, $seguidosIds);
                 return $u;
@@ -77,7 +79,7 @@ class UserController extends Controller
     private function processUpdate(Request $request, User $usuario)
     {
         $validaciones = $request->validate([
-            'nombreUsuario' => ['required', 'string', 'max:30', Rule::unique('users')->ignore($usuario->id)],
+            'nombreUsuario' => ['sometimes', 'required', 'string', 'max:30', Rule::unique('users')->ignore($usuario->id)],
             'nombreCompleto' => ['nullable', 'string', 'max:30'],
             'email' => ['sometimes', 'string', 'email', 'max:255', Rule::unique('users')->ignore($usuario->id)],
             'dni' => ['nullable', 'string', 'max:9', Rule::unique('users')->ignore($usuario->id)],
