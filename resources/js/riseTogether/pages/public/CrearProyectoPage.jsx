@@ -3,7 +3,6 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import HeaderPublic from "../../components/public/header_public";
 import RecompensaItem from "../../components/proyecto/recompensa_item";
-import ObjetivoItem from "../../components/proyecto/objetivo_item";
 import ProyectoCard from "../../components/cards/ProyectoCard";
 
 export default function CrearProyectoPage() {
@@ -33,10 +32,6 @@ export default function CrearProyectoPage() {
 
     const [recompensas, setRecompensas] = useState([
         { id: crypto.randomUUID(), cantidad: 10, titulo: "Aportación de apoyo", descripcion: "" },
-    ]);
-
-    const [objetivos, setObjetivos] = useState([
-        { id: crypto.randomUUID(), cantidad: 25000, titulo: "Mejores materiales", descripcion: "" },
     ]);
 
     const previewProyecto = useMemo(() => {
@@ -70,13 +65,6 @@ export default function CrearProyectoPage() {
         setRecompensas((prev) => [
             ...prev,
             { id: crypto.randomUUID(), cantidad: 10, titulo: "", descripcion: "" },
-        ]);
-    };
-
-    const addObjetivo = () => {
-        setObjetivos((prev) => [
-            ...prev,
-            { id: crypto.randomUUID(), cantidad: 25000, titulo: "", descripcion: "" },
         ]);
     };
 
@@ -290,40 +278,6 @@ export default function CrearProyectoPage() {
                                         onRemove={() =>
                                             setRecompensas((prev) => prev.filter((x) => x.id !== r.id))
                                         }
-                                    />
-                                ))}
-                            </div>
-                        </section>
-
-                        {/* BLOQUE 4: OBJETIVOS */}
-                        <section className="rounded-3xl border border-[#f4ede7] dark:border-[#2a2017] bg-white dark:bg-[#1a120d] p-6 shadow-sm">
-                            <div className="flex items-center justify-between gap-4">
-                                <div>
-                                    <h3 className="text-xl font-bold">Objetivos desbloqueables</h3>
-                                    <p className="mt-1 text-sm text-[#9c7049] dark:text-[#9c7049]/80">
-                                        (Stretch goals) para cuando se supera la financiación.
-                                    </p>
-                                </div>
-
-                                <button
-                                    type="button"
-                                    onClick={addObjetivo}
-                                    className="rounded-2xl h-11 px-5 bg-[#f2780d]/15 text-[#f2780d] font-bold text-sm hover:bg-[#f2780d]/25 transition"
-                                >
-                                    + Añadir
-                                </button>
-                            </div>
-
-                            <div className="mt-6 grid grid-cols-1 gap-4">
-                                {objetivos.map((o, idx) => (
-                                    <ObjetivoItem
-                                        key={o.id}
-                                        value={o}
-                                        index={idx}
-                                        onChange={(next) =>
-                                            setObjetivos((prev) => prev.map((x) => (x.id === o.id ? next : x)))
-                                        }
-                                        onRemove={() => setObjetivos((prev) => prev.filter((x) => x.id !== o.id))}
                                     />
                                 ))}
                             </div>

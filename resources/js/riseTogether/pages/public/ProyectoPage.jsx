@@ -310,10 +310,10 @@ export default function ProyectoPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => setPestana("donaciones")}
-                    className={btnPestana("donaciones", pestana === "donaciones")}
+                    onClick={() => setPestana("mecenas")}
+                    className={btnPestana("mecenas", pestana === "mecenas")}
                   >
-                    Donaciones
+                    Mecenas
                   </button>
                 </>
               )}
@@ -407,7 +407,7 @@ export default function ProyectoPage() {
               />
             )}
 
-            {pestana === "donaciones" && isOwner && (
+            {pestana === "mecenas" && isOwner && (
               <DonacionesAdminTab proyectoId={proyecto.id} />
             )}
           </div>
