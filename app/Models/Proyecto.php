@@ -88,4 +88,9 @@ class Proyecto extends Model
         
         return $porcentaje; // Quitamos el min(..., 100) de aquí
     }
+
+    public function faqs()
+    {
+        return $this->hasMany(Faq::class, 'proyecto_id');
+    }
 }
