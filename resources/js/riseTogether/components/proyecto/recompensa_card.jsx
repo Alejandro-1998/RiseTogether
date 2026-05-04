@@ -1,7 +1,7 @@
 import useAuth from "../../hooks/useAuth";
 
 
-export default function RecompensaCard({ recompensa, onSupport }) {
+export default function RecompensaCard({ recompensa, onSupport, isFinished = false }) {
   const { isAuth } = useAuth();
   const precio = recompensa?.costoRecompensa ?? recompensa?.precio ?? 10;
   const titulo = recompensa?.nombreRecompensa ?? recompensa?.titulo ?? "Aportación de apoyo";
@@ -27,9 +27,14 @@ export default function RecompensaCard({ recompensa, onSupport }) {
 
       <button
         onClick={handleSupport}
-        className="cursor-pointer mt-4 px-4 h-10 w-full rounded-2xl bg-[#f2780d] text-white text-sm font-bold hover:bg-[#f2780d]/90 transition-colors shadow-sm"
+        disabled={isFinished}
+        className={`mt-4 px-4 h-10 w-full rounded-2xl text-sm font-bold shadow-sm transition-colors ${
+          isFinished 
+            ? 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+            : 'bg-[#f2780d] text-white hover:bg-[#f2780d]/90 cursor-pointer'
+        }`}
       >
-        Seleccionar esta recompensa
+        {isFinished ? 'Financiación finalizada' : 'Seleccionar esta recompensa'}
       </button>
     </div>
   );

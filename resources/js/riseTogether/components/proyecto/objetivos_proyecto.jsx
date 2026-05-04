@@ -11,6 +11,9 @@ export default function ObjetivosProyecto({
   id,
   isFollowing = false,
 }) {
+  const isFinished = diasRestantes <= 0;
+  const isGoalReached = recaudado >= objetivo;
+
   const clamp = (n) => Math.max(0, Math.min(100, Number(n) || 0));
   const pct = clamp(porcentaje);
   const { isAuth } = useAuth();
@@ -93,14 +96,32 @@ export default function ObjetivosProyecto({
           </p>
         </div>
 
-        <div className="flex flex-col gap-1">
-          <p className="text-[#1c140d] dark:text-white tracking-light text-3xl font-bold leading-tight">
-            {diasRestantes}
-          </p>
-          <p className="text-[#9c7049] dark:text-[#9c7049]/80 text-sm font-normal leading-normal">
-            días restantes
-          </p>
-        </div>
+        {isFinished ? (
+          <div className="flex flex-col gap-1 col-span-1 justify-center">
+            <span className={`inline-flex items-center gap-1 font-bold text-sm px-3 py-1.5 rounded-full w-fit ${
+              isGoalReached 
+                ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' 
+                : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+            }`}>
+              <span className="material-symbols-outlined text-sm">
+                {isGoalReached ? 'check_circle' : 'cancel'}
+              </span>
+              {isGoalReached ? 'Objetivo Alcanzado' : 'No Alcanzado'}
+            </span>
+            <p className="text-[#1c140d] dark:text-white font-bold leading-tight mt-1">
+              Finalizado
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-1">
+            <p className="text-[#1c140d] dark:text-white tracking-light text-3xl font-bold leading-tight">
+              {diasRestantes}
+            </p>
+            <p className="text-[#9c7049] dark:text-[#9c7049]/80 text-sm font-normal leading-normal">
+              días restantes
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-2 pt-4">

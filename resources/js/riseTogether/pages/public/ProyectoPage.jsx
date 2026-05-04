@@ -135,6 +135,7 @@ export default function ProyectoPage() {
   const limite = new Date(proyecto.fecha_limite);
   const ms = limite.getTime() - hoy.getTime();
   const diasRestantes = Math.ceil(ms / (1000 * 60 * 60 * 24));
+  const isFinished = diasRestantes <= 0;
 
   const objetivosProps = {
     porcentaje: porcentaje,
@@ -204,49 +205,51 @@ export default function ProyectoPage() {
             <ObjetivosProyecto {...objetivosProps} />
 
             {/* Donación Libre moved here */}
-            <div className="rounded-3xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-6 bg-white dark:bg-[#1a120d] shadow-sm">
-              <h3 className="text-xl font-bold text-[#1c140d] dark:text-white mb-2">Apoya este proyecto</h3>
-              <p className="text-sm text-[#9c7049] mb-4">Haz una donación sin recompensa para ayudar a que este proyecto se haga realidad.</p>
-              <div className="flex flex-col gap-2">
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    id="donacionLibre"
-                    value={donationAmount}
-                    onChange={(e) => {
-                      setDonationAmount(e.target.value);
-                      if (donationError) setDonationError("");
-                    }}
-                    placeholder="Importe (€)"
-                    className={`flex-1 rounded-xl border ${donationError ? 'border-red-500 ring-1 ring-red-500' : 'border-[#e6dbd1] dark:border-[#3a2c20]'} px-4 py-2 bg-transparent focus:ring-2 focus:ring-[#f2780d] outline-none`}
-                    min="1"
-                    onKeyDown={(e) => {
-                      if (["-", "+", "e", "E"].includes(e.key)) {
-                        e.preventDefault();
-                      }
-                    }}
-                  />
-                  <button
-                    onClick={() => {
-                      const val = parseFloat(donationAmount);
-                      if (!val || val < 1) {
-                        setDonationError("El importe mínimo es 1€");
-                      } else {
-                        iniciarPago(val);
-                      }
-                    }}
-                    className="px-4 py-2 bg-[#f2780d] text-white font-bold rounded-xl hover:bg-[#d96600] transition-colors"
-                  >
-                    Donar
-                  </button>
+            {!isFinished && (
+              <div className="rounded-3xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-6 bg-white dark:bg-[#1a120d] shadow-sm">
+                <h3 className="text-xl font-bold text-[#1c140d] dark:text-white mb-2">Apoya este proyecto</h3>
+                <p className="text-sm text-[#9c7049] mb-4">Haz una donación sin recompensa para ayudar a que este proyecto se haga realidad.</p>
+                <div className="flex flex-col gap-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="number"
+                      id="donacionLibre"
+                      value={donationAmount}
+                      onChange={(e) => {
+                        setDonationAmount(e.target.value);
+                        if (donationError) setDonationError("");
+                      }}
+                      placeholder="Importe (€)"
+                      className={`flex-1 rounded-xl border ${donationError ? 'border-red-500 ring-1 ring-red-500' : 'border-[#e6dbd1] dark:border-[#3a2c20]'} px-4 py-2 bg-transparent focus:ring-2 focus:ring-[#f2780d] outline-none`}
+                      min="1"
+                      onKeyDown={(e) => {
+                        if (["-", "+", "e", "E"].includes(e.key)) {
+                          e.preventDefault();
+                        }
+                      }}
+                    />
+                    <button
+                      onClick={() => {
+                        const val = parseFloat(donationAmount);
+                        if (!val || val < 1) {
+                          setDonationError("El importe mínimo es 1€");
+                        } else {
+                          iniciarPago(val);
+                        }
+                      }}
+                      className="px-4 py-2 bg-[#f2780d] text-white font-bold rounded-xl hover:bg-[#d96600] transition-colors"
+                    >
+                      Donar
+                    </button>
+                  </div>
+                  {donationError && (
+                    <p className="text-sm text-red-500 font-medium">
+                      {donationError}
+                    </p>
+                  )}
                 </div>
-                {donationError && (
-                  <p className="text-sm text-red-500 font-medium">
-                    {donationError}
-                  </p>
-                )}
               </div>
-            </div>
+            )}
           </div>
         </PortadaProyecto>
 
@@ -356,7 +359,7 @@ export default function ProyectoPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {proyecto.recompensas && proyecto.recompensas.length > 0 ? (
                     proyecto.recompensas.map((r) => (
-                      <RecompensaCard key={r.id} recompensa={r} onSupport={() => iniciarPago(r.costoRecompensa, r.id)} />
+                      <RecompensaCard key={r.id} recompensa={r} onSupport={() => iniciarPago(r.costoRecompensa, r.id)} isFinished={isFinished} />
                     ))
                   ) : (
                     <div className="col-span-full rounded-2xl border border-dashed border-[#f4ede7] dark:border-[#3a2c20] p-6 text-center">

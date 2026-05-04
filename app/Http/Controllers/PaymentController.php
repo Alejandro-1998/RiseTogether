@@ -25,6 +25,13 @@ class PaymentController extends Controller
 
         try {
             $proyecto = Proyecto::findOrFail($request->id_proyecto);
+
+            // Verificar si el proyecto ha finalizado
+            $limite = \Carbon\Carbon::parse($proyecto->fecha_limite)->endOfDay();
+            if (now()->greaterThan($limite)) {
+                return response()->json(['message' => 'El proyecto ya ha finalizado y no admite más aportaciones.'], 403);
+            }
+
             $recompensa = $request->id_recompensa ? Recompensa::find($request->id_recompensa) : null;
             $usuario = $request->user();
 
