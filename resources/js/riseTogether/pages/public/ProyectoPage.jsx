@@ -11,6 +11,7 @@ import ObjetivosProyecto from "../../components/proyecto/objetivos_proyecto";
 import RecompensaCard from "../../components/proyecto/recompensa_card";
 import ComentariosTab from "../../components/proyecto/ComentariosTab";
 import ActualizacionesTab from "../../components/proyecto/ActualizacionesTab";
+import ProyectoOpcionesTab from "../../components/proyecto/ProyectoOpcionesTab";
 
 export default function ProyectoPage() {
   const { id } = useParams();
@@ -146,6 +147,8 @@ export default function ProyectoPage() {
 
 
 
+
+  const isOwner = isAuth && user && proyecto && user.id === proyecto.user_id;
 
   const iniciarPago = async (importe, idRecompensa = null) => {
     if (!isAuth) {
@@ -290,6 +293,16 @@ export default function ProyectoPage() {
               >
                 Comentarios
               </button>
+
+              {isOwner && (
+                <button
+                  type="button"
+                  onClick={() => setPestana("opciones")}
+                  className={btnPestana("opciones", pestana === "opciones")}
+                >
+                  Opciones
+                </button>
+              )}
             </nav>
           </div>
 
@@ -371,6 +384,13 @@ export default function ProyectoPage() {
 
             {pestana === "comentarios" && (
               <ComentariosTab proyectoId={proyecto.id} />
+            )}
+
+            {pestana === "opciones" && isOwner && (
+              <ProyectoOpcionesTab 
+                proyecto={proyecto} 
+                onUpdate={(updatedData) => setProyecto(updatedData)} 
+              />
             )}
           </div>
         </div>

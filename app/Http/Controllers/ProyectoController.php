@@ -184,12 +184,12 @@ class ProyectoController extends Controller
         }
 
         $request->validate([
-            'titulo' => 'required|max:255|unique:proyectos,titulo,' . $proyecto->id,
-            'categoria_id' => 'required|exists:categorias,id',
-            'imagen_portada' => 'nullable|image|max:2048', // Opcional al editar
-            'objetivo_financiacion' => 'required|numeric|min:1',
-            'fecha_limite' => 'required|date|after:today',
-            'descripcion' => 'required',
+            'titulo' => 'sometimes|required|max:255|unique:proyectos,titulo,' . $proyecto->id,
+            'categoria_id' => 'sometimes|required|exists:categorias,id',
+            'imagen_portada' => 'nullable|image|max:2048',
+            'objetivo_financiacion' => 'sometimes|required|numeric|min:1',
+            'fecha_limite' => 'sometimes|required|date|after:today',
+            'descripcion' => 'sometimes|required',
         ], [
             'titulo.required' => 'El proyecto necesita un nombre.',
             'titulo.unique' => 'Este nombre de proyecto ya está pillado.',

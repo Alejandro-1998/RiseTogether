@@ -30,6 +30,10 @@ class RecompensaController extends Controller
      */
     public function store(Request $request)
     {
+        $proyecto = \App\Models\Proyecto::findOrFail($request->idProyecto);
+        if ($proyecto->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+            return response()->json(['message' => 'No tienes permiso para añadir recompensas a este proyecto.'], 403);
+        }
         $request->validate([
             'idProyecto' => 'required|exists:proyectos,id',
             'nombreRecompensa' => 'required|string|max:255',
