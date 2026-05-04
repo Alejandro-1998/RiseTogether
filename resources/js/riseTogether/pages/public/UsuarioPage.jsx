@@ -101,7 +101,7 @@ export default function UsuarioPage() {
   }, [id, authLoading, currentUser]);
 
   useEffect(() => {
-    if (pestana === "creados" && usuario) {
+    if ((pestana === "creados" || (pestana === "resumen" && soyYo)) && usuario) {
       obtenerProyectosCreados();
     }
     if (pestana === "actividad") {
@@ -113,7 +113,7 @@ export default function UsuarioPage() {
     if (pestana === "seguidos" && usuario) {
       obtenerUsuariosSeguidos();
     }
-  }, [pestana, usuario]);
+  }, [pestana, usuario, soyYo]);
 
   const obtenerUsuario = async () => {
     setCargando(true);
@@ -149,6 +149,17 @@ export default function UsuarioPage() {
       console.error("Error obteniendo proyectos creados:", error);
     } finally {
       setCargandoProyectos(false);
+    }
+  };
+
+  const actualizarProyectoDestacado = async (proyectoId) => {
+    try {
+      const res = await axios.put('/api/user/profile', { proyecto_destacado_id: proyectoId || null });
+      setUsuario(prev => ({ ...prev, proyecto_destacado: res.data.user.proyecto_destacado, proyecto_destacado_id: res.data.user.proyecto_destacado_id }));
+      mostrarNotificacion("Proyecto destacado actualizado");
+    } catch (error) {
+      console.error("Error al actualizar proyecto destacado", error);
+      mostrarNotificacion("Error al actualizar el proyecto destacado");
     }
   };
 
@@ -232,16 +243,7 @@ export default function UsuarioPage() {
     { value: usuario.seguidos_count?.toString() || "0", label: "Siguiendo" },
   ];
 
-  const proyectoDestacado = {
-    id: 99,
-    titulo: "Proyecto destacado",
-    descripcion: "Este sería el proyecto destacado del usuario (mock).",
-    categoria: { nombre: "General" },
-    imagen_portada: null,
-    cantidad_recaudada: 9800,
-    porcentaje_financiado: 80,
-    fecha_limite: new Date(Date.now() + 1000 * 60 * 60 * 24 * 35),
-  };
+  const proyectoDestacado = usuario.proyecto_destacado || null;
 
   const actividades = [
     { icon: "add_circle", color: "blue", texto: "Se ha enviado el nuevo proyecto «Dron ecológico».", tiempo: "Hace 2 minutos" },
@@ -292,12 +294,36 @@ export default function UsuarioPage() {
               {pestana === "resumen" && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {/* Left Column: Featured Project */}
-                  <div>
-                    <h3 className="text-lg font-bold mb-4">Proyecto destacado</h3>
-                    <article className="flex flex-col overflow-hidden rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] shadow-sm">
-                      <ProyectoCard proyecto={proyectoDestacado} />
-                    </article>
-                  </div>
+                  {(!soyYo && proyectoDestacado) || (soyYo && proyectosCreados.length > 0) ? (
+                    <div>
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-bold">Proyecto destacado</h3>
+                        {soyYo && (
+                          <select 
+                            value={usuario.proyecto_destacado_id || ""}
+                            onChange={(e) => actualizarProyectoDestacado(e.target.value)}
+                            className="ml-4 p-1 text-sm rounded-md border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] focus:outline-none focus:ring-1 focus:ring-[#f2780d]"
+                          >
+                            <option value="">Seleccionar un proyecto...</option>
+                            {proyectosCreados.map(p => (
+                              <option key={p.id} value={p.id}>{p.titulo}</option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
+                      {proyectoDestacado ? (
+                        <article className="flex flex-col overflow-hidden rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] shadow-sm">
+                          <ProyectoCard proyecto={proyectoDestacado} />
+                        </article>
+                      ) : (
+                        <div className="rounded-2xl border border-dashed border-[#e8dace] dark:border-[#374151] bg-gray-50 dark:bg-gray-800/50 p-6 flex items-center justify-center text-center">
+                          <p className="text-sm text-[#6b7280] dark:text-[#9ca3af]">Aún no has seleccionado ningún proyecto destacado.</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div></div> // Empty div to preserve grid layout if no featured project
+                  )}
 
                   {/* Right Column: Actividad (Old Proyectos seguidos) */}
                   <section aria-labelledby="actividad-reciente-titulo" className="h-full">

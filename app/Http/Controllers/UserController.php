@@ -27,7 +27,7 @@ class UserController extends Controller
 
         if ($user) {
             $user->loadCount(['proyectosCreados', 'seguidores', 'seguidos']);
-            $user->load(['donaciones.proyectos.categoria', 'donaciones.recompensas', 'proyectos']);
+            $user->load(['donaciones.proyectos.categoria', 'donaciones.recompensas', 'proyectos', 'proyectoDestacado.categoria']);
 
             if (Auth::check()) {
                 $user->siguiendo = Auth::user()->seguidos()->where('users.id', $user->id)->exists();
@@ -87,6 +87,7 @@ class UserController extends Controller
             'numeroCuenta' => ['nullable', 'string', 'size:24', 'regex:/^ES[0-9]{22}$/', Rule::unique('users')->ignore($usuario->id)],
             'photo' => ['nullable', 'image', 'max:2048'], // 2MB Max
             'banner_photo' => ['nullable', 'image', 'max:4096'], // 4MB Max for banner
+            'proyecto_destacado_id' => ['nullable', 'exists:proyectos,id'],
         ], [
             'nombreUsuario.required' => 'El nombre de usuario es obligatorio.',
             'nombreUsuario.unique' => 'Este nombre de usuario ya está en uso.',

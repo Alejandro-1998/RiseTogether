@@ -35,6 +35,7 @@ class User extends Authenticatable
         'biografia',
         'profile_photo_path',
         'banner_photo_path',
+        'proyecto_destacado_id',
     ];
 
     /**
@@ -114,5 +115,10 @@ class User extends Authenticatable
     public function seguidores()
     {
         return $this->belongsToMany(User::class, 'usuarios_seguidores', 'id_seguido', 'id_seguidor');
+    }
+
+    public function proyectoDestacado()
+    {
+        return $this->belongsTo(Proyecto::class, 'proyecto_destacado_id');
     }
 }
