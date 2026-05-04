@@ -12,6 +12,7 @@ import RecompensaCard from "../../components/proyecto/recompensa_card";
 import ComentariosTab from "../../components/proyecto/ComentariosTab";
 import ActualizacionesTab from "../../components/proyecto/ActualizacionesTab";
 import ProyectoOpcionesTab from "../../components/proyecto/ProyectoOpcionesTab";
+import FaqTab from "../../components/proyecto/FaqTab";
 
 export default function ProyectoPage() {
   const { id } = useParams();
@@ -374,12 +375,12 @@ export default function ProyectoPage() {
             )}
 
             {pestana === "faq" && (
-              <div className="not-prose rounded-3xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-6">
-                <p className="font-bold text-lg">FAQ</p>
-                <p className="text-sm text-[#9c7049] dark:text-[#9c7049]/80 mt-1">
-                  El creador no ha publicado preguntas frecuentes.
-                </p>
-              </div>
+              <FaqTab 
+                proyectoId={proyecto.id} 
+                isOwner={isOwner} 
+                initialFaqs={proyecto.faqs || []} 
+                onFaqAdded={(updatedFaqs) => setProyecto({...proyecto, faqs: updatedFaqs})} 
+              />
             )}
 
             {pestana === "comentarios" && (

@@ -56,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/proyectos/{id}/seguir', [ProyectoController::class, 'dejarDeSeguir']);
     
     Route::post('/recompensas', [\App\Http\Controllers\RecompensaController::class, 'store']);
+    Route::post('/proyectos/{id}/faqs', [\App\Http\Controllers\FaqController::class, 'store']);
     
     Route::post('/users/{id}/follow', [SeguidorController::class, 'alternarSeguir']);
     Route::get('/users/{id}/check-follow', [SeguidorController::class, 'verificarSeguimiento']);

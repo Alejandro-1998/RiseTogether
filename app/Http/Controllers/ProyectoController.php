@@ -155,7 +155,7 @@ class ProyectoController extends Controller
     {
         $proyecto = Proyecto::with(['categoria', 'recompensas' => function ($query) {
             $query->orderBy('costoRecompensa', 'asc');
-        }, 'user'])->findOrFail($id);
+        }, 'user', 'faqs'])->findOrFail($id);
 
         // Inject into the response object
         // $proyecto->setAttribute('is_following', $isFollowing);
