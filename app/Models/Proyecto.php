@@ -63,7 +63,7 @@ class Proyecto extends Model
 
     function donaciones()
     {
-        return $this->hasMany(Donacion::class);
+        return $this->hasMany(Donacion::class, 'idProyecto');
     }
 
     public function user()

@@ -67,8 +67,8 @@ Eco-City Garden aspira a convertirse en una red global de microhuertos urbanos i
 
 En esencia, este proyecto convierte un simple cajón de cultivo en una herramienta de cambio urbano, ambiental y social. No se trata solo de plantar alimentos, sino de cultivar conciencia. 🌿',
             'objetivo_financiacion' => 15000.00,
-            'cantidad_recaudada'    => 16500.00,
-            'fecha_limite'          => now()->subDays(2),
+            'cantidad_recaudada'    => 8500.00,
+            'fecha_limite'          => now()->addDays(3),
             'estado'                => 'publicado',
             'ganadorEvento'         => true,
             'imagen_portada'        => 'img/jardines_urbanos.png',
