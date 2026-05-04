@@ -13,6 +13,7 @@ import ComentariosTab from "../../components/proyecto/ComentariosTab";
 import ActualizacionesTab from "../../components/proyecto/ActualizacionesTab";
 import ProyectoOpcionesTab from "../../components/proyecto/ProyectoOpcionesTab";
 import FaqTab from "../../components/proyecto/FaqTab";
+import DonacionesAdminTab from "../../components/proyecto/DonacionesAdminTab";
 
 export default function ProyectoPage() {
   const { id } = useParams();
@@ -299,13 +300,22 @@ export default function ProyectoPage() {
               </button>
 
               {isOwner && (
-                <button
-                  type="button"
-                  onClick={() => setPestana("opciones")}
-                  className={btnPestana("opciones", pestana === "opciones")}
-                >
-                  Opciones
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setPestana("opciones")}
+                    className={btnPestana("opciones", pestana === "opciones")}
+                  >
+                    Opciones
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPestana("donaciones")}
+                    className={btnPestana("donaciones", pestana === "donaciones")}
+                  >
+                    Donaciones
+                  </button>
+                </>
               )}
             </nav>
           </div>
@@ -395,6 +405,10 @@ export default function ProyectoPage() {
                 proyecto={proyecto} 
                 onUpdate={(updatedData) => setProyecto(updatedData)} 
               />
+            )}
+
+            {pestana === "donaciones" && isOwner && (
+              <DonacionesAdminTab proyectoId={proyecto.id} />
             )}
           </div>
         </div>

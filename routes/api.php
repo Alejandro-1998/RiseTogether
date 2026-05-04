@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/proyectos/{id}', [ProyectoController::class, 'update']);
     Route::post('/proyectos/{id}/seguir', [ProyectoController::class, 'seguir']);
     Route::delete('/proyectos/{id}/seguir', [ProyectoController::class, 'dejarDeSeguir']);
+    Route::get('/proyectos/{id}/donaciones', [ProyectoController::class, 'donaciones']);
     
     Route::post('/recompensas', [\App\Http\Controllers\RecompensaController::class, 'store']);
     Route::post('/proyectos/{id}/faqs', [\App\Http\Controllers\FaqController::class, 'store']);

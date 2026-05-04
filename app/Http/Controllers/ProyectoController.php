@@ -273,4 +273,21 @@ class ProyectoController extends Controller
         }
         return response()->json(['message' => 'Proyecto dejado de seguir', 'seguidores' => $proyecto->seguidores]);
     }
+
+    /**
+     * Obtiene las donaciones de un proyecto (Solo para el creador)
+     */
+    public function donaciones(Request $request, string $id)
+    {
+        $proyecto = Proyecto::findOrFail($id);
+
+        if ($proyecto->user_id !== Auth::id()) {
+            return response()->json(['message' => 'No tienes permiso para ver las donaciones de este proyecto.'], 403);
+        }
+
+        // The relationship is named 'users' and 'recompensas' in Donacion.php
+        $donaciones = $proyecto->donaciones()->with(['users', 'recompensas'])->orderBy('fechaCompra', 'desc')->get();
+
+        return response()->json($donaciones);
+    }
 }
