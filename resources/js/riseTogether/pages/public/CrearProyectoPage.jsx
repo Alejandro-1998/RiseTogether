@@ -1,11 +1,22 @@
 import { useMemo, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import useAuth from "../../hooks/useAuth";
 import HeaderPublic from "../../components/public/header_public";
 import RecompensaItem from "../../components/proyecto/recompensa_item";
 import ProyectoCard from "../../components/cards/ProyectoCard";
 
 export default function CrearProyectoPage() {
+    const { isAuth, loading } = useAuth();
+    const navigate = useNavigate();
+    
+    useEffect(() => {
+        if (!loading && !isAuth) {
+            navigate("/login");
+        }
+    }, [isAuth, loading, navigate]);
+
     const [categoriasdB, setCategoriasdB] = useState([]);
     const [form, setForm] = useState({
         titulo: "",
@@ -137,6 +148,14 @@ export default function CrearProyectoPage() {
             premiumToast.error(message);
         }
     };
+
+    if (loading) {
+        return <div className="min-h-screen bg-[#fcfaf8] flex items-center justify-center">Cargando...</div>;
+    }
+
+    if (!isAuth) {
+        return null; // Will redirect in useEffect
+    }
 
     return (
         <div className="min-h-screen bg-[#fcfaf8] text-[#1c140d] dark:bg-[#120b07] dark:text-white">
@@ -286,13 +305,6 @@ export default function CrearProyectoPage() {
                         {/* ACCIONES MOBILE (visible solo en pequeñas pantallas) */}
                         <div className="flex lg:hidden flex-col sm:flex-row gap-3">
                             <button
-                                onClick={submit("draft")}
-                                className="flex-1 rounded-2xl h-12 px-6 bg-[#f4ede7] dark:bg-[#2a2017] text-[#1c140d] dark:text-white font-bold hover:opacity-90 transition"
-                            >
-                                Guardar borrador
-                            </button>
-
-                            <button
                                 onClick={submit("publish")}
                                 className="flex-1 rounded-2xl h-12 px-6 bg-[#f2780d] text-white font-bold hover:bg-[#f2780d]/90 transition"
                             >
@@ -315,13 +327,6 @@ export default function CrearProyectoPage() {
 
                             {/* ACCIONES DESKTOP (visible en pantallas grandes) */}
                             <div className="hidden lg:flex flex-col gap-3">
-                                <button
-                                    onClick={submit("draft")}
-                                    className="w-full rounded-2xl h-12 px-6 bg-[#f4ede7] dark:bg-[#2a2017] text-[#1c140d] dark:text-white font-bold hover:opacity-90 transition"
-                                >
-                                    Guardar borrador
-                                </button>
-
                                 <button
                                     onClick={submit("publish")}
                                     className="w-full rounded-2xl h-12 px-6 bg-[#f2780d] text-white font-bold hover:bg-[#f2780d]/90 transition"
