@@ -14,7 +14,7 @@ class AdminController extends Controller
             ->whereDate('fecha_limite', '>', now())
             ->count();
 
-        $proyectosPendientes = Proyecto::whereIn('estado', ['pendiente', 'revision'])
+        $proyectosPendientes = Proyecto::where('estado', 'revision')
             ->count();
 
         $usuarios = User::count();
@@ -28,5 +28,16 @@ class AdminController extends Controller
             'usuarios' => $usuarios,
             'ingresos' => $ingresos
         ]);
+    }
+
+    public function pendingProjects()
+    {
+        // Obtener proyectos en estado de revisión con su creador y categoría
+        $proyectos = Proyecto::with(['user', 'categoria'])
+            ->where('estado', 'revision')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($proyectos);
     }
 }

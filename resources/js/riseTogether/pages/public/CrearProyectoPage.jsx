@@ -117,7 +117,7 @@ export default function CrearProyectoPage() {
         formData.append('objetivo_financiacion', form.objetivo);
         formData.append('fecha_limite', form.fecha_limite);
         formData.append('descripcion', form.descripcion); // Usar descripción única
-        formData.append('estado', type === 'publish' ? 'publicado' : 'borrador');
+        formData.append('estado', type === 'publish' ? 'revision' : 'borrador');
 
         if (formFile) {
             formData.append('imagen_portada', formFile);
@@ -135,7 +135,7 @@ export default function CrearProyectoPage() {
             if (response.status === 201) {
                 premiumToast.success(type === "draft"
                     ? "Borrador guardado correctamente."
-                    : "¡Proyecto publicado con éxito!");
+                    : "¡Proyecto creado correctamente a la espera de aprobación!");
                 
                 // Pequeño retardo para que se vea el toast antes de redirigir
                 setTimeout(() => {

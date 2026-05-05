@@ -14,15 +14,65 @@ export default function AdminDashboard() {
     ingresos: 0
   });
 
+  const [proyectosPendientes, setProyectosPendientes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchStats = async () => {
+    try {
+      const axios = (await import("axios")).default;
+      const res = await axios.get("/api/admin/stats");
+      setStats(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchPending = async () => {
+    try {
+      const axios = (await import("axios")).default;
+      const res = await axios.get("/api/admin/proyectos/pendientes");
+      setProyectosPendientes(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    import("axios").then((axios) => {
-      axios.default.get("/api/admin/stats")
-        .then((res) => {
-          setStats(res.data);
-        })
-        .catch((err) => console.error(err));
-    });
+    fetchStats();
+    fetchPending();
   }, []);
+
+  const handleApprove = async (id) => {
+    try {
+      const axios = (await import("axios")).default;
+      const toast = (await import("react-hot-toast")).default;
+      await axios.put(`/api/admin/proyectos/${id}/approve`);
+      toast.success("Proyecto aprobado correctamente");
+      fetchStats();
+      fetchPending();
+    } catch (err) {
+      console.error(err);
+      const toast = (await import("react-hot-toast")).default;
+      toast.error("Error al aprobar el proyecto");
+    }
+  };
+
+  const handleReject = async (id) => {
+    try {
+      const axios = (await import("axios")).default;
+      const toast = (await import("react-hot-toast")).default;
+      await axios.put(`/api/admin/proyectos/${id}/reject`);
+      toast.success("Proyecto rechazado");
+      fetchStats();
+      fetchPending();
+    } catch (err) {
+      console.error(err);
+      const toast = (await import("react-hot-toast")).default;
+      toast.error("Error al rechazar el proyecto");
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
@@ -69,7 +119,7 @@ export default function AdminDashboard() {
                         <th className="px-6 py-3">Nombre del proyecto</th>
                         <th className="px-6 py-3">Creador</th>
                         <th className="px-6 py-3">Categoría</th>
-                        <th className="px-6 py-3">Cantidad recaudada</th>
+                        <th className="px-6 py-3">Cantidad objetivo</th>
                         <th className="px-6 py-3">Estado</th>
                         <th className="px-6 py-3">Fecha de envío</th>
                         <th className="px-6 py-3 text-center">Acciones</th>
@@ -77,10 +127,22 @@ export default function AdminDashboard() {
                     </thead>
 
                     <tbody>
-                      <ProyectoPendiente />
-                      <ProyectoPendiente />
-                      <ProyectoPendiente />
-                      <ProyectoPendiente />
+                      {proyectosPendientes.length > 0 ? (
+                        proyectosPendientes.map((p) => (
+                          <ProyectoPendiente
+                            key={p.id}
+                            proyecto={p}
+                            onAprobar={handleApprove}
+                            onRechazar={handleReject}
+                          />
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="7" className="px-6 py-10 text-center text-gray-500 dark:text-gray-400">
+                            {loading ? "Cargando proyectos..." : "No hay proyectos pendientes de revisión."}
+                          </td>
+                        </tr>
+                      )}
                     </tbody>
                   </table>
                 </div>

@@ -78,6 +78,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/users', [UserController::class, 'index']); // Admin USERS list
         Route::get('/admin/proyectos', [ProyectoController::class, 'indexAdmin']); // Admin PROJECTS list
         Route::get('/admin/stats', [App\Http\Controllers\AdminController::class, 'stats']);
+        Route::get('/admin/proyectos/pendientes', [App\Http\Controllers\AdminController::class, 'pendingProjects']);
+        Route::put('/admin/proyectos/{id}/approve', [ProyectoController::class, 'approve']);
+        Route::put('/admin/proyectos/{id}/reject', [ProyectoController::class, 'reject']);
 
         // Categorias CRUD
         Route::post('/categorias', [CategoriaController::class, 'store']);

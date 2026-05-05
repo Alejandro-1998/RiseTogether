@@ -19,7 +19,8 @@ class ProyectoController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Proyecto::with(['categoria', 'user']);
+        $query = Proyecto::with(['categoria', 'user'])
+            ->where('estado', 'publicado');
 
         if ($request->has('categoria_id')) {
             $query->where('categoria_id', $request->categoria_id);
@@ -157,8 +158,16 @@ class ProyectoController extends Controller
             $query->orderBy('costoRecompensa', 'asc');
         }, 'user', 'faqs'])->findOrFail($id);
 
-        // Inject into the response object
-        // $proyecto->setAttribute('is_following', $isFollowing);
+        // Si el proyecto no está publicado, solo el dueño o un admin pueden verlo
+        if ($proyecto->estado !== 'publicado') {
+            $user = Auth::guard('sanctum')->user();
+            $isAdmin = $user && $user->hasRole('admin');
+            $isOwner = $user && $user->id === $proyecto->user_id;
+
+            if (!$isAdmin && !$isOwner) {
+                return response()->json(['message' => 'Este proyecto aún no ha sido publicado.'], 403);
+            }
+        }
 
         return response()->json($proyecto);
     }
@@ -289,5 +298,33 @@ class ProyectoController extends Controller
         $donaciones = $proyecto->donaciones()->with(['users', 'recompensas'])->orderBy('fechaCompra', 'desc')->get();
 
         return response()->json($donaciones);
+    }
+
+    /**
+     * Aprueba un proyecto (Solo Admin)
+     */
+    public function approve(string $id)
+    {
+        $proyecto = Proyecto::findOrFail($id);
+        $proyecto->update(['estado' => 'publicado']);
+
+        return response()->json([
+            'message' => 'Proyecto aprobado correctamente.',
+            'proyecto' => $proyecto
+        ]);
+    }
+
+    /**
+     * Rechaza un proyecto (Solo Admin)
+     */
+    public function reject(string $id)
+    {
+        $proyecto = Proyecto::findOrFail($id);
+        $proyecto->update(['estado' => 'rechazado']);
+
+        return response()->json([
+            'message' => 'Proyecto rechazado.',
+            'proyecto' => $proyecto
+        ]);
     }
 }

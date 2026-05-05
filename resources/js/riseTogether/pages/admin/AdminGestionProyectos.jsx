@@ -190,6 +190,7 @@ function SelectEstado({ value, onChange }) {
       <option value="completado">Completado</option>
       <option value="fallido">Fallido</option>
       <option value="cancelado">Cancelado</option>
+      <option value="rechazado">Rechazado</option>
     </select>
   );
 }
