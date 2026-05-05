@@ -235,10 +235,10 @@ export default function UsuarioPage() {
     : 0;
 
   const estadisticas = [
-    { value: usuario.proyectos_creados_count?.toString() || "0", label: "Proyectos creados" },
-    { value: proyectosApoyadosUnicos.toString(), label: "Proyectos apoyados" },
-    { value: usuario.seguidores_count?.toString() || "0", label: "Seguidores" },
-    { value: usuario.seguidos_count?.toString() || "0", label: "Siguiendo" },
+    { value: usuario.proyectos_creados_count?.toString() || "0", label: "Proyectos creados", tab: "creados" },
+    { value: proyectosApoyadosUnicos.toString(), label: "Proyectos apoyados", tab: "apoyados" },
+    { value: usuario.seguidores_count?.toString() || "0", label: "Seguidores", tab: "seguidores" },
+    { value: usuario.seguidos_count?.toString() || "0", label: "Siguiendo", tab: "seguidos" },
   ];
 
   const proyectoDestacado = usuario.proyecto_destacado || null;
@@ -270,10 +270,14 @@ export default function UsuarioPage() {
           <div className="rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] p-8 shadow-sm h-full flex flex-col justify-center">
             <div className="grid grid-cols-2 gap-y-10 gap-x-8">
               {estadisticas.map((s, i) => (
-                <div key={i} className="flex flex-col items-center justify-center text-center">
-                  <p className="text-4xl font-black text-[#1c140d] dark:text-white leading-tight mb-2">{s.value}</p>
-                  <p className="text-[#9c7049] dark:text-[#9ca3af] text-sm font-bold uppercase tracking-wider">{s.label}</p>
-                </div>
+                <button 
+                  key={i} 
+                  onClick={() => setPestana(s.tab)}
+                  className="flex flex-col items-center justify-center text-center hover:opacity-80 transition-opacity cursor-pointer group w-full"
+                >
+                  <p className="text-4xl font-black text-[#1c140d] dark:text-white leading-tight mb-2 group-hover:text-[#f2780d] dark:group-hover:text-[#f2780d] transition-colors">{s.value}</p>
+                  <p className="text-[#9c7049] dark:text-[#9ca3af] text-sm font-bold uppercase tracking-wider group-hover:text-[#f2780d] dark:group-hover:text-[#f2780d] transition-colors">{s.label}</p>
+                </button>
               ))}
             </div>
           </div>
