@@ -5,14 +5,12 @@ import useAuth from "../../hooks/useAuth";
 
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
-import PrivateChat from "../../components/chat/PrivateChat";
 
 export default function BuscarUsuariosPage() {
   const { user: currentUser } = useAuth();
   const [query, setQuery] = useState("");
   const [usuarios, setUsuarios] = useState([]);
   const [cargando, setCargando] = useState(false);
-  const [chatUser, setChatUser] = useState(null);
   const [mensajeNotificacion, setMensajeNotificacion] = useState(null);
   
   const navigate = useNavigate();
@@ -134,7 +132,7 @@ export default function BuscarUsuariosPage() {
                     </button>
 
                     <button 
-                      onClick={() => setChatUser(u)}
+                      onClick={() => window.dispatchEvent(new CustomEvent('abrirChatFlotante', { detail: u }))}
                       className="w-full text-sm bg-[#f4ede7] hover:bg-[#e8dace] dark:bg-[#1a120d] dark:hover:bg-[#2a2017] text-[#1c140d] dark:text-white px-4 py-2 rounded-xl h-10 transition flex items-center justify-center gap-2 font-bold"
                     >
                       <span className="material-symbols-outlined text-[18px]">chat</span>
@@ -153,8 +151,6 @@ export default function BuscarUsuariosPage() {
           </div>
         )}
 
-        {chatUser && (
-          <PrivateChat destUser={chatUser} onClose={() => setChatUser(null)} />
         )}
 
         {/* Notificación Toast */}

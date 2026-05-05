@@ -68,6 +68,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/mis-proyectos', [EventoController::class, 'misProyectos']);
     
     // Chat Privado
+    Route::get('/chat/no-leidos', [\App\Http\Controllers\ChatPrivadoController::class, 'obtenerTotalNoLeidos']);
+    Route::get('/chat/contactos', [\App\Http\Controllers\ChatPrivadoController::class, 'obtenerContactosChat']);
     Route::get('/chat/{userId}', [\App\Http\Controllers\ChatPrivadoController::class, 'getMensajes']);
     Route::post('/chat/{userId}', [\App\Http\Controllers\ChatPrivadoController::class, 'sendMensaje']);
 

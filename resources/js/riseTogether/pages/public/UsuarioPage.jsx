@@ -5,7 +5,6 @@ import useAuth from "../../hooks/useAuth";
 
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
-import PrivateChat from "../../components/chat/PrivateChat";
 
 import UsuarioBanner from "../../components/usuario/usuario_banner";
 import EstadisticasUsuario from "../../components/cards/estadisticas_usuario";
@@ -24,7 +23,6 @@ export default function UsuarioPage() {
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [soyYo, setSoyYo] = useState(false);
-  const [chatUser, setChatUser] = useState(null);
   const [proyectosCreados, setProyectosCreados] = useState([]);
   const [proyectosSeguidos, setProyectosSeguidos] = useState([]);
   const [cargandoProyectos, setCargandoProyectos] = useState(false);
@@ -261,7 +259,7 @@ export default function UsuarioPage() {
           usuario={usuarioMapeado} 
           soyYo={soyYo} 
           alAlternarSeguimiento={alternarSeguimientoPerfil} 
-          alIniciarChat={() => setChatUser(usuario)}
+          alIniciarChat={() => window.dispatchEvent(new CustomEvent('abrirChatFlotante', { detail: usuario }))}
         />
 
         {/* Estadísticas */}
@@ -455,7 +453,7 @@ export default function UsuarioPage() {
                               </button>
   
                               <button 
-                                onClick={() => setChatUser(u)}
+                                onClick={() => window.dispatchEvent(new CustomEvent('abrirChatFlotante', { detail: u }))}
                                 className="flex flex-1 items-center justify-center h-10 px-4 rounded-xl font-bold text-xs border border-[#e8dace] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-[#1c140d] dark:text-white"
                               >
                                 Chat
@@ -506,7 +504,7 @@ export default function UsuarioPage() {
                               </button>
   
                               <button 
-                                onClick={() => setChatUser(u)}
+                                onClick={() => window.dispatchEvent(new CustomEvent('abrirChatFlotante', { detail: u }))}
                                 className="flex flex-1 items-center justify-center h-10 px-4 rounded-xl font-bold text-xs border border-[#e8dace] dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors text-[#1c140d] dark:text-white"
                               >
                                 Chat
@@ -537,11 +535,6 @@ export default function UsuarioPage() {
             <span className="material-symbols-outlined">check_circle</span>
             <span className="font-medium text-sm">{mensajeNotificacion}</span>
           </div>
-        )}
-
-        {/* Modal Chat */}
-        {chatUser && (
-          <PrivateChat destUser={chatUser} onClose={() => setChatUser(null)} />
         )}
       </main>
 

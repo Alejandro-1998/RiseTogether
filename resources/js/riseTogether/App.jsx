@@ -24,6 +24,7 @@ import EventosPage from "./pages/public/EventosPage";
 import BuscarUsuariosPage from "./pages/public/BuscarUsuariosPage";
 
 import RequireAdmin from "./components/RequireAdmin";
+import ChatFlotante from "./components/chat/ChatFlotante";
 
 // RUTAS //
 function App() {
@@ -83,6 +84,8 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
 
         </Routes>
+        
+        <ChatFlotante />
       </AuthProvider>
     </BrowserRouter>
   );
