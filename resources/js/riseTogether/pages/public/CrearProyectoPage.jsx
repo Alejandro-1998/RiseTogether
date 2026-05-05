@@ -8,14 +8,14 @@ import RecompensaItem from "../../components/proyecto/recompensa_item";
 import ProyectoCard from "../../components/cards/ProyectoCard";
 
 export default function CrearProyectoPage() {
-    const { isAuth, loading } = useAuth();
+    const { isAuth, isLoading } = useAuth();
     const navigate = useNavigate();
     
     useEffect(() => {
-        if (!loading && !isAuth) {
+        if (!isLoading && !isAuth) {
             navigate("/login");
         }
-    }, [isAuth, loading, navigate]);
+    }, [isAuth, isLoading, navigate]);
 
     const [categoriasdB, setCategoriasdB] = useState([]);
     const [form, setForm] = useState({
@@ -149,7 +149,7 @@ export default function CrearProyectoPage() {
         }
     };
 
-    if (loading) {
+    if (isLoading) {
         return <div className="min-h-screen bg-[#fcfaf8] flex items-center justify-center">Cargando...</div>;
     }
 
