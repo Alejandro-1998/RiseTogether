@@ -12,7 +12,7 @@ export default function UsuarioBanner({ usuario, soyYo, alAlternarSeguimiento, a
         <div className="flex w-full flex-col gap-4 sm:flex-row sm:justify-between sm:items-end">
           <div className="flex gap-4">
             <div
-              className="relative bg-center bg-no-repeat aspect-square bg-cover rounded-full min-h-24 w-24 sm:min-h-32 sm:w-32 border-4 border-[#fcfaf8] dark:border-[#1a1a1a]"
+              className="relative bg-center bg-no-repeat aspect-square bg-cover rounded-full h-20 w-20 sm:h-28 sm:w-28 border-4 border-[#fcfaf8] dark:border-[#1a1a1a] flex-shrink-0"
               style={{ backgroundImage: `url("${usuario.avatarUrl}")` }}
             >
               <span className="sr-only">Foto de perfil</span>
