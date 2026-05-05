@@ -5,13 +5,13 @@ import PanelContactos from "./PanelContactos";
 import ConversacionFlotante from "./ConversacionFlotante";
 
 export default function ChatFlotante() {
-  const { user } = useAuth();
+  const { user, isAuth, isLoading } = useAuth();
   const [estaAbierto, setEstaAbierto] = useState(false);
   const [totalNoLeidos, setTotalNoLeidos] = useState(0);
   const [contactoSeleccionado, setContactoSeleccionado] = useState(null);
 
   useEffect(() => {
-    if (!user) return;
+    if (!isAuth) return;
 
     const obtenerNoLeidos = async () => {
       try {
@@ -36,9 +36,9 @@ export default function ChatFlotante() {
       clearInterval(intervalo);
       window.removeEventListener('abrirChatFlotante', manejarAperturaChat);
     };
-  }, [user]);
+  }, [isAuth]);
 
-  if (!user) return null;
+  if (isLoading || !isAuth) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-end pointer-events-none">

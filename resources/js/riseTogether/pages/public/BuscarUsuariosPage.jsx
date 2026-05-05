@@ -151,7 +151,6 @@ export default function BuscarUsuariosPage() {
           </div>
         )}
 
-        )}
 
         {/* Notificación Toast */}
         {mensajeNotificacion && (
