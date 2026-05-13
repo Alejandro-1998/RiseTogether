@@ -77,6 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/users', [UserController::class, 'index']); // Admin USERS list
         Route::get('/admin/proyectos', [ProyectoController::class, 'indexAdmin']); // Admin PROJECTS list
+        Route::put('/admin/proyectos/{id}/estado', [ProyectoController::class, 'updateEstado']); // Admin UPDATE PROJECT STATE
         Route::get('/admin/stats', [App\Http\Controllers\AdminController::class, 'stats']);
 
         // Categorias CRUD

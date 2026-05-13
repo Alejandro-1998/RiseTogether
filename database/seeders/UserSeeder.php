@@ -68,7 +68,7 @@ class UserSeeder extends Seeder
         User::where('id', 4)->first()->assignRole('admin');
 
         User::firstOrCreate(
-            ['email' => 'javier.ruiz@davante.es'],
+            ['email' => 'javier.ruiz@doc.medac.es'],
             [
                 'dni' => '12345678F',
                 'nombreUsuario' => 'Javier',
@@ -81,7 +81,7 @@ class UserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'pablo.santaella@davante.es'],
+            ['email' => 'pablo.santaella@doc.medac.es'],
             [
                 'dni' => '12345678G',
                 'nombreUsuario' => 'Pablo',
@@ -94,7 +94,7 @@ class UserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'sergio.diaz@davante.es'],
+            ['email' => 'sergio.diaz@doc.medac.es'],
             [
                 'dni' => '12345678H',
                 'nombreUsuario' => 'Sergio',
@@ -107,7 +107,7 @@ class UserSeeder extends Seeder
         );
 
         User::firstOrCreate(
-            ['email' => 'virginia.millan@davante.es'],
+            ['email' => 'virginia.millan@doc.medac.es'],
             [
                 'dni' => '12345678I',
                 'nombreUsuario' => 'Virginia',

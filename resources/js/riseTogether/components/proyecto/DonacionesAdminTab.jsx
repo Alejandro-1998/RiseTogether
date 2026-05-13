@@ -58,7 +58,7 @@ export default function DonacionesAdminTab({ proyectoId }) {
               <tr className="border-b border-[#f4ede7] dark:border-[#3a2c20] text-[#9c7049] dark:text-[#9c7049]/80 text-sm">
                 <th className="pb-3 font-medium px-4">Usuario</th>
                 <th className="pb-3 font-medium px-4">Importe</th>
-                <th className="pb-3 font-medium px-4">Tipo / Recompensa</th>
+                <th className="pb-3 font-medium px-4">Recompensa</th>
                 <th className="pb-3 font-medium px-4">Fecha</th>
               </tr>
             </thead>

@@ -38,6 +38,10 @@ class ProyectoController extends Controller
              $query->whereIn('id', $ids);
         }
 
+        // Filtro para usuarios públicos: solo mostrar estados públicos
+        // Asumiendo que esta ruta es pública (no auth)
+        $query->whereIn('estado', ['publicado', 'completado', 'fallido']);
+
         $proyectos = $query->get();
         return response()->json($proyectos);
     }
@@ -106,7 +110,7 @@ class ProyectoController extends Controller
                 'video_url' => $request->video_url,
                 'objetivo_financiacion' => $request->objetivo_financiacion,
                 'fecha_limite' => $request->fecha_limite,
-                'estado' => $request->estado ?? 'borrador',
+                'estado' => 'revision', // Siempre se crea en revisión
                 'cantidad_recaudada' => 0,
             ]);
 
@@ -148,14 +152,21 @@ class ProyectoController extends Controller
         }
     }
 
-    /**
-     * Obtiene un único proyecto.
-     */
     public function show(string $id)
     {
         $proyecto = Proyecto::with(['categoria', 'recompensas' => function ($query) {
             $query->orderBy('costoRecompensa', 'asc');
         }, 'user', 'faqs'])->findOrFail($id);
+
+        // Seguridad: Proteger proyectos en revisión o cancelados
+        if (in_array($proyecto->estado, ['revision', 'cancelado'])) {
+            /** @var \App\Models\User|null $user */
+            $user = Auth::guard('sanctum')->user();
+            
+            if (!$user || ($user->id !== $proyecto->user_id && !$user->hasRole('admin'))) {
+                return response()->json(['message' => 'No tienes permiso para ver este proyecto.'], 403);
+            }
+        }
 
         // Inject into the response object
         // $proyecto->setAttribute('is_following', $isFollowing);
@@ -289,5 +300,21 @@ class ProyectoController extends Controller
         $donaciones = $proyecto->donaciones()->with(['users', 'recompensas'])->orderBy('fechaCompra', 'desc')->get();
 
         return response()->json($donaciones);
+    }
+
+    /**
+     * Actualiza el estado de un proyecto (Solo Admin)
+     */
+    public function updateEstado(Request $request, string $id)
+    {
+        $request->validate([
+            'estado' => 'required|in:publicado,cancelado'
+        ]);
+
+        $proyecto = Proyecto::findOrFail($id);
+        $proyecto->estado = $request->estado;
+        $proyecto->save();
+
+        return response()->json(['message' => 'Estado del proyecto actualizado', 'proyecto' => $proyecto]);
     }
 }

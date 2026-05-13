@@ -152,6 +152,7 @@ export default function ProyectoPage() {
 
 
   const isOwner = isAuth && user && proyecto && user.id === proyecto.user_id;
+  const isAdmin = isAuth && user && user.roles_list && user.roles_list.includes("admin");
 
   const iniciarPago = async (importe, idRecompensa = null) => {
     if (!isAuth) {
@@ -183,11 +184,39 @@ export default function ProyectoPage() {
     }
   };
 
+  const cambiarEstado = async (nuevoEstado) => {
+    try {
+      const res = await axios.put(`/api/admin/proyectos/${proyecto.id}/estado`, { estado: nuevoEstado });
+      setProyecto(res.data.proyecto);
+      premiumToast.success(`Proyecto ${nuevoEstado} con éxito.`);
+    } catch (error) {
+      console.error(error);
+      premiumToast.error("Error al cambiar el estado del proyecto.");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#fcfaf8] text-[#1c140d] dark:bg-[#120b07] dark:text-white">
       <HeaderPublic />
 
-      <div className="flex flex-col w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-10 pb-12">
+      {isAdmin && proyecto.estado === "revision" && (
+        <div className="bg-[#fff8e1] dark:bg-[#2c2211] border-l-4 border-[#f2780d] p-4 w-full max-w-7xl mx-auto mt-4 px-4 sm:px-8 md:px-10 rounded-r-xl shadow-sm flex flex-col sm:flex-row justify-between items-center mx-4 sm:mx-8 md:mx-auto">
+          <div>
+            <p className="font-bold text-[#f2780d]">Revisión Pendiente</p>
+            <p className="text-[#9c7049] text-sm mt-1">Este proyecto está en revisión. Como administrador, puedes aprobarlo para que sea público o rechazarlo.</p>
+          </div>
+          <div className="flex gap-3 mt-4 sm:mt-0">
+            <button onClick={() => cambiarEstado("cancelado")} className="bg-red-500/10 text-red-500 border border-red-500/20 px-5 py-2 rounded-xl font-bold hover:bg-red-500 hover:text-white transition-colors">
+              Rechazar
+            </button>
+            <button onClick={() => cambiarEstado("publicado")} className="bg-[#f2780d] text-white px-5 py-2 rounded-xl font-bold hover:bg-[#d96600] transition-colors shadow-sm">
+              Aprobar
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="flex flex-col w-full max-w-7xl mx-auto px-4 sm:px-8 md:px-10 pb-12 mt-4">
         {/* Título */}
         <div className="flex flex-wrap justify-center gap-3 p-4">
           <div className="flex min-w-72 flex-col gap-2 items-center text-center">
