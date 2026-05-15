@@ -135,7 +135,7 @@ export default function CrearProyectoPage() {
             if (response.status === 201) {
                 premiumToast.success(type === "draft"
                     ? "Borrador guardado correctamente."
-                    : "¡Proyecto publicado con éxito!");
+                    : "Proyecto creado correctamente a la espera de revisión");
                 
                 // Pequeño retardo para que se vea el toast antes de redirigir
                 setTimeout(() => {

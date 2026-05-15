@@ -26,11 +26,19 @@ class UserController extends Controller
         $user = $id ? User::where('id', $id)->orWhere('nombreUsuario', $id)->firstOrFail() : $request->user();
 
         if ($user) {
-            $user->loadCount(['proyectosCreados', 'seguidores', 'seguidos']);
+            $user->loadCount([
+                'proyectosCreados' => function ($query) {
+                    $query->whereIn('estado', ['publicado', 'completado', 'fallido']);
+                },
+                'seguidores',
+                'seguidos'
+            ]);
             $user->load(['donaciones.proyectos.categoria', 'donaciones.recompensas', 'proyectos', 'proyectoDestacado.categoria']);
 
             if (Auth::check()) {
-                $user->siguiendo = Auth::user()->seguidos()->where('users.id', $user->id)->exists();
+                /** @var \App\Models\User $authUser */
+                $authUser = Auth::user();
+                $user->siguiendo = $authUser->seguidos()->where('users.id', $user->id)->exists();
             } else {
                 $user->siguiendo = false;
             }
@@ -171,7 +179,9 @@ class UserController extends Controller
         $actividades = collect();
 
         // 1. Creación de proyecto
-        $proyectosCreados = \App\Models\Proyecto::where('user_id', $user->id)->get();
+        $proyectosCreados = \App\Models\Proyecto::where('user_id', $user->id)
+            ->whereIn('estado', ['publicado', 'completado', 'fallido'])
+            ->get();
         foreach ($proyectosCreados as $p) {
             $actividades->push([
                 'texto' => 'Ha creado el proyecto «' . $p->titulo . '»',
