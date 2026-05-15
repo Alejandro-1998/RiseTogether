@@ -272,16 +272,39 @@ class ProyectoController extends Controller
     public function seguir(string $id)
     {
         $proyecto = Proyecto::findOrFail($id);
-        $proyecto->increment('seguidores');
+        
+        if (Auth::check()) {
+            $user = Auth::user();
+            // Evitar duplicados
+            if (!$user->proyectos()->where('idProyecto', $id)->exists()) {
+                $user->proyectos()->attach($id);
+                $proyecto->increment('seguidores');
+            }
+        } else {
+            $proyecto->increment('seguidores');
+        }
+
         return response()->json(['message' => 'Proyecto seguido', 'seguidores' => $proyecto->seguidores]);
     }
 
     public function dejarDeSeguir(string $id)
     {
         $proyecto = Proyecto::findOrFail($id);
-        if ($proyecto->seguidores > 0) {
-           $proyecto->decrement('seguidores');
+        
+        if (Auth::check()) {
+            $user = Auth::user();
+            if ($user->proyectos()->where('idProyecto', $id)->exists()) {
+                $user->proyectos()->detach($id);
+                if ($proyecto->seguidores > 0) {
+                    $proyecto->decrement('seguidores');
+                }
+            }
+        } else {
+            if ($proyecto->seguidores > 0) {
+                $proyecto->decrement('seguidores');
+            }
         }
+
         return response()->json(['message' => 'Proyecto dejado de seguir', 'seguidores' => $proyecto->seguidores]);
     }
 

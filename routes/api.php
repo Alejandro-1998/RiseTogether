@@ -34,6 +34,7 @@ Route::get('/user/search', [UserController::class, 'search']); // Buscar usuario
 Route::get('/users/{id}', [UserController::class, 'show']); // Perfil público
 Route::get('/user/{id}/seguidores', [SeguidorController::class, 'getSeguidores']);
 Route::get('/user/{id}/seguidos', [SeguidorController::class, 'getSeguidos']);
+Route::get('/user/{id}/actividad', [UserController::class, 'actividadReciente']);
 
 // Proyectos
 Route::get('/proyectos', [ProyectoController::class, 'index']);
@@ -79,6 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/proyectos', [ProyectoController::class, 'indexAdmin']); // Admin PROJECTS list
         Route::put('/admin/proyectos/{id}/estado', [ProyectoController::class, 'updateEstado']); // Admin UPDATE PROJECT STATE
         Route::get('/admin/stats', [App\Http\Controllers\AdminController::class, 'stats']);
+        Route::get('/admin/actividad', [App\Http\Controllers\AdminController::class, 'actividadReciente']);
 
         // Categorias CRUD
         Route::post('/categorias', [CategoriaController::class, 'store']);

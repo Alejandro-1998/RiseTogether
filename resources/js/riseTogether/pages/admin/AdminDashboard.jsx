@@ -15,6 +15,7 @@ export default function AdminDashboard() {
   });
 
   const [pendientes, setPendientes] = useState([]);
+  const [actividades, setActividades] = useState([]);
 
   useEffect(() => {
     import("axios").then((axios) => {
@@ -37,6 +38,12 @@ export default function AdminDashboard() {
           }));
           setPendientes(rev);
         });
+        
+      axios.default.get("/api/admin/actividad")
+        .then((res) => {
+          setActividades(res.data);
+        })
+        .catch((err) => console.error(err));
     });
   }, []);
 
@@ -102,10 +109,19 @@ export default function AdminDashboard() {
                 </h2>
 
                 <div className="bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 space-y-6">
-                  <ActividadReciente />
-                  <ActividadReciente />
-                  <ActividadReciente />
-                  <ActividadReciente />
+                  {actividades.length === 0 ? (
+                    <p className="text-gray-500 text-sm">No hay actividad reciente.</p>
+                  ) : (
+                    actividades.map((act, index) => (
+                      <ActividadReciente 
+                        key={index}
+                        icon={act.icon}
+                        color={act.color}
+                        texto={act.texto}
+                        tiempo={act.tiempo}
+                      />
+                    ))
+                  )}
                 </div>
               </div>
 

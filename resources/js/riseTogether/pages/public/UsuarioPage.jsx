@@ -28,6 +28,7 @@ export default function UsuarioPage() {
   const [cargandoProyectos, setCargandoProyectos] = useState(false);
   const [usuariosSeguidores, setUsuariosSeguidores] = useState([]);
   const [usuariosSeguidos, setUsuariosSeguidos] = useState([]);
+  const [actividades, setActividades] = useState([]);
   const [cargandoListas, setCargandoListas] = useState(false);
   const [mensajeNotificacion, setMensajeNotificacion] = useState(null);
 
@@ -102,6 +103,9 @@ export default function UsuarioPage() {
     if ((pestana === "creados" || (pestana === "resumen" && soyYo)) && usuario) {
       obtenerProyectosCreados();
     }
+    if (pestana === "resumen" && usuario) {
+      obtenerActividadReciente();
+    }
     if (pestana === "actividad") {
       obtenerProyectosSeguidos();
     }
@@ -112,6 +116,15 @@ export default function UsuarioPage() {
       obtenerUsuariosSeguidos();
     }
   }, [pestana, usuario, soyYo]);
+
+  const obtenerActividadReciente = async () => {
+    try {
+      const res = await axios.get(`/api/user/${usuario.id}/actividad`);
+      setActividades(res.data);
+    } catch (error) {
+      console.error("Error obteniendo actividad reciente:", error);
+    }
+  };
 
   const obtenerUsuario = async () => {
     setCargando(true);
@@ -162,24 +175,10 @@ export default function UsuarioPage() {
   };
 
   const obtenerProyectosSeguidos = async () => {
-
-    const seguidosIds = JSON.parse(localStorage.getItem("seguidos")) || [];
-
-    if (seguidosIds.length === 0) {
+    if (usuario && usuario.proyectos) {
+      setProyectosSeguidos(usuario.proyectos);
+    } else {
       setProyectosSeguidos([]);
-      return;
-    }
-
-    setCargandoProyectos(true);
-    try {
-      // Join IDs with comma
-      const idsParam = seguidosIds.join(',');
-      const res = await axios.get(`/api/proyectos?ids=${idsParam}`);
-      setProyectosSeguidos(res.data);
-    } catch (error) {
-      console.error("Error obteniendo proyectos seguidos:", error);
-    } finally {
-      setCargandoProyectos(false);
     }
   };
 
@@ -243,12 +242,7 @@ export default function UsuarioPage() {
 
   const proyectoDestacado = usuario.proyecto_destacado || null;
 
-  const actividades = [
-    { icon: "add_circle", color: "blue", texto: "Se ha enviado el nuevo proyecto «Dron ecológico».", tiempo: "Hace 2 minutos" },
-    { icon: "favorite", color: "red", texto: "Has apoyado el proyecto «Huertos urbanos».", tiempo: "Hace 1 hora" },
-    { icon: "chat_bubble", color: "green", texto: "Has comentado en «Diseño sostenible».", tiempo: "Ayer" },
-    { icon: "rocket_launch", color: "orange", texto: "Tu proyecto «IoT doméstico» está en tendencia.", tiempo: "Hace 3 días" },
-  ];
+
 
   return (
     <div className="min-h-screen bg-[#fcfaf8] text-[#1c140d] dark:bg-[#120b07] dark:text-white">
@@ -339,9 +333,13 @@ export default function UsuarioPage() {
                     </div>
 
                     <div className="bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 space-y-6">
-                      {actividades.map((a, i) => (
-                        <ActividadReciente key={i} {...a} />
-                      ))}
+                      {actividades.length > 0 ? (
+                        actividades.map((a, i) => (
+                          <ActividadReciente key={i} {...a} />
+                        ))
+                      ) : (
+                        <p className="text-sm text-gray-500">No hay actividad reciente para mostrar.</p>
+                      )}
                     </div>
                   </section>
                 </div>

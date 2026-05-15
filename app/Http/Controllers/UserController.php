@@ -163,4 +163,80 @@ class UserController extends Controller
         $user->delete();
         return response()->json(['message' => 'Usuario eliminado correctamente']);
     }
+
+    public function actividadReciente(string $id)
+    {
+        $user = User::where('id', $id)->orWhere('nombreUsuario', $id)->firstOrFail();
+        $actividades = collect();
+
+        // 1. Creación de proyecto
+        $proyectosCreados = \App\Models\Proyecto::where('user_id', $user->id)->get();
+        foreach ($proyectosCreados as $p) {
+            $actividades->push([
+                'texto' => 'Ha creado el proyecto «' . $p->titulo . '»',
+                'fecha' => clone $p->created_at,
+                'icon' => 'rocket_launch',
+                'color' => 'orange'
+            ]);
+        }
+
+        // 2. Donación a un proyecto
+        $donaciones = \App\Models\Donacion::with('proyectos')->where('idUsuario', $user->id)->get();
+        foreach ($donaciones as $d) {
+            if ($d->proyectos) {
+                $actividades->push([
+                    'texto' => 'Ha apoyado el proyecto «' . $d->proyectos->titulo . '»',
+                    'fecha' => $d->fechaCompra ? clone \Carbon\Carbon::parse($d->fechaCompra) : clone $d->created_at,
+                    'icon' => 'favorite',
+                    'color' => 'red'
+                ]);
+            }
+        }
+
+        // 3. Sigue a alguien
+        $seguidos = $user->seguidos()->withPivot('created_at')->get();
+        foreach ($seguidos as $s) {
+            $actividades->push([
+                'texto' => 'Ha empezado a seguir a ' . ($s->nombreUsuario ?? $s->nombreCompleto),
+                'fecha' => clone $s->pivot->created_at,
+                'icon' => 'person_add',
+                'color' => 'blue'
+            ]);
+        }
+
+        // 4. Alguien le ha seguido
+        $seguidores = $user->seguidores()->withPivot('created_at')->get();
+        foreach ($seguidores as $s) {
+            $actividades->push([
+                'texto' => ($s->nombreUsuario ?? $s->nombreCompleto) . ' le ha empezado a seguir',
+                'fecha' => clone $s->pivot->created_at,
+                'icon' => 'group_add',
+                'color' => 'blue'
+            ]);
+        }
+
+        // 5. Sigue a un proyecto
+        $proyectosSeguidos = $user->proyectos()->withPivot('created_at')->get();
+        foreach ($proyectosSeguidos as $p) {
+            if ($p->pivot->created_at) {
+                $actividades->push([
+                    'texto' => 'Ha empezado a seguir el proyecto «' . $p->titulo . '»',
+                    'fecha' => clone $p->pivot->created_at,
+                    'icon' => 'bookmark_add',
+                    'color' => 'green'
+                ]);
+            }
+        }
+
+        // Ordenar y tomar los 10 más recientes
+        $actividades = $actividades->sortByDesc('fecha')->take(10)->values();
+
+        // Formatear el tiempo
+        $actividades->transform(function ($item) {
+            $item['tiempo'] = clone \Carbon\Carbon::parse($item['fecha'])->locale('es')->diffForHumans();
+            return $item;
+        });
+
+        return response()->json($actividades);
+    }
 }

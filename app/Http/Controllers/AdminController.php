@@ -29,4 +29,56 @@ class AdminController extends Controller
             'ingresos' => $ingresos
         ]);
     }
+
+    public function actividadReciente()
+    {
+        $actividades = collect();
+
+        // Proyectos
+        $proyectos = \App\Models\Proyecto::orderBy('created_at', 'desc')->take(10)->get();
+        foreach ($proyectos as $p) {
+            $actividades->push([
+                'tipo' => 'proyecto',
+                'texto' => 'Nuevo proyecto creado: ' . $p->titulo,
+                'fecha' => $p->created_at,
+                'icon' => 'rocket_launch',
+                'color' => 'orange'
+            ]);
+        }
+
+        // Usuarios
+        $usuarios = \App\Models\User::orderBy('created_at', 'desc')->take(10)->get();
+        foreach ($usuarios as $u) {
+            $actividades->push([
+                'tipo' => 'usuario',
+                'texto' => 'Nuevo usuario registrado: ' . ($u->nombreUsuario ?? $u->nombreCompleto),
+                'fecha' => $u->created_at,
+                'icon' => 'person',
+                'color' => 'blue'
+            ]);
+        }
+
+        // Eventos
+        $eventos = \App\Models\Evento::orderBy('created_at', 'desc')->take(10)->get();
+        foreach ($eventos as $e) {
+            $actividades->push([
+                'tipo' => 'evento',
+                'texto' => 'Nuevo evento creado: ' . $e->nombre,
+                'fecha' => $e->created_at,
+                'icon' => 'event',
+                'color' => 'green'
+            ]);
+        }
+
+        // Ordenar y tomar los 10 más recientes
+        $actividades = $actividades->sortByDesc('fecha')->take(10)->values();
+
+        // Formatear el tiempo
+        $actividades->transform(function ($item) {
+            $item['tiempo'] = \Carbon\Carbon::parse($item['fecha'])->locale('es')->diffForHumans();
+            return $item;
+        });
+
+        return response()->json($actividades);
+    }
 }

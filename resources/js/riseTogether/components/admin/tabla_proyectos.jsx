@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function TablaProyectos({ proyectos = [], onEdit, onDelete, onCambiarEstado }) {
   return (
     <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-black/20 overflow-hidden">
@@ -28,7 +30,11 @@ export default function TablaProyectos({ proyectos = [], onEdit, onDelete, onCam
                   key={p.id}
                   className="border-t border-gray-200 dark:border-gray-800"
                 >
-                  <td className="p-5 font-bold">{p.nombre}</td>
+                  <td className="p-5 font-bold">
+                    <Link to={`/proyecto/${p.id}`} className="hover:underline text-[#f2780d] dark:text-[#f2780d]/90">
+                      {p.nombre}
+                    </Link>
+                  </td>
                   <td className="p-5">{p.creador}</td>
                   <td className="p-5">{p.categoria}</td>
                   <td className="p-5">{formatEUR(p.recaudado)}</td>
