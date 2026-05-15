@@ -26,11 +26,15 @@ class UserController extends Controller
         $user = $id ? User::where('id', $id)->orWhere('nombreUsuario', $id)->firstOrFail() : $request->user();
 
         if ($user) {
-            $user->loadCount(['proyectosCreados', 'seguidores', 'seguidos']);
+            $user->loadCount(['proyectosCreados' => function ($query) {
+                $query->whereIn('estado', ['publicado', 'completado']);
+            }, 'seguidores', 'seguidos']);
             $user->load(['donaciones.proyectos.categoria', 'donaciones.recompensas', 'proyectos', 'proyectoDestacado.categoria']);
 
             if (Auth::check()) {
-                $user->siguiendo = Auth::user()->seguidos()->where('users.id', $user->id)->exists();
+                /** @var \App\Models\User $authUser */
+                $authUser = Auth::user();
+                $user->siguiendo = $authUser->seguidos()->where('users.id', $user->id)->exists();
             } else {
                 $user->siguiendo = false;
             }

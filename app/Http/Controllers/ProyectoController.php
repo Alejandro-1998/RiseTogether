@@ -20,7 +20,7 @@ class ProyectoController extends Controller
     public function index(Request $request)
     {
         $query = Proyecto::with(['categoria', 'user'])
-            ->where('estado', 'publicado');
+            ->whereIn('estado', ['publicado', 'completado']);
 
         if ($request->has('categoria_id')) {
             $query->where('categoria_id', $request->categoria_id);
@@ -160,6 +160,7 @@ class ProyectoController extends Controller
 
         // Si el proyecto no está publicado, solo el dueño o un admin pueden verlo
         if ($proyecto->estado !== 'publicado') {
+            /** @var \App\Models\User $user */
             $user = Auth::guard('sanctum')->user();
             $isAdmin = $user && $user->hasRole('admin');
             $isOwner = $user && $user->id === $proyecto->user_id;
@@ -320,7 +321,12 @@ class ProyectoController extends Controller
     public function reject(string $id)
     {
         $proyecto = Proyecto::findOrFail($id);
-        $proyecto->update(['estado' => 'rechazado']);
+        
+        // Modificamos el título y el slug para liberar el nombre original
+        $proyecto->titulo = $proyecto->titulo . ' [RECHAZADO ' . now()->timestamp . ']';
+        $proyecto->slug = Str::slug($proyecto->titulo);
+        $proyecto->estado = 'rechazado';
+        $proyecto->save();
 
         return response()->json([
             'message' => 'Proyecto rechazado.',

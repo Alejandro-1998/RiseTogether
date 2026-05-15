@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Hero() {
   return (
     <section className="my-8 px-6">
@@ -27,19 +29,19 @@ export default function Hero() {
             </p>
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <a
-                href="/proyectos"
+              <Link
+                to="/proyectos"
                 className="inline-flex h-11 items-center justify-center rounded-lg bg-orange-500 px-6 text-sm font-bold text-white transition hover:bg-orange-600"
               >
                 Descubrir Proyectos
-              </a>
+              </Link>
 
-              <a
-                href="/crear-proyecto"
+              <Link
+                to="/crear-proyecto"
                 className="inline-flex h-11 items-center justify-center rounded-lg bg-white/90 px-6 text-sm font-bold text-gray-900 hover:bg-white"
               >
                 Crea tu Proyecto
-              </a>
+              </Link>
             </div>
           </div>
         </div>
