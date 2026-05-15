@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import Sidebar from "../../components/admin/sidebar";
 import HeaderPublic from "../../components/public/header_public";
 import Stats from "../../components/admin/stats";
-import ProyectoPendiente from "../../components/admin/proyecto_pendiente";
+import TablaProyectos from "../../components/admin/tabla_proyectos";
 import RevisionComentario from "../../components/admin/revision_comentario";
 import ActividadReciente from "../../components/cards/actividad_reciente";
 
@@ -14,6 +14,8 @@ export default function AdminDashboard() {
     ingresos: 0
   });
 
+  const [pendientes, setPendientes] = useState([]);
+
   useEffect(() => {
     import("axios").then((axios) => {
       axios.default.get("/api/admin/stats")
@@ -21,8 +23,34 @@ export default function AdminDashboard() {
           setStats(res.data);
         })
         .catch((err) => console.error(err));
+        
+      axios.default.get("/api/admin/proyectos")
+        .then((res) => {
+          const rev = res.data.filter(p => p.estado === 'revision').map(p => ({
+            id: p.id,
+            nombre: p.titulo,
+            creador: p.user ? (p.user.nombreUsuario || p.user.nombreCompleto || "Desconocido") : "Desconocido",
+            categoria: p.categoria ? p.categoria.nombre : "Sin categoría",
+            recaudado: Number(p.cantidad_recaudada || 0),
+            estado: p.estado || "borrador",
+            fecha_envio: p.created_at ? p.created_at.substring(0, 10) : "",
+          }));
+          setPendientes(rev);
+        });
     });
   }, []);
+
+  const cambiarEstado = async (id, nuevoEstado) => {
+    try {
+      const axios = (await import("axios")).default;
+      await axios.put(`/api/admin/proyectos/${id}/estado`, { estado: nuevoEstado });
+      setPendientes((prev) => prev.filter((p) => p.id !== id));
+      import("react-hot-toast").then(toast => toast.default.success(`Proyecto ${nuevoEstado === 'publicado' ? 'aprobado' : 'rechazado'} con éxito.`));
+      setStats(prev => ({...prev, proyectos_pendientes: prev.proyectos_pendientes - 1}));
+    } catch (error) {
+      import("react-hot-toast").then(toast => toast.default.error("Error al cambiar el estado"));
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
@@ -62,27 +90,8 @@ export default function AdminDashboard() {
                   Proyectos pendientes
                 </h2>
 
-                <div className="overflow-x-auto bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-3xl">
-                  <table className="min-w-full text-sm text-left text-gray-600 dark:text-gray-300">
-                    <thead className="text-xs text-gray-700 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-800">
-                      <tr>
-                        <th className="px-6 py-3">Nombre del proyecto</th>
-                        <th className="px-6 py-3">Creador</th>
-                        <th className="px-6 py-3">Categoría</th>
-                        <th className="px-6 py-3">Cantidad recaudada</th>
-                        <th className="px-6 py-3">Estado</th>
-                        <th className="px-6 py-3">Fecha de envío</th>
-                        <th className="px-6 py-3 text-center">Acciones</th>
-                      </tr>
-                    </thead>
-
-                    <tbody>
-                      <ProyectoPendiente />
-                      <ProyectoPendiente />
-                      <ProyectoPendiente />
-                      <ProyectoPendiente />
-                    </tbody>
-                  </table>
+                <div className="bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-3xl overflow-hidden">
+                  <TablaProyectos proyectos={pendientes} onCambiarEstado={cambiarEstado} />
                 </div>
               </div>
 

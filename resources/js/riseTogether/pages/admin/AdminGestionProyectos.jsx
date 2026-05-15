@@ -1,4 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
 import Sidebar from "../../components/admin/sidebar";
 import HeaderPublic from "../../components/public/header_public";
 import TablaProyectos from "../../components/admin/tabla_proyectos";
@@ -19,22 +21,20 @@ export default function AdminGestionProyectos() {
   const [proyectos, setProyectos] = useState([]);
 
   useEffect(() => {
-    import("axios").then((axios) => {
-      axios.default.get("/api/admin/proyectos")
-        .then((res) => {
-          const mapped = res.data.map((p) => ({
-            id: p.id,
-            nombre: p.titulo,
-            creador: p.user ? (p.user.nombreUsuario || p.user.nombreCompleto || "Desconocido") : "Desconocido",
-            categoria: p.categoria ? p.categoria.nombre : "Sin categoría",
-            recaudado: Number(p.cantidad_recaudada || 0),
-            estado: p.estado || "borrador",
-            fecha_envio: p.created_at ? p.created_at.substring(0, 10) : "",
-          }));
-          setProyectos(mapped);
-        })
-        .catch((err) => console.error(err));
-    });
+    axios.get("/api/admin/proyectos")
+      .then((res) => {
+        const mapped = res.data.map((p) => ({
+          id: p.id,
+          nombre: p.titulo,
+          creador: p.user ? (p.user.nombreUsuario || p.user.nombreCompleto || "Desconocido") : "Desconocido",
+          categoria: p.categoria ? p.categoria.nombre : "Sin categoría",
+          recaudado: Number(p.cantidad_recaudada || 0),
+          estado: p.estado || "borrador",
+          fecha_envio: p.created_at ? p.created_at.substring(0, 10) : "",
+        }));
+        setProyectos(mapped);
+      })
+      .catch((err) => console.error(err));
   }, []);
 
   const proyectosFiltrados = useMemo(() => {
@@ -98,6 +98,19 @@ export default function AdminGestionProyectos() {
     setABorrar(null);
   };
 
+  const cambiarEstado = async (id, nuevoEstado) => {
+    try {
+      await axios.put(`/api/admin/proyectos/${id}/estado`, { estado: nuevoEstado });
+      setProyectos((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, estado: nuevoEstado } : p))
+      );
+      toast.success(`Proyecto ${nuevoEstado === 'publicado' ? 'aprobado' : 'rechazado'} con éxito.`);
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al cambiar el estado del proyecto.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
       <HeaderPublic />
@@ -148,6 +161,7 @@ export default function AdminGestionProyectos() {
               proyectos={proyectosFiltrados}
               onEdit={abrirEditar}
               onDelete={pedirBorrar}
+              onCambiarEstado={cambiarEstado}
             />
           </main>
         </div>

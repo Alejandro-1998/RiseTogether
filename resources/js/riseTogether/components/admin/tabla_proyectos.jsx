@@ -1,4 +1,4 @@
-export default function TablaProyectos({ proyectos = [], onEdit, onDelete }) {
+export default function TablaProyectos({ proyectos = [], onEdit, onDelete, onCambiarEstado }) {
   return (
     <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-black/20 overflow-hidden">
       <div className="overflow-x-auto">
@@ -38,18 +38,38 @@ export default function TablaProyectos({ proyectos = [], onEdit, onDelete }) {
                   <td className="p-5">{p.fecha_envio}</td>
                   <td className="p-5 pr-6">
                     <div className="flex justify-end gap-2">
-                      <button
-                        onClick={() => onEdit?.(p)}
-                        className="rounded-xl px-4 py-2 bg-[#f2780d]/10 text-[#f2780d] font-bold hover:bg-[#f2780d]/20"
-                      >
-                        Editar
-                      </button>
-                      <button
-                        onClick={() => onDelete?.(p)}
-                        className="rounded-xl px-4 py-2 bg-red-600 text-white font-bold hover:brightness-110"
-                      >
-                        Borrar
-                      </button>
+                      {p.estado === "revision" && onCambiarEstado && (
+                        <>
+                          <button
+                            onClick={() => onCambiarEstado(p.id, "publicado")}
+                            className="rounded-xl px-4 py-2 bg-green-600 text-white font-bold hover:bg-green-700"
+                          >
+                            Aprobar
+                          </button>
+                          <button
+                            onClick={() => onCambiarEstado(p.id, "cancelado")}
+                            className="rounded-xl px-4 py-2 bg-red-600/10 text-red-600 border border-red-600/20 font-bold hover:bg-red-600 hover:text-white"
+                          >
+                            Rechazar
+                          </button>
+                        </>
+                      )}
+                      {onEdit && (
+                        <button
+                          onClick={() => onEdit(p)}
+                          className="rounded-xl px-4 py-2 bg-[#f2780d]/10 text-[#f2780d] font-bold hover:bg-[#f2780d]/20"
+                        >
+                          Editar
+                        </button>
+                      )}
+                      {onDelete && (
+                        <button
+                          onClick={() => onDelete(p)}
+                          className="rounded-xl px-4 py-2 bg-red-600 text-white font-bold hover:brightness-110"
+                        >
+                          Borrar
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
