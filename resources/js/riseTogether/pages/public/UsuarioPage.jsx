@@ -11,6 +11,7 @@ import EstadisticasUsuario from "../../components/cards/estadisticas_usuario";
 import UsuarioTabs from "../../components/usuario/usuario_tabs";
 import UsuarioSidebar from "../../components/usuario/usuario_sidebar";
 import UsuarioAjustes from "../../components/usuario/usuario_ajustes";
+import UsuarioFacturasTab from "../../components/usuario/UsuarioFacturasTab";
 
 import ProyectoCard from "../../components/proyecto/proyecto_card";
 import ActividadReciente from "../../components/cards/actividad_reciente";
@@ -526,6 +527,12 @@ export default function UsuarioPage() {
 
               {pestana === "ajustes" && soyYo && (
                 <UsuarioAjustes user={usuario} onUserUpdate={manejarActualizacionUsuario} />
+              )}
+
+              {pestana === "facturas" && (
+                <div className="space-y-4">
+                  <UsuarioFacturasTab usuario={usuario} isMe={soyYo} />
+                </div>
               )}
             </section>
           </div>

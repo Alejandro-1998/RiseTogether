@@ -1,4 +1,6 @@
 export default function UsuarioTabs({ tab, setTab, isMe, user }) {
+  const canViewFacturas = isMe || (user?.roles_list && user.roles_list.includes('admin'));
+
   const tabs = [
     { id: "resumen", label: "Resumen" },
     { id: "creados", label: "Proyectos creados" },
@@ -6,6 +8,7 @@ export default function UsuarioTabs({ tab, setTab, isMe, user }) {
     { id: "actividad", label: "Proyectos seguidos" },
     { id: "seguidores", label: "Seguidores" },
     { id: "seguidos", label: "Seguidos" },
+    ...(canViewFacturas ? [{ id: "facturas", label: "Facturas" }] : []),
     ...(isMe ? [{ id: "ajustes", label: "Ajustes" }] : []),
   ];
 

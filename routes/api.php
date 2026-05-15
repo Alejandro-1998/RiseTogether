@@ -10,6 +10,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\EventoController;
 use App\Http\Controllers\SeguidorController;
+use App\Http\Controllers\FacturaController;
 
 /// RUTAS PÚBLICAS DE API ///
 
@@ -74,6 +75,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/chat/{userId}', [\App\Http\Controllers\ChatPrivadoController::class, 'getMensajes']);
     Route::post('/chat/{userId}', [\App\Http\Controllers\ChatPrivadoController::class, 'sendMensaje']);
 
+    // Facturas
+    Route::get('/facturas', [FacturaController::class, 'indexUser']);
+    Route::post('/facturas', [FacturaController::class, 'store']);
+
     // Admin Routes
     Route::middleware(['role:admin'])->group(function () {
         Route::get('/users', [UserController::class, 'index']); // Admin USERS list
@@ -81,6 +86,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/admin/proyectos/{id}/estado', [ProyectoController::class, 'updateEstado']); // Admin UPDATE PROJECT STATE
         Route::get('/admin/stats', [App\Http\Controllers\AdminController::class, 'stats']);
         Route::get('/admin/actividad', [App\Http\Controllers\AdminController::class, 'actividadReciente']);
+        Route::get('/admin/facturas', [FacturaController::class, 'indexAdmin']);
+        Route::put('/admin/facturas/{id}/estado', [FacturaController::class, 'updateEstado']);
 
         // Categorias CRUD
         Route::post('/categorias', [CategoriaController::class, 'store']);

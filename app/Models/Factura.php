@@ -20,12 +20,20 @@ class Factura extends Model
         'fechaFactura',
         'costo',
         'descripcion',
-        'descripcionFiscal',
-        'pdf'
+        'direccionFiscal',
+        'pdf',
+        'proyecto_id',
+        'user_id',
+        'estado'
     ];
 
-    function proyectos()
+    public function proyecto()
     {
         return $this->belongsTo(Proyecto::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
