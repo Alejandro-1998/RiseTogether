@@ -23,6 +23,7 @@ import ContactoPage from "./pages/public/ContactoPage";
 import AvisoLegalPage from "./pages/public/AvisoLegalPage";
 import EventosPage from "./pages/public/EventosPage";
 import BuscarUsuariosPage from "./pages/public/BuscarUsuariosPage";
+import UsuarioActividadPage from "./pages/public/UsuarioActividadPage";
 
 import RequireAdmin from "./components/RequireAdmin";
 import ChatFlotante from "./components/chat/ChatFlotante";
@@ -66,6 +67,7 @@ function App() {
 
           {/* Usuario */}
           <Route path="/usuario/:id?" element={<UsuarioPage />} />
+          <Route path="/usuario/:id/actividad" element={<UsuarioActividadPage />} />
 
           {/* Proyecto */}
           <Route path="/proyecto/:id" element={<ProyectoPage />} />

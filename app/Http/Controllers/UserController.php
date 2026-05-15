@@ -164,8 +164,9 @@ class UserController extends Controller
         return response()->json(['message' => 'Usuario eliminado correctamente']);
     }
 
-    public function actividadReciente(string $id)
+    public function actividadReciente(Request $request, string $id)
     {
+        $limit = $request->query('limit', 10);
         $user = User::where('id', $id)->orWhere('nombreUsuario', $id)->firstOrFail();
         $actividades = collect();
 
@@ -226,8 +227,8 @@ class UserController extends Controller
             ]);
         }
 
-        // Ordenar y tomar los 10 más recientes
-        $actividades = $actividades->sortByDesc('fecha')->take(10)->values();
+        // Ordenar y tomar los más recientes según el límite
+        $actividades = $actividades->sortByDesc('fecha')->take($limit)->values();
 
         // Formatear el tiempo
         $actividades->transform(function ($item) {

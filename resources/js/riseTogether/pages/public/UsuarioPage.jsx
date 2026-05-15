@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import useAuth from "../../hooks/useAuth";
 
@@ -119,7 +119,7 @@ export default function UsuarioPage() {
 
   const obtenerActividadReciente = async () => {
     try {
-      const res = await axios.get(`/api/user/${usuario.id}/actividad`);
+      const res = await axios.get(`/api/user/${usuario.id}/actividad?limit=5`);
       setActividades(res.data);
     } catch (error) {
       console.error("Error obteniendo actividad reciente:", error);
@@ -327,9 +327,9 @@ export default function UsuarioPage() {
                       <h3 id="actividad-reciente-titulo" className="text-lg font-bold">
                         Actividad
                       </h3>
-                      <button className="cursor-pointer text-xs text-[#f2780d] font-medium hover:underline">
+                      <Link to={`/usuario/${usuario.id}/actividad`} className="cursor-pointer text-xs text-[#f2780d] font-medium hover:underline">
                         Ver toda la actividad
-                      </button>
+                      </Link>
                     </div>
 
                     <div className="bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 space-y-6">
