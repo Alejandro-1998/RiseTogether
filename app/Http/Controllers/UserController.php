@@ -174,7 +174,7 @@ class UserController extends Controller
         foreach ($proyectosCreados as $p) {
             $actividades->push([
                 'texto' => 'Ha creado el proyecto «' . $p->titulo . '»',
-                'fecha' => clone $p->created_at,
+                'fecha' => $p->created_at,
                 'icon' => 'rocket_launch',
                 'color' => 'orange'
             ]);
@@ -186,7 +186,7 @@ class UserController extends Controller
             if ($d->proyectos) {
                 $actividades->push([
                     'texto' => 'Ha apoyado el proyecto «' . $d->proyectos->titulo . '»',
-                    'fecha' => $d->fechaCompra ? clone \Carbon\Carbon::parse($d->fechaCompra) : clone $d->created_at,
+                    'fecha' => $d->fechaCompra ? \Carbon\Carbon::parse($d->fechaCompra) : $d->created_at,
                     'icon' => 'favorite',
                     'color' => 'red'
                 ]);
@@ -198,7 +198,7 @@ class UserController extends Controller
         foreach ($seguidos as $s) {
             $actividades->push([
                 'texto' => 'Ha empezado a seguir a ' . ($s->nombreUsuario ?? $s->nombreCompleto),
-                'fecha' => clone $s->pivot->created_at,
+                'fecha' => $s->pivot->created_at,
                 'icon' => 'person_add',
                 'color' => 'blue'
             ]);
@@ -209,7 +209,7 @@ class UserController extends Controller
         foreach ($seguidores as $s) {
             $actividades->push([
                 'texto' => ($s->nombreUsuario ?? $s->nombreCompleto) . ' le ha empezado a seguir',
-                'fecha' => clone $s->pivot->created_at,
+                'fecha' => $s->pivot->created_at,
                 'icon' => 'group_add',
                 'color' => 'blue'
             ]);
@@ -218,14 +218,12 @@ class UserController extends Controller
         // 5. Sigue a un proyecto
         $proyectosSeguidos = $user->proyectos()->withPivot('created_at')->get();
         foreach ($proyectosSeguidos as $p) {
-            if ($p->pivot->created_at) {
-                $actividades->push([
-                    'texto' => 'Ha empezado a seguir el proyecto «' . $p->titulo . '»',
-                    'fecha' => clone $p->pivot->created_at,
-                    'icon' => 'bookmark_add',
-                    'color' => 'green'
-                ]);
-            }
+            $actividades->push([
+                'texto' => 'Ha empezado a seguir el proyecto «' . $p->titulo . '»',
+                'fecha' => $p->pivot->created_at ?? $p->created_at,
+                'icon' => 'bookmark_add',
+                'color' => 'green'
+            ]);
         }
 
         // Ordenar y tomar los 10 más recientes
@@ -233,7 +231,7 @@ class UserController extends Controller
 
         // Formatear el tiempo
         $actividades->transform(function ($item) {
-            $item['tiempo'] = clone \Carbon\Carbon::parse($item['fecha'])->locale('es')->diffForHumans();
+            $item['tiempo'] = \Carbon\Carbon::parse($item['fecha'])->locale('es')->diffForHumans();
             return $item;
         });
 

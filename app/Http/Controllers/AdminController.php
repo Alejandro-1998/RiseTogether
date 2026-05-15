@@ -30,8 +30,9 @@ class AdminController extends Controller
         ]);
     }
 
-    public function actividadReciente()
+    public function actividadReciente(Request $request)
     {
+        $limit = $request->query('limit', 10);
         $actividades = collect();
 
         // Proyectos
@@ -70,8 +71,8 @@ class AdminController extends Controller
             ]);
         }
 
-        // Ordenar y tomar los 10 más recientes
-        $actividades = $actividades->sortByDesc('fecha')->take(10)->values();
+        // Ordenar y tomar los más recientes según el límite
+        $actividades = $actividades->sortByDesc('fecha')->take($limit)->values();
 
         // Formatear el tiempo
         $actividades->transform(function ($item) {

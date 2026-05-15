@@ -16,6 +16,7 @@ import AdminGestionUsuarios from "./pages/admin/AdminGestionUsuarios";
 import AdminCategorias from "./pages/admin/AdminCategorias";
 import AdminEventos from "./pages/admin/AdminEventos";
 import AdminPagos from "./pages/admin/AdminPagos";
+import AdminActividadPage from "./pages/admin/AdminActividadPage";
 
 import SobreNosotrosPage from "./pages/public/SobreNosotrosPage";
 import ContactoPage from "./pages/public/ContactoPage";
@@ -51,6 +52,7 @@ function App() {
             <Route path="/administrador/categorias" element={<AdminCategorias />} />
             <Route path="/administrador/eventos" element={<AdminEventos />} />
             <Route path="/administrador/pagos" element={<AdminPagos />} />
+            <Route path="/administrador/actividad" element={<AdminActividadPage />} />
           </Route>
 
           {/* Crear Proyecto */}

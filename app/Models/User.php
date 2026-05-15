@@ -89,7 +89,7 @@ class User extends Authenticatable
 
     function proyectos()
     {
-        return $this->belongsToMany(Proyecto::class, 'users_proyectos', 'idUsuario', 'idProyecto');
+        return $this->belongsToMany(Proyecto::class, 'users_proyectos', 'idUsuario', 'idProyecto')->withTimestamps();
     }
 
     function comentarios()
@@ -109,12 +109,12 @@ class User extends Authenticatable
 
     public function seguidos()
     {
-        return $this->belongsToMany(User::class, 'usuarios_seguidores', 'id_seguidor', 'id_seguido');
+        return $this->belongsToMany(User::class, 'usuarios_seguidores', 'id_seguidor', 'id_seguido')->withTimestamps();
     }
 
     public function seguidores()
     {
-        return $this->belongsToMany(User::class, 'usuarios_seguidores', 'id_seguido', 'id_seguidor');
+        return $this->belongsToMany(User::class, 'usuarios_seguidores', 'id_seguido', 'id_seguidor')->withTimestamps();
     }
 
     public function proyectoDestacado()

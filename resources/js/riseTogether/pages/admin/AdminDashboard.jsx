@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Sidebar from "../../components/admin/sidebar";
 import HeaderPublic from "../../components/public/header_public";
 import Stats from "../../components/admin/stats";
@@ -39,7 +40,7 @@ export default function AdminDashboard() {
           setPendientes(rev);
         });
         
-      axios.default.get("/api/admin/actividad")
+      axios.default.get("/api/admin/actividad?limit=4")
         .then((res) => {
           setActividades(res.data);
         })
@@ -104,9 +105,14 @@ export default function AdminDashboard() {
 
               {/* ACTIVIDAD RECIENTE */}
               <div className="col-span-3 lg:col-span-1 h-full">
-                <h2 className="text-gray-800 dark:text-white text-xl font-bold leading-tight tracking-tight mb-4">
-                  Actividad reciente
-                </h2>
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-gray-800 dark:text-white text-xl font-bold leading-tight tracking-tight">
+                    Actividad reciente
+                  </h2>
+                  <Link to="/administrador/actividad" className="text-sm text-[#f2780d] font-bold hover:underline">
+                    Ver historial
+                  </Link>
+                </div>
 
                 <div className="bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 space-y-6">
                   {actividades.length === 0 ? (
