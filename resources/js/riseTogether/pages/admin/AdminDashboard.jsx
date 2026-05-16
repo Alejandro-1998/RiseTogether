@@ -17,6 +17,7 @@ export default function AdminDashboard() {
 
   const [pendientes, setPendientes] = useState([]);
   const [actividades, setActividades] = useState([]);
+  const [comentarios, setComentarios] = useState([]);
 
   useEffect(() => {
     import("axios").then((axios) => {
@@ -45,8 +46,25 @@ export default function AdminDashboard() {
           setActividades(res.data);
         })
         .catch((err) => console.error(err));
+
+      axios.default.get("/api/admin/comentarios/pendientes")
+        .then((res) => {
+          setComentarios(res.data);
+        })
+        .catch((err) => console.error("Error cargando comentarios", err));
     });
   }, []);
+
+  const cambiarEstadoComentario = async (id, nuevoEstado) => {
+    try {
+      const axios = (await import("axios")).default;
+      await axios.put(`/api/admin/comentarios/${id}/estado`, { estado: nuevoEstado });
+      setComentarios((prev) => prev.filter((c) => c.id !== id));
+      import("react-hot-toast").then(toast => toast.default.success(`Comentario ${nuevoEstado === 'aprobado' ? 'restaurado' : 'eliminado'}.`));
+    } catch (error) {
+      import("react-hot-toast").then(toast => toast.default.error("Error al actualizar comentario"));
+    }
+  };
 
   const cambiarEstado = async (id, nuevoEstado) => {
     try {
@@ -156,10 +174,25 @@ export default function AdminDashboard() {
                       </thead>
 
                       <tbody>
-                        <RevisionComentario />
-                        <RevisionComentario />
-                        <RevisionComentario />
-                        <RevisionComentario />
+                        {comentarios.length === 0 ? (
+                          <tr>
+                            <td colSpan="5" className="px-4 py-8 text-center text-gray-500">
+                              No hay comentarios pendientes de revisión.
+                            </td>
+                          </tr>
+                        ) : (
+                          comentarios.map((com) => (
+                            <RevisionComentario
+                              key={com.id}
+                              proyecto={com.proyecto ? com.proyecto.titulo : "Desconocido"}
+                              usuario={com.user ? `@${com.user.nombreUsuario}` : "Desconocido"}
+                              motivo="Pendiente de revisión"
+                              fecha={com.created_at ? com.created_at.substring(0, 10) : ""}
+                              onRestaurar={() => cambiarEstadoComentario(com.id, 'aprobado')}
+                              onEliminar={() => cambiarEstadoComentario(com.id, 'rechazado')}
+                            />
+                          ))
+                        )}
                       </tbody>
                     </table>
                   </div>

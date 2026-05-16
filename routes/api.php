@@ -88,6 +88,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/admin/actividad', [App\Http\Controllers\AdminController::class, 'actividadReciente']);
         Route::get('/admin/facturas', [FacturaController::class, 'indexAdmin']);
         Route::put('/admin/facturas/{id}/estado', [FacturaController::class, 'updateEstado']);
+        
+        // Comentarios Admin
+        Route::get('/admin/comentarios/pendientes', [ComentarioController::class, 'pendientesAdmin']);
+        Route::put('/admin/comentarios/{id}/estado', [ComentarioController::class, 'updateEstadoAdmin']);
 
         // Categorias CRUD
         Route::post('/categorias', [CategoriaController::class, 'store']);

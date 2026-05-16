@@ -45,6 +45,11 @@ class Comentario extends Model
         return $this->hasMany(Proyecto::class);
     }
 
+    function proyecto()
+    {
+        return $this->belongsTo(Proyecto::class, 'idProyecto');
+    }
+
     function actualizacion()
     {
         return $this->belongsTo(ProyectoActualizacion::class, 'idActualizacion');

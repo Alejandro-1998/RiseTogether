@@ -218,4 +218,39 @@ class ComentarioController extends Controller
 
         return response()->json(array_values($rootComments));
     }
+
+    /**
+     * Obtener comentarios pendientes para el panel de administración.
+     */
+    public function pendientesAdmin()
+    {
+        $comentarios = Comentario::with(['user', 'proyecto'])
+            ->where('estado', 'pendiente')
+            ->orderBy('created_at', 'asc')
+            ->get();
+
+        return response()->json($comentarios);
+    }
+
+    /**
+     * Actualizar estado de comentario o eliminar (admin).
+     */
+    public function updateEstadoAdmin(Request $request, $id)
+    {
+        $comentario = Comentario::findOrFail($id);
+
+        $request->validate([
+            'estado' => 'required|in:aprobado,rechazado',
+        ]);
+
+        if ($request->estado === 'rechazado') {
+            $comentario->delete();
+            return response()->json(['message' => 'Comentario eliminado']);
+        }
+
+        $comentario->estado = $request->estado;
+        $comentario->save();
+
+        return response()->json(['message' => 'Comentario actualizado', 'comentario' => $comentario]);
+    }
 }
