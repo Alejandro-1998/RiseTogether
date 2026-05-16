@@ -109,7 +109,7 @@ export default function UsuarioFacturasTab({ usuario, isMe }) {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">CIF / NIF</label>
-            <input required type="text" maxLength="9" value={cif} onChange={e => setCif(e.target.value)} className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
+            <input required type="text" minLength="9" maxLength="9" value={cif} onChange={e => setCif(e.target.value)} className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha</label>

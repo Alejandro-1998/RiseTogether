@@ -24,7 +24,7 @@ class FacturaController extends Controller
         $request->validate([
             'proyecto_id' => 'required|exists:proyectos,id',
             'numeroFactura' => 'required|numeric',
-            'cif' => 'required|string|max:9',
+            'cif' => 'required|string|size:9',
             'fechaFactura' => 'required|date',
             'costo' => 'required|numeric|min:0',
             'descripcion' => 'required|string|max:255',
