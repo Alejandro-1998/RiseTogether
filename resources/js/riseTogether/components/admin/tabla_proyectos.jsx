@@ -48,13 +48,13 @@ export default function TablaProyectos({ proyectos = [], onEdit, onDelete, onCam
                         <>
                           <button
                             onClick={() => onCambiarEstado(p.id, "publicado")}
-                            className="rounded-xl px-4 py-2 bg-green-600 text-white font-bold hover:bg-green-700"
+                            className="rounded-xl px-4 py-2 text-sm bg-green-600 text-white font-bold hover:bg-green-700"
                           >
                             Aprobar
                           </button>
                           <button
                             onClick={() => onCambiarEstado(p.id, "cancelado")}
-                            className="rounded-xl px-4 py-2 bg-red-600/10 text-red-600 border border-red-600/20 font-bold hover:bg-red-600 hover:text-white"
+                            className="rounded-xl px-4 py-2 text-sm bg-red-600/10 text-red-600 border border-red-600/20 font-bold hover:bg-red-600 hover:text-white"
                           >
                             Rechazar
                           </button>
@@ -63,7 +63,7 @@ export default function TablaProyectos({ proyectos = [], onEdit, onDelete, onCam
                       {onEdit && (
                         <button
                           onClick={() => onEdit(p)}
-                          className="rounded-xl px-4 py-2 bg-[#f2780d]/10 text-[#f2780d] font-bold hover:bg-[#f2780d]/20"
+                          className="rounded-xl px-4 py-2 text-sm bg-[#f2780d]/10 text-[#f2780d] font-bold hover:bg-[#f2780d]/20"
                         >
                           Editar
                         </button>
@@ -71,7 +71,7 @@ export default function TablaProyectos({ proyectos = [], onEdit, onDelete, onCam
                       {onDelete && (
                         <button
                           onClick={() => onDelete(p)}
-                          className="rounded-xl px-4 py-2 bg-red-600 text-white font-bold hover:brightness-110"
+                          className="rounded-xl px-4 py-2 text-sm bg-red-600 text-white font-bold hover:brightness-110"
                         >
                           Borrar
                         </button>

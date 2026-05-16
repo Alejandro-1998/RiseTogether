@@ -15,19 +15,19 @@ export default function RevisionComentario({
       <td className="px-4 py-3">{motivo}</td>
       <td className="px-4 py-3 whitespace-nowrap">{fecha}</td>
 
-      <td className="px-4 py-3 text-right space-x-2">
+      <td className="px-4 py-3 text-right flex items-center justify-end gap-2">
         <button
-          className="text-xs px-3 py-1.5 rounded-2xl bg-green-600 hover:bg-green-700 text-white"
+          className="rounded-xl px-4 py-2 text-sm bg-green-600 text-white font-bold hover:bg-green-700 transition-colors"
           onClick={onRestaurar}
         >
-          Restaurar
+          Aprobar
         </button>
 
         <button
-          className="text-xs px-3 py-1.5 rounded-2xl bg-red-600 hover:bg-red-700 text-white"
+          className="rounded-xl px-4 py-2 text-sm bg-red-600/10 text-red-600 border border-red-600/20 font-bold hover:bg-red-600 hover:text-white transition-colors"
           onClick={onEliminar}
         >
-          Eliminar
+          Rechazar
         </button>
       </td>
     </tr>

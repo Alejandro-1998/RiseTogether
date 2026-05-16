@@ -92,16 +92,16 @@ export default function AdminPagos() {
                                                     <td className="p-4 font-bold">{f.costo}€</td>
                                                     <td className="p-4">{getEstadoBadge(f.estado)}</td>
                                                     <td className="p-4 text-right flex items-center justify-end gap-2">
-                                                        <a href={`/storage/${f.pdf}`} target="_blank" rel="noreferrer" className="p-2 text-gray-500 hover:text-blue-500 transition-colors" title="Ver PDF">
-                                                            <span className="material-symbols-outlined">visibility</span>
+                                                        <a href={`/storage/${f.pdf}`} target="_blank" rel="noreferrer" className="rounded-xl px-4 py-2 text-sm bg-[#f2780d]/10 text-[#f2780d] font-bold hover:bg-[#f2780d]/20 flex items-center justify-center" title="Ver PDF">
+                                                            <span className="material-symbols-outlined text-[16px] mr-1">visibility</span> Ver
                                                         </a>
                                                         {f.estado === 'pendiente' && (
                                                             <>
-                                                                <button onClick={() => updateEstado(f.id, 'verificada')} className="p-2 text-gray-500 hover:text-green-500 transition-colors" title="Aprobar">
-                                                                    <span className="material-symbols-outlined">check_circle</span>
+                                                                <button onClick={() => updateEstado(f.id, 'verificada')} className="rounded-xl px-4 py-2 text-sm bg-green-600 text-white font-bold hover:bg-green-700 transition-colors" title="Aprobar">
+                                                                    Aprobar
                                                                 </button>
-                                                                <button onClick={() => updateEstado(f.id, 'rechazada')} className="p-2 text-gray-500 hover:text-red-500 transition-colors" title="Rechazar">
-                                                                    <span className="material-symbols-outlined">cancel</span>
+                                                                <button onClick={() => updateEstado(f.id, 'rechazada')} className="rounded-xl px-4 py-2 text-sm bg-red-600/10 text-red-600 border border-red-600/20 font-bold hover:bg-red-600 hover:text-white transition-colors" title="Rechazar">
+                                                                    Rechazar
                                                                 </button>
                                                             </>
                                                         )}
