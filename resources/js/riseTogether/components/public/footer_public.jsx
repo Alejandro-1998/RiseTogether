@@ -68,25 +68,15 @@ export default function FooterPublic() {
             <ul className="mt-4 space-y-2">
               {[
                 { label: "Centro de contacto", to: "#" },
-                { label: "Aviso Legal", to: "/aviso-legal" },
                 { label: "Recursos para creadores", to: "#" },
               ].map((l) => (
                 <li key={l.label}>
-                  {l.to.startsWith('/') ? (
-                    <Link
-                      to={l.to}
-                      className="text-sm text-[#9c7049] transition-colors hover:text-[#f2780d] dark:text-[#a18a7a] dark:hover:text-[#f2780d]"
-                    >
-                      {l.label}
-                    </Link>
-                  ) : (
-                    <a
-                      href={l.to}
-                      className="text-sm text-[#9c7049] transition-colors hover:text-[#f2780d] dark:text-[#a18a7a] dark:hover:text-[#f2780d]"
-                    >
-                      {l.label}
-                    </a>
-                  )}
+                  <a
+                    href={l.to}
+                    className="text-sm text-[#9c7049] transition-colors hover:text-[#f2780d] dark:text-[#a18a7a] dark:hover:text-[#f2780d]"
+                  >
+                    {l.label}
+                  </a>
                 </li>
               ))}
             </ul>
@@ -130,6 +120,14 @@ export default function FooterPublic() {
               alt="ND"
               className="ml-1 h-4 w-4"
             />
+            <span className="mx-2 text-[#9c7049]/50">|</span>
+            <Link to="/terminos-y-condiciones" className="font-semibold hover:text-[#f2780d]">
+              Términos y Condiciones
+            </Link>
+            <span className="mx-2 text-[#9c7049]/50">|</span>
+            <Link to="/aviso-legal" className="font-semibold hover:text-[#f2780d]">
+              Aviso Legal
+            </Link>
           </p>
         </div>
       </div>

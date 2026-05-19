@@ -18,29 +18,7 @@ function Toast({ open, text }) {
   );
 }
 
-function ActionBtn({ icon, children, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex items-center gap-2 cursor-pointer rounded-xl h-10 px-4 bg-gray-100 dark:bg-[#393028] text-gray-900 dark:text-white text-sm font-bold hover:bg-gray-200 dark:hover:bg-[#4a3f35] transition-colors"
-    >
-      <span className="material-symbols-outlined text-base">{icon}</span>
-      <span>{children}</span>
-    </button>
-  );
-}
 
-function IndexLink({ href, children }) {
-  return (
-    <a
-      href={href}
-      className="px-3 py-2 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800/60 text-gray-700 dark:text-gray-200 transition text-sm"
-    >
-      {children}
-    </a>
-  );
-}
 
 function DetailSection({ item, open, onToggle, onCopyEmail }) {
   return (
@@ -79,49 +57,7 @@ function DetailSection({ item, open, onToggle, onCopyEmail }) {
   );
 }
 
-function CtaCard() {
-  return (
-    <div className="p-1 @container mt-8">
-      <div className="flex flex-col items-stretch justify-start rounded-2xl @xl:flex-row @xl:items-center shadow-lg bg-white dark:bg-[#1c1815] border border-gray-100 dark:border-gray-800 overflow-hidden">
-        <div
-          className="w-full md:w-1/3 bg-center bg-no-repeat aspect-video bg-cover"
-          style={{
-            backgroundImage:
-              "url(\"https://lh3.googleusercontent.com/aida-public/AB6AXuDtuDPm4BFK1MGP4-dEwtGzGgq9O61Orhj2A_3QGH8Q7lJ0gxy-gX_pUesgT8ku02ETRRX-9y7JpaETyvhHn441ynRri0XdX57MbAOmy8vBBCL-Sh8cQhq74FYWigiTI6SchI7LcFGiIe7S3qFoJTFMdbuyvoM1_NQ3lr9a_I495uJHXymJwaqX7vyCjkTpaBN7LsjYUK0GLbSFQEKn7SNBqxNh1YCZO0rdKKQOJwVkpYq0qosRKgwDnze9NiqQTtH3PF18PfEN5AI\")",
-          }}
-        />
 
-        <div className="flex w-full grow flex-col items-stretch justify-center gap-4 py-8 px-6 md:px-10">
-          <div className="flex flex-col gap-2">
-            <h3 className="text-gray-900 dark:text-white text-2xl font-black leading-tight tracking-[-0.015em]">
-              ¿Tienes dudas legales?
-            </h3>
-            <p className="text-gray-600 dark:text-[#baaa9c] text-base font-normal leading-relaxed">
-              Si necesitas más información sobre nuestros términos o el tratamiento
-              de tus datos, estamos aquí para ayudarte.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4 pt-2">
-            <Link
-              to="/contacto"
-              className="flex min-w-[140px] items-center justify-center rounded-xl h-12 px-6 bg-[#f2780d] text-white text-base font-bold transition-all hover:scale-[1.02] shadow-md shadow-[#f2780d]/20"
-            >
-              Contactar ahora
-            </Link>
-
-            <Link
-              to="/"
-              className="flex min-w-[140px] items-center justify-center rounded-xl h-12 px-6 bg-transparent border-2 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white text-base font-bold transition-all hover:bg-gray-50 dark:hover:bg-gray-800"
-            >
-              Volver al inicio
-            </Link>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function LegalNoticePage() {
   const lastUpdated = "19 de mayo, 2026";
@@ -245,23 +181,7 @@ export default function LegalNoticePage() {
   };
 
   const onCopyEmail = (email) => copyText(email, "Email copiado");
-  const onCopyLink = () => copyText(window.location.href, "Enlace copiado");
 
-  const onPrint = () => window.print();
-
-  const expandAll = () => {
-    const next = {};
-    sections.forEach((s) => (next[s.id] = true));
-    setOpenMap(next);
-    showToast("Secciones expandidas");
-  };
-
-  const collapseAll = () => {
-    const next = {};
-    sections.forEach((s, idx) => (next[s.id] = idx === 0)); // deja abierta la 01
-    setOpenMap(next);
-    showToast("Secciones contraídas");
-  };
 
   const toggleOne = (id) => {
     setOpenMap((prev) => ({ ...prev, [id]: !prev[id] }));
@@ -308,56 +228,13 @@ export default function LegalNoticePage() {
               <p className="text-gray-900 dark:text-white text-sm font-bold">
                 {lastUpdated}
               </p>
-
-              <div className="flex flex-wrap gap-2 no-print">
-                <ActionBtn icon="print" onClick={onPrint}>
-                  Imprimir
-                </ActionBtn>
-                <ActionBtn icon="unfold_more" onClick={expandAll}>
-                  Expandir todo
-                </ActionBtn>
-                <ActionBtn icon="unfold_less" onClick={collapseAll}>
-                  Contraer
-                </ActionBtn>
-              </div>
             </div>
           </div>
 
-          {/* Layout: Índice + Contenido */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Índice */}
-            <aside className="no-print lg:col-span-4">
-              <div className="bg-white dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 rounded-2xl p-5 sticky top-24">
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-gray-900 dark:text-white font-extrabold">Índice</p>
-                  <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
-                    Navega rápido
-                  </span>
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  {sections.map((s) => (
-                    <IndexLink key={s.id} href={`#${s.id}`}>
-                      {s.num}. {s.title}
-                    </IndexLink>
-                  ))}
-                </div>
-
-                <div className="mt-5 border-t border-gray-100 dark:border-gray-800 pt-4 flex gap-2">
-                  <button
-                    type="button"
-                    onClick={onCopyLink}
-                    className="w-full flex items-center justify-center gap-2 rounded-xl h-11 px-4 border border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white font-bold hover:bg-gray-50 dark:hover:bg-gray-800 transition"
-                  >
-                    <span className="material-symbols-outlined text-base">link</span>
-                    Copiar enlace
-                  </button>
-                </div>
-              </div>
-            </aside>
-
+          {/* Layout: Contenido Centrado */}
+          <div className="mx-auto max-w-3xl">
             {/* Contenido */}
-            <section className="lg:col-span-8">
+            <section className="w-full">
               <div className="bg-white dark:bg-gray-900/40 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm print-card">
                 <div className="flex flex-col p-6 md:p-8 gap-0">
                   {sections.map((item) => (
@@ -371,8 +248,6 @@ export default function LegalNoticePage() {
                   ))}
                 </div>
               </div>
-
-              <CtaCard />
 
               <Toast open={toast.open} text={toast.text} />
             </section>
