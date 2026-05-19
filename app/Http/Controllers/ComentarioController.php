@@ -274,12 +274,12 @@ class ComentarioController extends Controller
         return response()->json(['message' => 'Comentario actualizado', 'comentario' => $comentario]);
     }
 
-    private static $regexProhibido = null;
+    private static $regexProhibidosList = null;
 
-    private function obtenerRegexOptimizado()
+    private function obtenerRegexOptimizadoList()
     {
-        if (self::$regexProhibido) {
-            return self::$regexProhibido;
+        if (self::$regexProhibidosList !== null) {
+            return self::$regexProhibidosList;
         }
 
         $palabrasProhibidas = [
@@ -660,33 +660,48 @@ class ComentarioController extends Controller
             "zorniger", "zorniges"
         ];
 
-        $patterns = [];
+        // Limpiar dinámicamente palabras problemáticas con asteriscos o duplicados raros
+        $palabrasProhibidasCleaned = [];
         foreach ($palabrasProhibidas as $palabra) {
-            $palabraNorm = $this->quitarAcentos(mb_strtolower($palabra, 'UTF-8'));
-            $chars = preg_split('//u', $palabraNorm, -1, PREG_SPLIT_NO_EMPTY);
-            
-            $pattern = '';
-            $len = count($chars);
-            for ($i = 0; $i < $len; $i++) {
-                $char = $chars[$i];
-                if ($char === ' ') {
-                    $pattern .= '\s+';
-                } elseif ($i === $len - 1) {
-                    $pattern .= preg_quote($char, '/');
-                } else {
-                    $pattern .= preg_quote($char, '/') . '[^a-z0-9]*';
-                }
+            if (str_contains($palabra, '**') || str_contains($palabra, '***') || str_contains($palabra, '自由')) {
+                continue;
             }
-
-            if (mb_strlen($palabraNorm, 'UTF-8') < 4) {
-                $patterns[] = '\b' . $pattern . '\b';
-            } else {
-                $patterns[] = $pattern;
-            }
+            $palabrasProhibidasCleaned[] = $palabra;
         }
 
-        self::$regexProhibido = '/' . implode('|', $patterns) . '/i';
-        return self::$regexProhibido;
+        $chunks = array_chunk($palabrasProhibidasCleaned, 100);
+        $regexes = [];
+
+        foreach ($chunks as $chunk) {
+            $patterns = [];
+            foreach ($chunk as $palabra) {
+                $palabraNorm = $this->quitarAcentos(mb_strtolower($palabra, 'UTF-8'));
+                $chars = preg_split('//u', $palabraNorm, -1, PREG_SPLIT_NO_EMPTY);
+                
+                $pattern = '';
+                $len = count($chars);
+                for ($i = 0; $i < $len; $i++) {
+                    $char = $chars[$i];
+                    if ($char === ' ') {
+                        $pattern .= '\s+';
+                    } elseif ($i === $len - 1) {
+                        $pattern .= preg_quote($char, '/');
+                    } else {
+                        $pattern .= preg_quote($char, '/') . '[^a-z0-9]*';
+                    }
+                }
+
+                if (mb_strlen($palabraNorm, 'UTF-8') < 4) {
+                    $patterns[] = '\b' . $pattern . '\b';
+                } else {
+                    $patterns[] = $pattern;
+                }
+            }
+            $regexes[] = '/' . implode('|', $patterns) . '/i';
+        }
+
+        self::$regexProhibidosList = $regexes;
+        return self::$regexProhibidosList;
     }
 
     private function contienePalabrasInapropiadas($mensaje)
@@ -710,9 +725,13 @@ class ComentarioController extends Controller
         ];
         $textoNormalizado = str_replace(array_keys($leetMap), array_values($leetMap), mb_strtolower($mensajeLimpio, 'UTF-8'));
 
-        // 3. Ejecutar la expresión regular consolidada
-        $regex = $this->obtenerRegexOptimizado();
-        return (bool)preg_match($regex, $textoNormalizado);
+        // 3. Ejecutar las expresiones regulares en bloques pequeños para evitar rebasar límites de PCRE
+        foreach ($this->obtenerRegexOptimizadoList() as $regex) {
+            if (preg_match($regex, $textoNormalizado)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private function quitarAcentos($str) {

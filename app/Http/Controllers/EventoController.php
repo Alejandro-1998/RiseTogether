@@ -16,6 +16,7 @@ class EventoController extends Controller
      */
     public function index()
     {
+        $this->checkAndAssignWinners();
         $eventos = Evento::all();
         return response()->json($eventos);
     }
@@ -40,6 +41,7 @@ class EventoController extends Controller
      */
     public function active()
     {
+        $this->checkAndAssignWinners();
         $now = Carbon::now();
         $evento = Evento::where('fechaInicio', '<=', $now)
             ->where('fechaFinal', '>=', $now)
@@ -53,6 +55,7 @@ class EventoController extends Controller
      */
     public function upcoming()
     {
+        $this->checkAndAssignWinners();
         $now = Carbon::now();
         $eventos = Evento::where('fechaInicio', '>', $now)
             ->orderBy('fechaInicio', 'asc')
@@ -67,6 +70,7 @@ class EventoController extends Controller
      */
     public function leaderboard(Request $request, $id)
     {
+        $this->checkAndAssignWinners();
         $evento = Evento::findOrFail($id);
         
         $query = $evento->proyectos()->with(['user', 'categoria']);
@@ -293,5 +297,35 @@ class EventoController extends Controller
         \Illuminate\Support\Facades\Log::info("User ID {$user->id} fetching its projects. Found: " . count($proyectos));
 
         return response()->json($proyectos);
+    }
+
+    /**
+     * Check ended events and assign the winning project as ganadorEvento = true.
+     */
+    private function checkAndAssignWinners()
+    {
+        $now = Carbon::now();
+        
+        // Find all events that have ended
+        $endedEvents = Evento::where('fechaFinal', '<', $now)->get();
+        
+        foreach ($endedEvents as $evento) {
+            // Check if any project associated with this event is already marked as ganadorEvento = true
+            $hasWinner = $evento->proyectos()->where('ganadorEvento', true)->exists();
+            
+            if (!$hasWinner) {
+                // Find the project in this event with the highest cantidad_recaudada
+                $winner = $evento->proyectos()
+                    ->orderBy('cantidad_recaudada', 'desc')
+                    ->first();
+                
+                if ($winner) {
+                    $winner->ganadorEvento = true;
+                    $winner->save();
+                    
+                    \Illuminate\Support\Facades\Log::info("Evento ID {$evento->id} ({$evento->nombre}) finalizado. Ganador: Proyecto ID {$winner->id} ({$winner->titulo}) con {$winner->cantidad_recaudada}€.");
+                }
+            }
+        }
     }
 }

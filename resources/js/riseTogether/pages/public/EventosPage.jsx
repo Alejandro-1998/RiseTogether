@@ -6,6 +6,24 @@ import toast, { Toaster } from 'react-hot-toast';
 import useAuth from "../../hooks/useAuth";
 import axios from 'axios';
 
+const getImagenProyecto = (proyecto) => {
+    let imagen = "/img/default-project.png"; // Imagen por defecto
+    if (proyecto?.imagen_portada) {
+        if (proyecto.imagen_portada.startsWith('http') || proyecto.imagen_portada.startsWith('blob')) {
+            imagen = proyecto.imagen_portada;
+        } else if (proyecto.imagen_portada.startsWith('img/')) {
+            const baseUrl = window.Laravel?.assetUrl || '/';
+            const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+            imagen = `${cleanBaseUrl}${proyecto.imagen_portada}`;
+        } else {
+            const baseUrl = window.Laravel?.assetUrl || '/';
+            const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+            imagen = `${cleanBaseUrl}storage/${proyecto.imagen_portada}`;
+        }
+    }
+    return imagen;
+};
+
 export default function EventosPage() {
     const { user } = useAuth();
     // Estado para datos dinámicos
@@ -455,7 +473,7 @@ export default function EventosPage() {
                                         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 size-12 rounded-full bg-slate-300 flex items-center justify-center font-black text-slate-600 border-4 border-[#fcfaf8] dark:border-[#1c140d] shadow-lg">2</div>
                                         <div className="flex flex-col items-center gap-4 pt-4">
                                             <div className="relative">
-                                                <img src={leaderboard[1].imagen_portada ? "/" + leaderboard[1].imagen_portada : "/default-project.jpg"} className="size-24 rounded-2xl object-cover border-2 border-slate-200" alt="2nd" />
+                                                <img src={getImagenProyecto(leaderboard[1])} className="size-24 rounded-2xl object-cover border-2 border-slate-200" alt="2nd" />
                                                 <div className="absolute -bottom-2 -right-2 size-8 rounded-lg bg-slate-300 flex items-center justify-center text-slate-700 shadow-sm">
                                                     <span className="material-symbols-outlined text-sm">military_tech</span>
                                                 </div>
@@ -480,7 +498,7 @@ export default function EventosPage() {
                                         <div className="flex flex-col items-center gap-6 pt-6">
                                             <div className="relative">
                                                 <div className="absolute inset-0 bg-orange-500/20 blur-2xl rounded-full scale-110 animate-pulse"></div>
-                                                <img src={leaderboard[0].imagen_portada ? "/" + leaderboard[0].imagen_portada : "/default-project.jpg"} className="relative size-32 rounded-[2rem] object-cover border-4 border-orange-500/30" alt="1st" />
+                                                <img src={getImagenProyecto(leaderboard[0])} className="relative size-32 rounded-[2rem] object-cover border-4 border-orange-500/30" alt="1st" />
                                             </div>
                                             <div className="text-center">
                                                 <h3 className="font-black text-2xl lg:text-3xl line-clamp-1 text-[#1c140d] dark:text-white">{leaderboard[0].titulo}</h3>
@@ -501,7 +519,7 @@ export default function EventosPage() {
                                         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 size-12 rounded-full bg-orange-200 flex items-center justify-center font-black text-orange-800 border-4 border-[#fcfaf8] dark:border-[#1c140d] shadow-lg">3</div>
                                         <div className="flex flex-col items-center gap-4 pt-4">
                                             <div className="relative">
-                                                <img src={leaderboard[2].imagen_portada ? "/" + leaderboard[2].imagen_portada : "/default-project.jpg"} className="size-24 rounded-2xl object-cover border-2 border-orange-100" alt="3rd" />
+                                                <img src={getImagenProyecto(leaderboard[2])} className="size-24 rounded-2xl object-cover border-2 border-orange-100" alt="3rd" />
                                                 <div className="absolute -bottom-2 -right-2 size-8 rounded-lg bg-orange-100 flex items-center justify-center text-orange-700 shadow-sm">
                                                     <span className="material-symbols-outlined text-sm">auto_awesome</span>
                                                 </div>
@@ -626,7 +644,7 @@ export default function EventosPage() {
                                                         <img
                                                             className="w-14 h-14 rounded-2xl object-cover shadow-sm group-hover:scale-105 transition-transform"
                                                             alt={project.titulo}
-                                                            src={project.imagen_portada ? "/" + project.imagen_portada : "https://via.placeholder.com/100"}
+                                                            src={getImagenProyecto(project)}
                                                         />
                                                         {index < 3 && <div className="absolute -top-1 -right-1 size-5 rounded-full bg-orange-500 border-2 border-white dark:border-[#2a221b] flex items-center justify-center"><span className="material-symbols-outlined text-[10px] text-white font-black">star</span></div>}
                                                     </div>
