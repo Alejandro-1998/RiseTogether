@@ -24,11 +24,11 @@ class Recompensa extends Model
 
     function proyectos()
     {
-        return $this->belongsTo(Proyecto::class);
+        return $this->belongsTo(Proyecto::class, 'idProyecto');
     }
 
     function donaciones()
     {
-        return $this->hasMany(Donacion::class);
+        return $this->hasMany(Donacion::class, 'idRecompensa');
     }
 }

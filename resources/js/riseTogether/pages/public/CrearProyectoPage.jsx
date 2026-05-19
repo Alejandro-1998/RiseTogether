@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import useAuth from "../../hooks/useAuth";
@@ -8,8 +8,10 @@ import RecompensaItem from "../../components/proyecto/recompensa_item";
 import ProyectoCard from "../../components/cards/ProyectoCard";
 
 export default function CrearProyectoPage() {
-    const { isAuth, isLoading } = useAuth();
+    const { isAuth, isLoading, user } = useAuth();
     const navigate = useNavigate();
+    const { id } = useParams();
+    const isEdit = Boolean(id);
     
     useEffect(() => {
         if (!isLoading && !isAuth) {
@@ -31,13 +33,44 @@ export default function CrearProyectoPage() {
         axios.get('/api/categorias')
             .then(res => {
                 setCategoriasdB(res.data);
-                // Si hay categorías, seleccionar la primera por defecto
-                if (res.data.length > 0) {
+                // Si hay categorías y no estamos editando, seleccionar la primera por defecto
+                if (res.data.length > 0 && !isEdit) {
                     setForm(f => ({ ...f, categoria: res.data[0].id }));
                 }
             })
             .catch(err => console.error(err));
-    }, []);
+    }, [isEdit]);
+
+    useEffect(() => {
+        if (isEdit && id) {
+            axios.get(`/api/proyectos/${id}`)
+                .then(res => {
+                    const p = res.data;
+                    setForm({
+                        titulo: p.titulo || "",
+                        categoria: p.categoria_id || "",
+                        objetivo: p.objetivo_financiacion || 0,
+                        fecha_limite: p.fecha_limite ? p.fecha_limite.substring(0, 10) : "",
+                        imagen_portada: p.imagen_portada || null,
+                        descripcion: p.descripcion || "",
+                    });
+                    
+                    if (p.recompensas && p.recompensas.length > 0) {
+                        setRecompensas(p.recompensas.map(r => ({
+                            id: r.id,
+                            cantidad: Number(r.costoRecompensa),
+                            titulo: r.nombreRecompensa,
+                            descripcion: r.descripcionRecompensa || "",
+                            dbId: r.id
+                        })));
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching project:", err);
+                    toast.error("No se pudo cargar la información del proyecto.");
+                });
+        }
+    }, [id, isEdit]);
 
     const [formFile, setFormFile] = useState(null);
 
@@ -112,12 +145,15 @@ export default function CrearProyectoPage() {
 
         const formData = new FormData();
         formData.append('titulo', form.titulo);
-        formData.append('titulo', form.titulo);
         formData.append('categoria_id', form.categoria);
         formData.append('objetivo_financiacion', form.objetivo);
         formData.append('fecha_limite', form.fecha_limite);
         formData.append('descripcion', form.descripcion); // Usar descripción única
         formData.append('estado', type === 'publish' ? 'publicado' : 'borrador');
+
+        if (isEdit) {
+            formData.append('_method', 'PUT');
+        }
 
         if (formFile) {
             formData.append('imagen_portada', formFile);
@@ -125,25 +161,33 @@ export default function CrearProyectoPage() {
 
         formData.append('recompensas', JSON.stringify(recompensas));
 
+        const url = isEdit ? `/api/proyectos/${id}` : '/api/proyectos';
+
         try {
-            const response = await axios.post('/api/proyectos', formData, {
+            const response = await axios.post(url, formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
 
-            if (response.status === 201) {
-                premiumToast.success(type === "draft"
-                    ? "Borrador guardado correctamente."
-                    : "Proyecto creado correctamente a la espera de revisión");
+            if (response.status === 201 || response.status === 200) {
+                premiumToast.success(isEdit
+                    ? "Proyecto actualizado correctamente."
+                    : (type === "draft"
+                        ? "Borrador guardado correctamente."
+                        : "Proyecto creado correctamente a la espera de revisión"));
                 
+                const redirectPath = user?.rol === 'admin' || user?.roles_list?.includes('admin')
+                    ? '/administrador/proyectos'
+                    : '/proyectos';
+
                 // Pequeño retardo para que se vea el toast antes de redirigir
                 setTimeout(() => {
-                    window.location.href = '/proyectos';
+                    window.location.href = redirectPath;
                 }, 1500);
             }
         } catch (error) {
-            console.error("Error creating project:", error);
+            console.error("Error saving project:", error);
             const message = error.response?.data?.message || "Hubo un error al guardar el proyecto. Revisa los datos.";
             premiumToast.error(message);
         }
@@ -165,7 +209,7 @@ export default function CrearProyectoPage() {
                 <div className="flex flex-wrap justify-between gap-3 mb-10">
                     <div className="min-w-[280px]">
                         <p className="text-3xl md:text-4xl font-black tracking-tight">
-                            Crear proyecto
+                            {isEdit ? "Editar proyecto" : "Crear proyecto"}
                         </p>
                         <p className="mt-2 text-[#9c7049] dark:text-[#9c7049]/80">
                             Completa los datos y previsualiza cómo se verá tu campaña.
@@ -308,7 +352,7 @@ export default function CrearProyectoPage() {
                                 onClick={submit("publish")}
                                 className="flex-1 rounded-2xl h-12 px-6 bg-[#f2780d] text-white font-bold hover:bg-[#f2780d]/90 transition"
                             >
-                                Publicar proyecto
+                                {isEdit ? "Guardar cambios" : "Publicar proyecto"}
                             </button>
                         </div>
 
@@ -331,7 +375,7 @@ export default function CrearProyectoPage() {
                                     onClick={submit("publish")}
                                     className="w-full rounded-2xl h-12 px-6 bg-[#f2780d] text-white font-bold hover:bg-[#f2780d]/90 transition"
                                 >
-                                    Publicar proyecto
+                                    {isEdit ? "Guardar cambios" : "Publicar proyecto"}
                                 </button>
                             </div>
                         </div>

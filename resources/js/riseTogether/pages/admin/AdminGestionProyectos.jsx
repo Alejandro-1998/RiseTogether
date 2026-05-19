@@ -1,17 +1,16 @@
 import { useMemo, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 import Sidebar from "../../components/admin/sidebar";
 import HeaderPublic from "../../components/public/header_public";
 import TablaProyectos from "../../components/admin/tabla_proyectos";
-import ModalProyecto from "../../components/admin/modal_proyecto";
 import ConfirmDelete from "../../components/admin/confirm_delete";
 
 export default function AdminGestionProyectos() {
+  const navigate = useNavigate();
   const [q, setQ] = useState("");
   const [estado, setEstado] = useState("todos"); // todos | pendiente | activo | rechazado | finalizado
-  const [openModal, setOpenModal] = useState(false);
-  const [modo, setModo] = useState("create"); // create | edit
   const [seleccionado, setSeleccionado] = useState(null);
 
   const [openDelete, setOpenDelete] = useState(false);
@@ -58,15 +57,11 @@ export default function AdminGestionProyectos() {
   }, [proyectos, q, estado]);
 
   const abrirCrear = () => {
-    setModo("create");
-    setSeleccionado(null);
-    setOpenModal(true);
+    navigate("/crear-proyecto");
   };
 
   const abrirEditar = (proyecto) => {
-    setModo("edit");
-    setSeleccionado(proyecto);
-    setOpenModal(true);
+    navigate(`/editar-proyecto/${proyecto.id}`);
   };
 
   const pedirBorrar = (proyecto) => {
@@ -74,28 +69,18 @@ export default function AdminGestionProyectos() {
     setOpenDelete(true);
   };
 
-  // ✅ Guardar (mock). Luego se conecta a Laravel
-  const guardarProyecto = (data) => {
-    if (modo === "create") {
-      const nuevo = {
-        id: Date.now(),
-        ...data,
-        fecha_envio: new Date().toISOString().slice(0, 10),
-        recaudado: Number(data.recaudado || 0),
-      };
-      setProyectos((prev) => [nuevo, ...prev]);
-    } else {
-      setProyectos((prev) =>
-        prev.map((p) => (p.id === seleccionado.id ? { ...p, ...data } : p))
-      );
+  const confirmarBorrar = async () => {
+    try {
+      await axios.delete(`/api/proyectos/${aBorrar.id}`);
+      setProyectos((prev) => prev.filter((p) => p.id !== aBorrar.id));
+      toast.success("Proyecto eliminado con éxito.");
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al eliminar el proyecto.");
+    } finally {
+      setOpenDelete(false);
+      setABorrar(null);
     }
-    setOpenModal(false);
-  };
-
-  const confirmarBorrar = () => {
-    setProyectos((prev) => prev.filter((p) => p.id !== aBorrar.id));
-    setOpenDelete(false);
-    setABorrar(null);
   };
 
   const cambiarEstado = async (id, nuevoEstado) => {
@@ -166,13 +151,7 @@ export default function AdminGestionProyectos() {
           </main>
         </div>
 
-        <ModalProyecto
-          open={openModal}
-          modo={modo}
-          proyecto={seleccionado}
-          onClose={() => setOpenModal(false)}
-          onSave={guardarProyecto}
-        />
+
 
         <ConfirmDelete
           open={openDelete}

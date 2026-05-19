@@ -188,7 +188,7 @@ export default function HeaderPublic({ isAuth }) {
 
       {/* Menú Móvil */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-[100]">
+        <div className="md:hidden fixed inset-0 z-100">
           {/* Overlay oscuro para cerrar al hacer clic fuera */}
           <div 
             className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
@@ -196,7 +196,7 @@ export default function HeaderPublic({ isAuth }) {
           ></div>
           
           {/* Cajón derecho sólido */}
-          <div className="absolute right-0 top-0 bottom-0 w-64 bg-white dark:bg-[#120b07] shadow-xl flex flex-col p-6 animate-fade-in z-[101] overflow-y-auto">
+          <div className="absolute right-0 top-0 bottom-0 w-64 bg-white dark:bg-[#120b07] shadow-xl flex flex-col p-6 animate-fade-in z-101 overflow-y-auto">
             <div className="flex items-center justify-between mb-8">
               <span className="font-bold text-lg text-[#1c140d] dark:text-white">Menú</span>
               <button 

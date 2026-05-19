@@ -190,7 +190,7 @@ class ProyectoController extends Controller
         $proyecto = Proyecto::findOrFail($id);
         
         // Verificar propiedad (si no es admin, lógica adicional necesaria aquí o en middleware)
-        if ($proyecto->user_id !== Auth::id()) {
+        if ($proyecto->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
             return response()->json(['message' => 'No tienes permiso para editar este proyecto.'], 403);
         }
 
@@ -199,7 +199,7 @@ class ProyectoController extends Controller
             'categoria_id' => 'sometimes|required|exists:categorias,id',
             'imagen_portada' => 'nullable|image|max:2048',
             'objetivo_financiacion' => 'sometimes|required|numeric|min:1',
-            'fecha_limite' => 'sometimes|required|date|after:today',
+            'fecha_limite' => 'sometimes|required|date',
             'descripcion' => 'sometimes|required',
         ], [
             'titulo.required' => 'El proyecto necesita un nombre.',
@@ -211,12 +211,13 @@ class ProyectoController extends Controller
             'objetivo_financiacion.required' => 'Define cuánto dinero necesitas.',
             'objetivo_financiacion.min' => 'El objetivo debe ser positivo.',
             'fecha_limite.required' => 'Pon una fecha límite.',
-            'fecha_limite.after' => 'La fecha límite debe ser futura.',
             'descripcion.required' => 'La descripción completa es vital.',
         ]);
 
-        $datos = $request->all();
-        $datos['slug'] = Str::slug($request->titulo);
+        $datos = $request->only(['titulo', 'categoria_id', 'objetivo_financiacion', 'fecha_limite', 'descripcion', 'video_url']);
+        if ($request->has('titulo')) {
+            $datos['slug'] = Str::slug($request->titulo);
+        }
 
         if ($request->hasFile('imagen_portada')) {
             // Borrar imagen antigua si existe
@@ -227,6 +228,48 @@ class ProyectoController extends Controller
         }
 
         $proyecto->update($datos);
+
+        // Actualizar recompensas si vienen
+        if ($request->has('recompensas')) {
+            $recompensasData = json_decode($request->recompensas, true);
+            if (is_array($recompensasData)) {
+                $idsEnviados = [];
+                foreach ($recompensasData as $r) {
+                    if (!empty($r['titulo']) && isset($r['cantidad']) && is_numeric($r['cantidad'])) {
+                        $recompensaId = $r['dbId'] ?? (is_numeric($r['id']) ? $r['id'] : null);
+                        
+                        if ($recompensaId) {
+                            $recompensa = $proyecto->recompensas()->find($recompensaId);
+                            if ($recompensa) {
+                                $recompensa->update([
+                                    'nombreRecompensa' => $r['titulo'],
+                                    'descripcionRecompensa' => $r['descripcion'] ?? '',
+                                    'costoRecompensa' => $r['cantidad'],
+                                ]);
+                                $idsEnviados[] = $recompensa->id;
+                            }
+                        } else {
+                            $nuevaRecompensa = $proyecto->recompensas()->create([
+                                'nombreRecompensa' => $r['titulo'],
+                                'descripcionRecompensa' => $r['descripcion'] ?? '',
+                                'costoRecompensa' => $r['cantidad'],
+                                'tipoEntrega' => 'fisica',
+                            ]);
+                            $idsEnviados[] = $nuevaRecompensa->id;
+                        }
+                    }
+                }
+                
+                // Eliminar las que no se enviaron
+                $recompensasAEliminar = $proyecto->recompensas()->whereNotIn('id', $idsEnviados)->get();
+                foreach ($recompensasAEliminar as $recompensaAEliminar) {
+                    if (!$recompensaAEliminar->donaciones()->exists()) {
+                        $recompensaAEliminar->delete();
+                    }
+                }
+            }
+        }
+
         return response()->json($proyecto);
     }
 
@@ -236,7 +279,7 @@ class ProyectoController extends Controller
     public function destroy(string $id)
     {
         $proyecto = Proyecto::findOrFail($id);
-        if ($proyecto->user_id !== Auth::id()) {
+        if ($proyecto->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
             return response()->json(['message' => 'No tienes permiso para eliminar este proyecto.'], 403);
         }
         if ($proyecto->imagen_portada) {

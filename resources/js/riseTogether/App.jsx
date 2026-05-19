@@ -58,6 +58,7 @@ function App() {
 
           {/* Crear Proyecto */}
           <Route path="/crear-proyecto" element={<CrearProyectoPage />} />
+          <Route path="/editar-proyecto/:id" element={<CrearProyectoPage />} />
 
           {/* Descubrir Proyectos */}
           <Route path="/proyectos" element={<ProyectosPage />} />
