@@ -4,7 +4,7 @@ export default function FooterPublic() {
   return (
     <footer className="bg-[#f4ede7] dark:bg-[#2a2017]">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
           {/* Logo */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-8">
@@ -44,31 +44,7 @@ export default function FooterPublic() {
             </h3>
             <ul className="mt-4 space-y-2">
               {[
-                { label: "Nosotros", to: "/sobre-nosotros" },
-                { label: "Profesiones", to: "#" },
-                { label: "Noticias", to: "#" },
-              ].map((l) => (
-                <li key={l.label}>
-                  <a
-                    href={l.to}
-                    className="text-sm text-[#9c7049] transition-colors hover:text-[#f2780d] dark:text-[#a18a7a] dark:hover:text-[#f2780d]"
-                  >
-                    {l.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Ayuda */}
-          <div>
-            <h3 className="text-sm font-bold uppercase tracking-wider text-[#1c140d] dark:text-[#fcfaf8]">
-              Ayuda
-            </h3>
-            <ul className="mt-4 space-y-2">
-              {[
-                { label: "Centro de contacto", to: "#" },
-                { label: "Recursos para creadores", to: "#" },
+                { label: "Nosotros", to: "/sobre-nosotros" }
               ].map((l) => (
                 <li key={l.label}>
                   <a

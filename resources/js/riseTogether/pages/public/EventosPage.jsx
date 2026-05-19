@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
@@ -134,7 +134,42 @@ export default function EventosPage() {
         try {
             const url = `/api/eventos/${eventId}/leaderboard${category !== 'Todas las Categorías' ? `?categoria=${encodeURIComponent(category)}` : ''}`;
             const res = await axios.get(url);
-            setLeaderboard(res.data);
+            
+            setLeaderboard(prevLeaderboard => {
+                const prevRanks = {};
+                if (Array.isArray(prevLeaderboard)) {
+                    prevLeaderboard.forEach((proj, idx) => {
+                        prevRanks[proj.id] = idx + 1;
+                    });
+                }
+                
+                const updatedList = (res.data || []).map((proj, idx) => {
+                    const currentRank = idx + 1;
+                    const prevRank = prevRanks[proj.id];
+                    
+                    let trend = 'estable';
+                    if (prevRank !== undefined) {
+                        if (currentRank < prevRank) {
+                            trend = 'subiendo';
+                        } else if (currentRank > prevRank) {
+                            trend = 'bajando';
+                        } else {
+                            trend = proj.trend || 'estable'; // retain trend if same rank
+                        }
+                    } else {
+                        if (Object.keys(prevRanks).length > 0) {
+                            trend = 'subiendo'; // new entry climbed into leaderboard
+                        }
+                    }
+                    
+                    return {
+                        ...proj,
+                        trend: trend
+                    };
+                });
+                
+                return updatedList;
+            });
         } catch (error) {
             console.error("Error fetching leaderboard:", error);
         }
@@ -705,10 +740,24 @@ export default function EventosPage() {
                                             <td className="px-6 py-6 text-right">
                                                 <div className="flex flex-col items-end">
                                                     <span className="font-black text-lg text-[#1c140d] dark:text-white">€{Number(project.cantidad_recaudada).toLocaleString()}</span>
-                                                    <div className="flex items-center gap-1 text-[10px] text-green-500 font-bold uppercase tracking-wider">
-                                                        <span className="material-symbols-outlined text-[12px]">trending_up</span>
-                                                        Subiendo
-                                                    </div>
+                                                    {project.trend === 'subiendo' && (
+                                                        <div className="flex items-center gap-1 text-[10px] text-green-500 font-bold uppercase tracking-wider">
+                                                            <span className="material-symbols-outlined text-[12px] font-black">trending_up</span>
+                                                            Subiendo
+                                                        </div>
+                                                    )}
+                                                    {project.trend === 'bajando' && (
+                                                        <div className="flex items-center gap-1 text-[10px] text-red-500 font-bold uppercase tracking-wider">
+                                                            <span className="material-symbols-outlined text-[12px] font-black">trending_down</span>
+                                                            Bajando
+                                                        </div>
+                                                    )}
+                                                    {(project.trend === 'estable' || !project.trend) && (
+                                                        <div className="flex items-center gap-1 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                                                            <span className="material-symbols-outlined text-[12px]">trending_flat</span>
+                                                            Estable
+                                                        </div>
+                                                    )}
                                                 </div>
                                             </td>
                                             <td className="px-8 py-6 text-right">
@@ -842,41 +891,6 @@ export default function EventosPage() {
                                 <p className="text-gray-500 text-sm leading-relaxed font-medium">{item.a}</p>
                             </div>
                         ))}
-                    </div>
-                </section>
-
-                {/* Rewards & Badges Section */}
-                <section>
-                    <h2 className="text-2xl font-bold mb-6">Premios para Ganadores</h2>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="group rounded-xl p-6 bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] hover:border-[#f27f0d] transition-all">
-                            <div className="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/20 flex items-center justify-center mb-4 text-[#f27f0d] group-hover:scale-110 transition-transform">
-                                <span className="material-symbols-outlined">stars</span>
-                            </div>
-                            <h3 className="font-bold text-lg mb-2">Portada por 48h</h3>
-                            <p className="text-sm text-gray-500">Visibilidad máxima en la página principal.</p>
-                        </div>
-                        <div className="group rounded-xl p-6 bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] hover:border-[#f27f0d] transition-all">
-                            <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center mb-4 text-blue-500 group-hover:scale-110 transition-transform">
-                                <span className="material-symbols-outlined">military_tech</span>
-                            </div>
-                            <h3 className="font-bold text-lg mb-2">Insignia Elite</h3>
-                            <p className="text-sm text-gray-500">Un distintivo único para tu perfil de creador.</p>
-                        </div>
-                        <div className="group rounded-xl p-6 bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] hover:border-[#f27f0d] transition-all">
-                            <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/20 flex items-center justify-center mb-4 text-purple-500 group-hover:scale-110 transition-transform">
-                                <span className="material-symbols-outlined">rocket_launch</span>
-                            </div>
-                            <h3 className="font-bold text-lg mb-2">Boost de Ranking</h3>
-                            <p className="text-sm text-gray-500">Impulso en nuestro algoritmo de búsqueda.</p>
-                        </div>
-                        <div className="group rounded-xl p-6 bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] hover:border-[#f27f0d] transition-all">
-                            <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center mb-4 text-green-500 group-hover:scale-110 transition-transform">
-                                <span className="material-symbols-outlined">percent</span>
-                            </div>
-                            <h3 className="font-bold text-lg mb-2">Tarifa 0%</h3>
-                            <p className="text-sm text-gray-500">Sin comisiones de plataforma para el ganador.</p>
-                        </div>
                     </div>
                 </section>
             </main>
