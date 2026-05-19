@@ -38,6 +38,7 @@ export default function EventosPage() {
     const [eventStats, setEventStats] = useState({ total_recaudado: 0, total_proyectos: 0, total_donantes: 0 });
     const [userImpact, setUserImpact] = useState({ proyectos_seguidos: 0, total_aportado: 0, proyectos_apoyados: 0 });
     const [userProjects, setUserProjects] = useState([]);
+    const [eventActivities, setEventActivities] = useState([]);
     const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
     const [targetEvent, setTargetEvent] = useState(null); // The event currently chosen for enrollment
     const [selectedProjectId, setSelectedProjectId] = useState("");
@@ -94,6 +95,14 @@ export default function EventosPage() {
                     console.error("Error fetching stats", e);
                 }
 
+                // Fetch Event Activities
+                try {
+                    const actRes = await axios.get(`/api/eventos/${hero.id}/actividad`);
+                    setEventActivities(actRes.data);
+                } catch (e) {
+                    console.error("Error fetching event activities", e);
+                }
+
                 if (user) {
                     // Fetch User Impact and User Projects if logged in
                     try {
@@ -138,6 +147,9 @@ export default function EventosPage() {
 
             const interval = setInterval(() => {
                 fetchLeaderboard(featuredEvent.id, selectedCategory);
+                axios.get(`/api/eventos/${featuredEvent.id}/actividad`)
+                    .then(res => setEventActivities(res.data))
+                    .catch(e => console.error("Error polling activities", e));
             }, 30000); // Polling cada 30 segundos
 
             return () => clearInterval(interval);
@@ -238,11 +250,47 @@ export default function EventosPage() {
             return;
         }
 
+        const proj = leaderboard.find(p => p.id === projectId);
+        const isCurrentlyFollowing = proj ? !!proj.is_following : false;
+
         try {
-            await window.axios.post(`/api/proyectos/${projectId}/seguir`);
-            premiumToast.success('¡Siguiendo proyecto!');
+            if (isCurrentlyFollowing) {
+                await window.axios.delete(`/api/proyectos/${projectId}/seguir`);
+                premiumToast.success('Dejaste de seguir el proyecto');
+            } else {
+                await window.axios.post(`/api/proyectos/${projectId}/seguir`);
+                premiumToast.success('¡Siguiendo proyecto!');
+            }
+
+            // Sync with local storage
+            const seguidos = JSON.parse(localStorage.getItem("seguidos")) || [];
+            const idStr = String(projectId);
+            let nuevosSeguidos;
+            if (isCurrentlyFollowing) {
+                nuevosSeguidos = seguidos.filter(sid => sid !== idStr);
+            } else {
+                nuevosSeguidos = [...seguidos.filter(sid => sid !== idStr), idStr];
+            }
+            localStorage.setItem("seguidos", JSON.stringify(nuevosSeguidos));
+
+            // Update local leaderboard state
+            setLeaderboard(prev => prev.map(p => {
+                if (p.id === projectId) {
+                    return { ...p, is_following: !isCurrentlyFollowing };
+                }
+                return p;
+            }));
+
+            // Fetch user impact dynamically to update the "Tu Impacto" card in real-time
+            if (featuredEvent?.id) {
+                const impactRes = await axios.get(`/api/eventos/${featuredEvent.id}/user-impact`);
+                setUserImpact(impactRes.data);
+
+                const actRes = await axios.get(`/api/eventos/${featuredEvent.id}/actividad`);
+                setEventActivities(actRes.data);
+            }
         } catch (error) {
-            const message = error.response?.data?.message || 'Error al intentar seguir el proyecto';
+            const message = error.response?.data?.message || 'Error al intentar actualizar el seguimiento';
             premiumToast.error(message);
         }
     };
@@ -326,7 +374,7 @@ export default function EventosPage() {
                 </div>
 
                 {/* Hero Section */}
-                <section className="relative py-12 md:py-20 mb-12 rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-[#1c140d] via-[#2a221b] to-[#1c140d] border border-white/5 shadow-2xl">
+                <section className="relative py-12 md:py-20 mb-12 rounded-[2.5rem] overflow-hidden bg-linear-to-br from-[#1c140d] via-[#2a221b] to-[#1c140d] border border-white/5 shadow-2xl">
                     {/* Decorative Elements */}
                     <div className="absolute top-0 left-0 w-full h-full">
                         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[50%] bg-[#f27f0d]/10 rounded-full blur-[120px]"></div>
@@ -491,14 +539,14 @@ export default function EventosPage() {
                             {/* 1st Place */}
                             {leaderboard[0] && (
                                 <div className="w-full md:w-[38%] order-1 md:order-2 z-10 scale-105 group">
-                                    <div className="relative p-8 rounded-[2.5rem] bg-gradient-to-b from-white to-orange-50/50 dark:from-[#3a2d22] dark:to-[#2a221b] border-2 border-orange-500/50 shadow-2xl shadow-orange-500/20 hover:-translate-y-3 transition-all duration-500">
+                                    <div className="relative p-8 rounded-[2.5rem] bg-linear-to-b from-white to-orange-50/50 dark:from-[#3a2d22] dark:to-[#2a221b] border-2 border-orange-500/50 shadow-2xl shadow-orange-500/20 hover:-translate-y-3 transition-all duration-500">
                                         <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 size-16 rounded-full bg-orange-500 flex items-center justify-center font-black text-white border-4 border-[#fcfaf8] dark:border-[#1c140d] shadow-xl">
                                             <span className="material-symbols-outlined text-3xl">emoji_events</span>
                                         </div>
                                         <div className="flex flex-col items-center gap-6 pt-6">
                                             <div className="relative">
                                                 <div className="absolute inset-0 bg-orange-500/20 blur-2xl rounded-full scale-110 animate-pulse"></div>
-                                                <img src={getImagenProyecto(leaderboard[0])} className="relative size-32 rounded-[2rem] object-cover border-4 border-orange-500/30" alt="1st" />
+                                                <img src={getImagenProyecto(leaderboard[0])} className="relative size-32 rounded-4xl object-cover border-4 border-orange-500/30" alt="1st" />
                                             </div>
                                             <div className="text-center">
                                                 <h3 className="font-black text-2xl lg:text-3xl line-clamp-1 text-[#1c140d] dark:text-white">{leaderboard[0].titulo}</h3>
@@ -546,7 +594,7 @@ export default function EventosPage() {
                     <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
                         {upcomingEvents.length > 0 ? upcomingEvents.map((event) => (
                             <div key={event.id} className="min-w-[300px] md:min-w-[350px] rounded-3xl bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] overflow-hidden flex flex-col hover:border-orange-500/50 hover:shadow-lg transition-all group">
-                                <div className="h-40 bg-gradient-to-br from-[#f27f0d] via-[#d96600] to-[#1c140d] relative overflow-hidden flex items-center justify-center">
+                                <div className="h-40 bg-linear-to-br from-[#f27f0d] via-[#d96600] to-[#1c140d] relative overflow-hidden flex items-center justify-center">
                                     <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]"></div>
                                     {/* Large abstract calendar icon in the background */}
                                     <span className="material-symbols-outlined text-[100px] text-white/5 absolute -right-4 -bottom-6 select-none pointer-events-none">
@@ -610,21 +658,10 @@ export default function EventosPage() {
                                 </h2>
                                 <p className="text-gray-500 mt-2 font-medium">Actualización automática cada 30s</p>
                             </div>
-                            <div className="flex gap-4">
-                                <select
-                                    value={selectedCategory}
-                                    onChange={(e) => setSelectedCategory(e.target.value)}
-                                    className="bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] text-sm font-bold rounded-2xl focus:ring-orange-500 focus:border-orange-500 block px-6 py-3 shadow-sm appearance-none cursor-pointer">
-                                    <option>Todas las Categorías</option>
-                                    {categories.map(cat => (
-                                        <option key={cat.id} value={cat.nombre}>{cat.nombre}</option>
-                                    ))}
-                                </select>
-                            </div>
                         </div>
 
                         {/* Premium Table */}
-                        <div className="overflow-hidden rounded-[2rem] border border-[#f4ede7] dark:border-[#3a2d22] bg-white dark:bg-[#2a221b] shadow-sm">
+                        <div className="overflow-hidden rounded-4xl border border-[#f4ede7] dark:border-[#3a2d22] bg-white dark:bg-[#2a221b] shadow-sm">
                             <table className="w-full text-sm text-left border-collapse">
                                 <thead className="text-[10px] text-gray-400 uppercase bg-gray-50/50 dark:bg-black/20 font-black tracking-widest border-b border-[#f4ede7] dark:border-[#3a2d22]">
                                     <tr>
@@ -677,7 +714,17 @@ export default function EventosPage() {
                                             <td className="px-8 py-6 text-right">
                                                 <div className="flex justify-end gap-3">
                                                     <Link to={`/proyecto/${project.id}`} className="size-10 rounded-xl bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-400 hover:bg-orange-500 hover:text-white transition-all"><span className="material-symbols-outlined font-black">visibility</span></Link>
-                                                    <button onClick={() => handleFollow(project.id)} className="size-10 rounded-xl bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-400 hover:bg-red-500 hover:text-white transition-all"><span className="material-symbols-outlined font-black">favorite</span></button>
+                                                    <button 
+                                                        onClick={() => handleFollow(project.id)} 
+                                                        className={`size-10 rounded-xl flex items-center justify-center transition-all ${
+                                                            project.is_following 
+                                                                ? 'bg-red-500 text-white hover:bg-red-600 shadow-md shadow-red-500/20' 
+                                                                : 'bg-gray-50 dark:bg-white/5 text-gray-400 hover:bg-red-500 hover:text-white'
+                                                        }`}
+                                                        title={project.is_following ? "Dejar de seguir" : "Seguir proyecto"}
+                                                    >
+                                                        <span className="material-symbols-outlined font-black">favorite</span>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -699,7 +746,7 @@ export default function EventosPage() {
                     {/* Sidebar: Premium Components */}
                     <div className="flex flex-col gap-10">
                         {/* Dynamic User Impact Card */}
-                        <div className="rounded-[2.5rem] bg-gradient-to-br from-orange-600 to-orange-400 text-white p-8 shadow-2xl shadow-orange-500/30 relative overflow-hidden group">
+                        <div className="rounded-[2.5rem] bg-linear-to-br from-orange-600 to-orange-400 text-white p-8 shadow-2xl shadow-orange-500/30 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-3xl -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-700"></div>
                             <h3 className="font-black text-xl mb-6 relative z-10 flex items-center gap-2">
                                 <span className="material-symbols-outlined">analytics</span>
@@ -718,35 +765,57 @@ export default function EventosPage() {
                             <div className="relative z-10 p-4 rounded-2xl bg-black/10 border border-white/10">
                                 <p className="text-xs font-bold text-orange-50 flex items-center gap-2">
                                     <span className="material-symbols-outlined text-sm">info</span>
-                                    {userImpact.proyectos_seguidos > 0
-                                        ? `Sigues a ${userImpact.proyectos_seguidos} proyectos en este evento.`
+                                    {userImpact.proyectos_seguidos_count > 0
+                                        ? `Sigues a ${userImpact.proyectos_seguidos_count} ${userImpact.proyectos_seguidos_count === 1 ? 'proyecto' : 'proyectos'} en este evento.`
                                         : "Aún no sigues proyectos en este evento."}
                                 </p>
                             </div>
+                            {userImpact.proyectos_seguidos && userImpact.proyectos_seguidos.length > 0 && (
+                                <div className="relative z-10 mt-6 flex flex-col gap-3">
+                                    <p className="text-[10px] text-orange-100 font-black uppercase tracking-widest">Proyectos seguidos</p>
+                                    <div className="flex flex-col gap-2 max-h-48 overflow-y-auto pr-1">
+                                        {userImpact.proyectos_seguidos.map(proj => (
+                                            <Link 
+                                                key={proj.id} 
+                                                to={`/proyecto/${proj.id}`} 
+                                                className="flex items-center justify-between gap-3 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl px-4 py-2.5 transition-all text-xs font-bold text-white"
+                                            >
+                                                <span className="truncate flex items-center gap-2">
+                                                    <span className="material-symbols-outlined text-[14px] text-red-300">favorite</span>
+                                                    {proj.titulo}
+                                                </span>
+                                                <span className="material-symbols-outlined text-[14px] shrink-0 text-white/60">arrow_forward</span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         {/* Recent Activity / Milestones */}
-                        <div className="p-8 rounded-[2rem] bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22]">
+                        <div className="p-8 rounded-4xl bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22]">
                             <h3 className="font-black text-xl mb-6 flex items-center gap-2">
                                 <span className="material-symbols-outlined text-orange-500">history_edu</span>
                                 Hitos del Evento
                             </h3>
                             <div className="space-y-6">
-                                {[
-                                    { icon: 'trending_up', color: 'text-green-500', bg: 'bg-green-100', text: '5 Proyectos han superado los 1,000€ hoy.', time: 'Hace 2h' },
-                                    { icon: 'add_task', color: 'text-blue-500', bg: 'bg-blue-100', text: 'Nueva categoría "Sostenibilidad" añadida.', time: 'Hace 5h' },
-                                    { icon: 'ads_click', color: 'text-orange-500', bg: 'bg-orange-100', text: '+400 nuevos votantes registrados.', time: 'Hace 1d' }
-                                ].map((item, i) => (
-                                    <div key={i} className="flex gap-4 items-start">
-                                        <div className={`mt-1 size-8 shrink-0 rounded-lg ${item.bg} flex items-center justify-center font-black ${item.color}`}>
-                                            <span className="material-symbols-outlined text-lg">{item.icon}</span>
+                                {eventActivities && eventActivities.length > 0 ? (
+                                    eventActivities.map((item, i) => (
+                                        <div key={i} className="flex gap-4 items-start">
+                                            <div className={`mt-1 size-8 shrink-0 rounded-lg ${item.bg || 'bg-orange-100'} flex items-center justify-center font-black ${item.color || 'text-orange-500'}`}>
+                                                <span className="material-symbols-outlined text-lg">{item.icon || 'star'}</span>
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-bold text-[#1c140d] dark:text-gray-200 leading-snug wrap-break-word">{item.texto}</p>
+                                                <p className="text-[10px] font-black text-gray-400 uppercase tracking-tighter mt-1">{item.time}</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="text-sm font-bold text-[#1c140d] dark:text-gray-200 leading-snug">{item.text}</p>
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-tighter mt-1">{item.time}</p>
-                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="text-center py-6 text-gray-400 font-medium text-sm">
+                                        No hay actividades registradas en este evento todavía.
                                     </div>
-                                ))}
+                                )}
                             </div>
                         </div>
                     </div>
@@ -814,7 +883,7 @@ export default function EventosPage() {
 
             {/* Enroll Modal */}
             {isEnrollModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+                <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-[#1c140d] rounded-3xl p-8 max-w-md w-full shadow-2xl border border-gray-100 dark:border-white/10 animate-fade-in-up">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-2xl font-black">Inscripción Evento</h3>

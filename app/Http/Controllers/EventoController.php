@@ -8,6 +8,7 @@ use App\Models\Evento;
 use App\Models\Proyecto;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class EventoController extends Controller
 {
@@ -83,6 +84,13 @@ class EventoController extends Controller
         }
 
         $projects = $query->get()->map(function($proyecto) {
+            $isFollowing = false;
+            /** @var \App\Models\User|null $user */
+            $user = Auth::guard('sanctum')->user();
+            if ($user) {
+                $isFollowing = $user->proyectos()->where('idProyecto', $proyecto->id)->exists();
+            }
+            $proyecto->setAttribute('is_following', $isFollowing);
             return $proyecto;
         })->sortByDesc('cantidad_recaudada')->values();
 
@@ -107,6 +115,90 @@ class EventoController extends Controller
     }
 
     /**
+     * Get the latest 5 activities/milestones for a specific event.
+     */
+    public function actividadReciente($id)
+    {
+        $evento = Evento::findOrFail($id);
+        $proyectosIds = $evento->proyectos()->pluck('proyectos.id');
+
+        $actividades = collect();
+
+        // 1. Inscripciones
+        $inscripciones = DB::table('proyectos_eventos')
+            ->join('proyectos', 'proyectos_eventos.idProyecto', '=', 'proyectos.id')
+            ->where('proyectos_eventos.idEvento', $id)
+            ->select('proyectos.titulo', 'proyectos_eventos.created_at')
+            ->orderBy('proyectos_eventos.created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        foreach ($inscripciones as $ins) {
+            $actividades->push([
+                'texto' => 'El proyecto «' . $ins->titulo . '» se ha inscrito en el evento.',
+                'fecha' => $ins->created_at,
+                'icon' => 'add_circle',
+                'color' => 'text-blue-500',
+                'bg' => 'bg-blue-100'
+            ]);
+        }
+
+        // 2. Donaciones
+        $donaciones = \App\Models\Donacion::with(['users', 'proyectos'])
+            ->whereIn('idProyecto', $proyectosIds)
+            ->where('estadoDonacion', 'pagada')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        foreach ($donaciones as $d) {
+            $userNombre = $d->users ? $d->users->nombreUsuario : 'Alguien';
+            $proyectoTitulo = $d->proyectos ? $d->proyectos->titulo : 'un proyecto';
+            $actividades->push([
+                'texto' => '@' . $userNombre . ' ha apoyado el proyecto «' . $proyectoTitulo . '» con ' . number_format($d->importe) . '€.',
+                'fecha' => $d->fechaCompra ? \Carbon\Carbon::parse($d->fechaCompra) : $d->created_at,
+                'icon' => 'favorite',
+                'color' => 'text-red-500',
+                'bg' => 'bg-red-100'
+            ]);
+        }
+
+        // 3. Seguimientos
+        $seguimientos = DB::table('users_proyectos')
+            ->join('proyectos', 'users_proyectos.idProyecto', '=', 'proyectos.id')
+            ->join('users', 'users_proyectos.idUsuario', '=', 'users.id')
+            ->join('proyectos_eventos', 'proyectos.id', '=', 'proyectos_eventos.idProyecto')
+            ->where('proyectos_eventos.idEvento', $id)
+            ->select('users.nombreUsuario', 'proyectos.titulo', 'users_proyectos.created_at')
+            ->orderBy('users_proyectos.created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        foreach ($seguimientos as $seg) {
+            $actividades->push([
+                'texto' => '@' . $seg->nombreUsuario . ' ha empezado a seguir el proyecto «' . $seg->titulo . '»',
+                'fecha' => $seg->created_at,
+                'icon' => 'bookmark',
+                'color' => 'text-green-500',
+                'bg' => 'bg-green-100'
+            ]);
+        }
+
+        // Sort by date desc and take 5
+        $actividades = $actividades->sortByDesc(function ($act) {
+            return Carbon::parse($act['fecha']);
+        })->take(5)->values();
+
+        // Format time diffForHumans
+        $actividades->transform(function ($item) {
+            $item['time'] = \Carbon\Carbon::parse($item['fecha'])->locale('es')->diffForHumans();
+            return $item;
+        });
+
+        return response()->json($actividades);
+    }
+
+    /**
      * Get the impact of the authenticated user in a specific event.
      */
     public function userImpact($id)
@@ -115,7 +207,8 @@ class EventoController extends Controller
         $user = Auth::user();
         if (!$user) {
             return response()->json([
-                'proyectos_seguidos' => 0,
+                'proyectos_seguidos_count' => 0,
+                'proyectos_seguidos' => [],
                 'total_aportado' => 0,
                 'proyectos_apoyados' => 0
             ]);
@@ -124,14 +217,15 @@ class EventoController extends Controller
         $evento = Evento::findOrFail($id);
         $proyectosIds = $evento->proyectos()->pluck('proyectos.id');
 
-        $proyectosSeguidos = $user->proyectos()->whereIn('idProyecto', $proyectosIds)->count();
+        $proyectosSeguidosList = $user->proyectos()->whereIn('idProyecto', $proyectosIds)->get(['proyectos.id', 'proyectos.titulo', 'proyectos.slug']);
         
-        $donaciones = $user->donaciones()->whereIn('idProyecto', $proyectosIds);
-        $totalAportado = $donaciones->sum('cantidadDonada');
-        $proyectosApoyados = $donaciones->distinct('idProyecto')->count();
+        $donaciones = $user->donaciones()->whereIn('idProyecto', $proyectosIds)->where('estadoDonacion', 'pagada');
+        $totalAportado = $donaciones->sum('importe');
+        $proyectosApoyados = $donaciones->distinct('idProyecto')->count('idProyecto');
 
         return response()->json([
-            'proyectos_seguidos' => $proyectosSeguidos,
+            'proyectos_seguidos_count' => count($proyectosSeguidosList),
+            'proyectos_seguidos' => $proyectosSeguidosList,
             'total_aportado' => $totalAportado,
             'proyectos_apoyados' => $proyectosApoyados
         ]);

@@ -21,9 +21,13 @@ export default function ObjetivosProyecto({
   const [loadingFollow, setLoadingFollow] = useState(false);
 
   useEffect(() => {
-    const seguidos = JSON.parse(localStorage.getItem("seguidos")) || [];
-    setSiguiendo(seguidos.includes(String(id)));
-  }, [id]);
+    if (isAuth) {
+      setSiguiendo(!!isFollowing);
+    } else {
+      const seguidos = JSON.parse(localStorage.getItem("seguidos")) || [];
+      setSiguiendo(seguidos.includes(String(id)));
+    }
+  }, [id, isFollowing, isAuth]);
 
   const formatEUR = (n) =>
     (Number(n) || 0).toLocaleString("es-ES", { minimumFractionDigits: 0 }) + " €";
@@ -36,12 +40,12 @@ export default function ObjetivosProyecto({
     let nuevosSeguidos;
     let isFollowingNow = false;
 
-    if (seguidos.includes(idStr)) {
+    if (siguiendo) {
       nuevosSeguidos = seguidos.filter(sid => sid !== idStr);
       setSiguiendo(false);
       isFollowingNow = false;
     } else {
-      nuevosSeguidos = [...seguidos, idStr];
+      nuevosSeguidos = [...seguidos.filter(sid => sid !== idStr), idStr];
       setSiguiendo(true);
       isFollowingNow = true;
     }

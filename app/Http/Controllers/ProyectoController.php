@@ -42,7 +42,16 @@ class ProyectoController extends Controller
         // Asumiendo que esta ruta es pública (no auth)
         $query->whereIn('estado', ['publicado', 'completado', 'fallido']);
 
-        $proyectos = $query->get();
+        $proyectos = $query->get()->map(function($proyecto) {
+            $isFollowing = false;
+            /** @var \App\Models\User|null $user */
+            $user = Auth::guard('sanctum')->user();
+            if ($user) {
+                $isFollowing = $user->proyectos()->where('idProyecto', $proyecto->id)->exists();
+            }
+            $proyecto->setAttribute('is_following', $isFollowing);
+            return $proyecto;
+        });
         return response()->json($proyectos);
     }
 
@@ -169,7 +178,13 @@ class ProyectoController extends Controller
         }
 
         // Inject into the response object
-        // $proyecto->setAttribute('is_following', $isFollowing);
+        $isFollowing = false;
+        /** @var \App\Models\User|null $user */
+        $user = Auth::guard('sanctum')->user();
+        if ($user) {
+            $isFollowing = $user->proyectos()->where('idProyecto', $proyecto->id)->exists();
+        }
+        $proyecto->setAttribute('is_following', $isFollowing);
 
         return response()->json($proyecto);
     }
@@ -296,7 +311,17 @@ class ProyectoController extends Controller
             ->where('ganadorEvento', true)
             ->orderBy('created_at', 'desc')
             ->limit(3)
-            ->get();
+            ->get()
+            ->map(function($proyecto) {
+                $isFollowing = false;
+                /** @var \App\Models\User|null $user */
+                $user = Auth::guard('sanctum')->user();
+                if ($user) {
+                    $isFollowing = $user->proyectos()->where('idProyecto', $proyecto->id)->exists();
+                }
+                $proyecto->setAttribute('is_following', $isFollowing);
+                return $proyecto;
+            });
 
         return response()->json($proyectos);
     }

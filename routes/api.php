@@ -29,6 +29,7 @@ Route::get('/eventos/active', [EventoController::class, 'active']);
 Route::get('/eventos/upcoming', [EventoController::class, 'upcoming']);
 Route::get('/eventos/{id}/leaderboard', [EventoController::class, 'leaderboard']);
 Route::get('/eventos/{id}/stats', [EventoController::class, 'stats']);
+Route::get('/eventos/{id}/actividad', [EventoController::class, 'actividadReciente']);
 Route::get('/eventos/{id}/user-impact', [EventoController::class, 'userImpact'])->middleware('auth:sanctum');
 Route::get('/about-us', [\App\Http\Controllers\AboutUsController::class, 'index']);
 Route::get('/user/search', [UserController::class, 'search']); // Buscar usuarios
