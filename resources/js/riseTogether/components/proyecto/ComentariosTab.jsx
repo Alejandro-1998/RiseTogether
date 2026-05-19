@@ -3,6 +3,7 @@ import axios from "axios";
 import useAuth from "../../hooks/useAuth";
 import { Link, useLocation } from "react-router-dom";
 import { contienePalabrasInapropiadas } from "../../utils/validation";
+import toast from "react-hot-toast";
 
 const formatearFecha = (fecha) => {
     if (!fecha) return "";
@@ -40,6 +41,31 @@ const CommentItem = ({
     const [likes, setLikes] = useState(comentario.likes_count || 0);
     const [isLiked, setIsLiked] = useState(comentario.is_liked || false);
     const [likeLoading, setLikeLoading] = useState(false);
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const handleReport = async () => {
+        setMenuOpen(false);
+        try {
+            await axios.post(`/api/comentarios/${comentario.id}/reportar`);
+            toast.success("Comentario reportado con éxito. Un administrador lo revisará.", {
+                style: {
+                    borderRadius: '16px',
+                    background: '#1c140d',
+                    color: '#fff',
+                    border: '1px solid rgba(242, 127, 13, 0.2)',
+                    padding: '16px',
+                    fontWeight: 'bold',
+                },
+                iconTheme: {
+                    primary: '#f27f0d',
+                    secondary: '#fff',
+                },
+            });
+        } catch (error) {
+            console.error("Error reporting comment:", error);
+            toast.error("No se pudo reportar el comentario.");
+        }
+    };
 
     const handleLike = async () => {
         if (!isAuth) return;
@@ -98,56 +124,80 @@ const CommentItem = ({
                                 {formatearFecha(comentario.created_at)}
                             </span>
                         </div>
+                        {isAuth && comentario.mensaje !== 'Mensaje eliminado por un administrador' && comentario.estado !== 'rechazado' && (
+                            <div className="relative" onMouseLeave={() => setMenuOpen(false)}>
+                                <button
+                                    onClick={() => setMenuOpen(!menuOpen)}
+                                    className="p-1 rounded-full text-[#9c7049] hover:text-[#f2780d] hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                                >
+                                    <span className="material-symbols-outlined text-[20px] block">more_vert</span>
+                                </button>
+                                {menuOpen && (
+                                    <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-[#1a120d] border border-[#eceae8] dark:border-[#3a2c20] rounded-xl shadow-lg z-30 py-1">
+                                        <button
+                                            type="button"
+                                            onClick={handleReport}
+                                            className="w-full text-left px-4 py-2 text-xs font-bold text-[#9c7049] hover:text-[#ef4444] hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center gap-2"
+                                        >
+                                            <span className="material-symbols-outlined text-[16px]">report</span>
+                                            Reportar
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                     <p className="text-[#5e4e42] dark:text-[#b0a8a0] text-sm leading-relaxed whitespace-pre-wrap">
                         {comentario.mensaje}
                     </p>
 
-                    <div className="flex items-center gap-4 mt-2">
-                        {/* Like Button */}
-                        <button
-                            onClick={handleLike}
-                            disabled={!isAuth}
-                            className={`group flex items-center gap-1.5 text-xs font-semibold transition-colors ${isLiked ? 'text-[#f2780d]' : 'text-[#9c7049] hover:text-[#f2780d]'
-                                } ${!isAuth ? 'opacity-50 cursor-default' : ''}`}
-                            title={!isAuth ? "Inicia sesión para dar me gusta" : ""}
-                        >
-                            <span className={`material-symbols-outlined text-[18px] ${isLiked ? 'font-variation-fill' : ''}`} style={isLiked ? { fontVariationSettings: "'FILL' 1" } : {}}>
-                                thumb_up
-                            </span>
-                            <span>{likes}</span>
-                        </button>
-
-                        {/* Toggle Replies Button */}
-                        {hasReplies && (
+                    {comentario.mensaje !== 'Mensaje eliminado por un administrador' && comentario.estado !== 'rechazado' && (
+                        <div className="flex items-center gap-4 mt-2">
+                            {/* Like Button */}
                             <button
-                                onClick={() => setShowReplies(!showReplies)}
-                                className="group flex items-center gap-1.5 text-xs font-semibold text-[#9c7049] hover:text-[#f2780d] transition-colors"
+                                onClick={handleLike}
+                                disabled={!isAuth}
+                                className={`group flex items-center gap-1.5 text-xs font-semibold transition-colors ${isLiked ? 'text-[#f2780d]' : 'text-[#9c7049] hover:text-[#f2780d]'
+                                    } ${!isAuth ? 'opacity-50 cursor-default' : ''}`}
+                                title={!isAuth ? "Inicia sesión para dar me gusta" : ""}
                             >
-                                <div className="flex items-center justify-center h-5 w-5 rounded-full bg-[#f2780d]/10 group-hover:bg-[#f2780d]/20 transition-colors">
-                                    <span className={`material-symbols-outlined text-[14px] transition-transform duration-300 ${showReplies ? 'rotate-180' : ''}`}>
-                                        expand_more
-                                    </span>
-                                </div>
-                                <span className="opacity-90 group-hover:opacity-100">
-                                    {showReplies ? 'Ocultar' : `${comentario.comentarios_respuesta.length} respuestas`}
+                                <span className={`material-symbols-outlined text-[18px] ${isLiked ? 'font-variation-fill' : ''}`} style={isLiked ? { fontVariationSettings: "'FILL' 1" } : {}}>
+                                    thumb_up
                                 </span>
+                                <span>{likes}</span>
                             </button>
-                        )}
 
-                        {/* Reply Button */}
-                        {isAuth && (
-                            <button
-                                onClick={() => {
-                                    setReplyingTo(replyingTo === comentario.id ? null : comentario.id);
-                                    setReplyMensaje("");
-                                }}
-                                className="text-xs font-bold text-[#f2780d] hover:text-[#d96600] transition-colors"
-                            >
-                                Responder
-                            </button>
-                        )}
-                    </div>
+                            {/* Toggle Replies Button */}
+                            {hasReplies && (
+                                <button
+                                    onClick={() => setShowReplies(!showReplies)}
+                                    className="group flex items-center gap-1.5 text-xs font-semibold text-[#9c7049] hover:text-[#f2780d] transition-colors"
+                                >
+                                    <div className="flex items-center justify-center h-5 w-5 rounded-full bg-[#f2780d]/10 group-hover:bg-[#f2780d]/20 transition-colors">
+                                        <span className={`material-symbols-outlined text-[14px] transition-transform duration-300 ${showReplies ? 'rotate-180' : ''}`}>
+                                            expand_more
+                                        </span>
+                                    </div>
+                                    <span className="opacity-90 group-hover:opacity-100">
+                                        {showReplies ? 'Ocultar' : `${comentario.comentarios_respuesta.length} respuestas`}
+                                    </span>
+                                </button>
+                            )}
+
+                            {/* Reply Button */}
+                            {isAuth && (
+                                <button
+                                    onClick={() => {
+                                        setReplyingTo(replyingTo === comentario.id ? null : comentario.id);
+                                        setReplyMensaje("");
+                                    }}
+                                    className="text-xs font-bold text-[#f2780d] hover:text-[#d96600] transition-colors"
+                                >
+                                    Responder
+                                </button>
+                            )}
+                        </div>
+                    )}
 
                     {/* Reply Form */}
                     {replyingTo === comentario.id && (

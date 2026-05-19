@@ -108,6 +108,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout']);
     Route::post('/comentarios', [ComentarioController::class, 'store']);
     Route::post('/comentarios/{id}/like', [ComentarioController::class, 'toggleLike']);
+    Route::post('/comentarios/{id}/reportar', [ComentarioController::class, 'reportar']);
 
     // Updates
     Route::post('/proyectos/{id}/actualizaciones', [\App\Http\Controllers\ActualizacionController::class, 'store']);

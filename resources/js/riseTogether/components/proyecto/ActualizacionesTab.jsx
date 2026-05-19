@@ -224,6 +224,7 @@ function UpdateCommentsSection({ actualizacionId, proyectoId }) {
     const [mensaje, setMensaje] = useState("");
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
+    const [openMenuId, setOpenMenuId] = useState(null);
 
     useEffect(() => {
         cargarComentarios();
@@ -237,6 +238,30 @@ function UpdateCommentsSection({ actualizacionId, proyectoId }) {
             console.error("Error cargando comentarios de actualización:", err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleReportComment = async (id) => {
+        setOpenMenuId(null);
+        try {
+            await axios.post(`/api/comentarios/${id}/reportar`);
+            toast.success("Comentario reportado con éxito. Un administrador lo revisará.", {
+                style: {
+                    borderRadius: '16px',
+                    background: '#1c140d',
+                    color: '#fff',
+                    border: '1px solid rgba(242, 127, 13, 0.2)',
+                    padding: '16px',
+                    fontWeight: 'bold',
+                },
+                iconTheme: {
+                    primary: '#f27f0d',
+                    secondary: '#fff',
+                },
+            });
+        } catch (error) {
+            console.error("Error reporting update comment:", error);
+            toast.error("No se pudo reportar el comentario.");
         }
     };
 
@@ -316,9 +341,34 @@ function UpdateCommentsSection({ actualizacionId, proyectoId }) {
                             )}
                         </div>
                         <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-0.5">
-                                <span className="text-xs font-bold text-[#1c140d] dark:text-white">{c.user?.nombreUsuario}</span>
-                                <span className="text-[10px] text-[#9c7049]">{formatearFecha(c.created_at)}</span>
+                            <div className="flex items-center justify-between gap-2 mb-0.5">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-xs font-bold text-[#1c140d] dark:text-white">{c.user?.nombreUsuario}</span>
+                                    <span className="text-[10px] text-[#9c7049]">{formatearFecha(c.created_at)}</span>
+                                </div>
+                                {isAuth && c.mensaje !== 'Mensaje eliminado por un administrador' && c.estado !== 'rechazado' && (
+                                    <div className="relative" onMouseLeave={() => setOpenMenuId(null)}>
+                                        <button
+                                            type="button"
+                                            onClick={() => setOpenMenuId(openMenuId === c.id ? null : c.id)}
+                                            className="p-0.5 rounded-full text-[#9c7049] hover:text-[#f2780d] hover:bg-gray-100 dark:hover:bg-white/5 transition-colors"
+                                        >
+                                            <span className="material-symbols-outlined text-[18px] block">more_vert</span>
+                                        </button>
+                                        {openMenuId === c.id && (
+                                            <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-[#1a120d] border border-[#eceae8] dark:border-[#3a2c20] rounded-xl shadow-lg z-30 py-1">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleReportComment(c.id)}
+                                                    className="w-full text-left px-4 py-2 text-xs font-bold text-[#9c7049] hover:text-[#ef4444] hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center gap-2"
+                                                >
+                                                    <span className="material-symbols-outlined text-[16px]">report</span>
+                                                    Reportar
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
                             <p className="text-sm text-[#5e4e42] dark:text-[#b0a8a0]">{c.mensaje}</p>
                         </div>

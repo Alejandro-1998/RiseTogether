@@ -68,7 +68,7 @@ class ComentarioController extends Controller
             'mensaje' => $request->mensaje,
             'fechaHora' => $request->fechaHora,
             'estrellas' => $request->estrellas,
-            'estado' => 'pendiente',
+            'estado' => 'aprobado',
         ]);
 
         return response()->json($comentario, 201);
@@ -264,14 +264,28 @@ class ComentarioController extends Controller
         ]);
 
         if ($request->estado === 'rechazado') {
-            $comentario->delete();
-            return response()->json(['message' => 'Comentario eliminado']);
+            $comentario->mensaje = 'Mensaje eliminado por un administrador';
+            $comentario->estado = 'rechazado';
+            $comentario->save();
+            return response()->json(['message' => 'Comentario rechazado y ocultado', 'comentario' => $comentario]);
         }
 
         $comentario->estado = $request->estado;
         $comentario->save();
 
-        return response()->json(['message' => 'Comentario actualizado', 'comentario' => $comentario]);
+        return response()->json(['message' => 'Comentario aprobado', 'comentario' => $comentario]);
+    }
+
+    /**
+     * Reportar un comentario (lo pasa a estado pendiente).
+     */
+    public function reportar($id)
+    {
+        $comentario = Comentario::findOrFail($id);
+        $comentario->estado = 'pendiente';
+        $comentario->save();
+
+        return response()->json(['message' => 'Comentario reportado con éxito y enviado a revisión.', 'comentario' => $comentario]);
     }
 
     private static $regexProhibidosList = null;
