@@ -110,6 +110,7 @@ export default function PrivateChat({ destUser, onClose }) {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Escribe un mensaje..."
+              autoFocus
               className="flex-1 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-[#f2780d]/50"
             />
             <button 

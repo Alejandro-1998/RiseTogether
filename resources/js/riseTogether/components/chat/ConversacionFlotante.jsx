@@ -98,7 +98,7 @@ export default function ConversacionFlotante({ usuarioDestino, alVolver, alCerra
                       : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-bl-none shadow-sm'
                   }`}
                 >
-                  <p className="break-words">{msg.contenido}</p>
+                  <p className="wrap-break-word">{msg.contenido}</p>
                 </div>
               </div>
             );
@@ -115,12 +115,13 @@ export default function ConversacionFlotante({ usuarioDestino, alVolver, alCerra
             value={nuevoMensaje}
             onChange={(e) => setNuevoMensaje(e.target.value)}
             placeholder="Escribe un mensaje..."
+            autoFocus
             className="flex-1 bg-gray-100 dark:bg-gray-800 text-sm text-gray-900 dark:text-white px-4 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-[#f2780d]/50"
           />
           <button 
             type="submit"
             disabled={!nuevoMensaje.trim()}
-            className="bg-[#f2780d] hover:bg-[#d96a0a] disabled:opacity-50 text-white w-9 h-9 flex-shrink-0 rounded-full flex items-center justify-center transition-colors shadow-sm"
+            className="bg-[#f2780d] hover:bg-[#d96a0a] disabled:opacity-50 text-white w-9 h-9 shrink-0 rounded-full flex items-center justify-center transition-colors shadow-sm"
           >
             <span className="material-symbols-outlined text-[18px]">send</span>
           </button>

@@ -482,7 +482,7 @@ export default function EventosPage() {
                                                 <h3 className="font-bold text-lg line-clamp-1">{leaderboard[1].titulo}</h3>
                                                 <p className="text-sm text-gray-500">€{Number(leaderboard[1].cantidad_recaudada).toLocaleString()}</p>
                                             </div>
-                                            <Link to={`/proyectos/${leaderboard[1].id}`} className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-white/5 font-bold text-sm text-center hover:bg-slate-200 transition-colors">Ver Proyecto</Link>
+                                            <Link to={`/proyecto/${leaderboard[1].id}`} className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-white/5 font-bold text-sm text-center hover:bg-slate-200 transition-colors">Ver Proyecto</Link>
                                         </div>
                                     </div>
                                 </div>
@@ -506,7 +506,7 @@ export default function EventosPage() {
                                                     €{Number(leaderboard[0].cantidad_recaudada).toLocaleString()}
                                                 </div>
                                             </div>
-                                            <Link to={`/proyectos/${leaderboard[0].id}`} className="w-full py-4 rounded-2xl bg-orange-500 text-white font-black text-center shadow-lg shadow-orange-500/30 hover:bg-orange-600 hover:shadow-orange-600/40 transition-all">Impulsar Líder</Link>
+                                            <Link to={`/proyecto/${leaderboard[0].id}`} className="w-full py-4 rounded-2xl bg-orange-500 text-white font-black text-center shadow-lg shadow-orange-500/30 hover:bg-orange-600 hover:shadow-orange-600/40 transition-all">Impulsar Líder</Link>
                                         </div>
                                     </div>
                                 </div>
@@ -528,7 +528,7 @@ export default function EventosPage() {
                                                 <h3 className="font-bold text-lg line-clamp-1">{leaderboard[2].titulo}</h3>
                                                 <p className="text-sm text-gray-500">€{Number(leaderboard[2].cantidad_recaudada).toLocaleString()}</p>
                                             </div>
-                                            <Link to={`/proyectos/${leaderboard[2].id}`} className="w-full py-2.5 rounded-xl bg-orange-50/50 dark:bg-white/5 font-bold text-sm text-center hover:bg-orange-100 transition-colors">Ver Proyecto</Link>
+                                            <Link to={`/proyecto/${leaderboard[2].id}`} className="w-full py-2.5 rounded-xl bg-orange-50/50 dark:bg-white/5 font-bold text-sm text-center hover:bg-orange-100 transition-colors">Ver Proyecto</Link>
                                         </div>
                                     </div>
                                 </div>
@@ -546,11 +546,19 @@ export default function EventosPage() {
                     <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
                         {upcomingEvents.length > 0 ? upcomingEvents.map((event) => (
                             <div key={event.id} className="min-w-[300px] md:min-w-[350px] rounded-3xl bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] overflow-hidden flex flex-col hover:border-orange-500/50 hover:shadow-lg transition-all group">
-                                <div className="h-40 bg-gray-100 dark:bg-gray-800 relative overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                                    <div className="absolute top-4 left-4 size-14 rounded-2xl bg-white/90 dark:bg-black/80 backdrop-blur shadow-sm p-1.5 flex flex-col items-center justify-center border border-white/20">
-                                        <span className="text-lg font-black leading-none">{event.fechaInicio ? new Date(event.fechaInicio).toLocaleDateString('es-ES', { day: '2-digit' }) : '--'}</span>
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">{event.fechaInicio ? new Date(event.fechaInicio).toLocaleDateString('es-ES', { month: 'short' }) : '--'}</span>
+                                <div className="h-40 bg-gradient-to-br from-[#f27f0d] via-[#d96600] to-[#1c140d] relative overflow-hidden flex items-center justify-center">
+                                    <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]"></div>
+                                    {/* Large abstract calendar icon in the background */}
+                                    <span className="material-symbols-outlined text-[100px] text-white/5 absolute -right-4 -bottom-6 select-none pointer-events-none">
+                                        event
+                                    </span>
+                                    {/* Abstract circle patterns */}
+                                    <div className="absolute -top-12 -left-12 size-32 rounded-full bg-white/5 border border-white/10"></div>
+                                    <div className="absolute -bottom-8 -left-8 size-20 rounded-full bg-white/5 border border-white/10"></div>
+                                    
+                                    <div className="absolute top-4 left-4 size-14 rounded-2xl bg-white/95 dark:bg-[#1a120d]/90 backdrop-blur shadow-sm p-1.5 flex flex-col items-center justify-center border border-white/20 z-10">
+                                        <span className="text-lg font-black leading-none text-[#1c140d] dark:text-white">{event.fechaInicio ? new Date(event.fechaInicio).toLocaleDateString('es-ES', { day: '2-digit' }) : '--'}</span>
+                                        <span className="text-[10px] font-bold text-[#f27f0d] uppercase tracking-tighter">{event.fechaInicio ? new Date(event.fechaInicio).toLocaleDateString('es-ES', { month: 'short' }).replace('.', '') : '--'}</span>
                                     </div>
                                 </div>
                                 <div className="p-6 flex flex-col gap-4 flex-1">
@@ -561,7 +569,7 @@ export default function EventosPage() {
                                     <div className="mt-auto pt-4 flex items-center justify-between border-t border-[#f4ede7] dark:border-[#3a2d22]">
                                         <div className="flex items-center gap-2">
                                             <span className="material-symbols-outlined text-lg text-gray-400 font-black">group</span>
-                                            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{event.cantidadMaxParticipantes || 'Open'} SLOTS</span>
+                                            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{event.cantidadMaxParticipantes || 'Open'} PLAZAS</span>
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <button
@@ -668,7 +676,7 @@ export default function EventosPage() {
                                             </td>
                                             <td className="px-8 py-6 text-right">
                                                 <div className="flex justify-end gap-3">
-                                                    <Link to={`/proyectos/${project.id}`} className="size-10 rounded-xl bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-400 hover:bg-orange-500 hover:text-white transition-all"><span className="material-symbols-outlined font-black">visibility</span></Link>
+                                                    <Link to={`/proyecto/${project.id}`} className="size-10 rounded-xl bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-400 hover:bg-orange-500 hover:text-white transition-all"><span className="material-symbols-outlined font-black">visibility</span></Link>
                                                     <button onClick={() => handleFollow(project.id)} className="size-10 rounded-xl bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-400 hover:bg-red-500 hover:text-white transition-all"><span className="material-symbols-outlined font-black">favorite</span></button>
                                                 </div>
                                             </td>

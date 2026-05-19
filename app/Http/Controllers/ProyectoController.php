@@ -294,6 +294,7 @@ class ProyectoController extends Controller
         $proyectos = Proyecto::with('categoria')
             ->where('estado', 'publicado')
             ->where('ganadorEvento', true)
+            ->orderBy('created_at', 'desc')
             ->limit(3)
             ->get();
 
