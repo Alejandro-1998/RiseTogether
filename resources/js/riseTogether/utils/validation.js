@@ -51,7 +51,7 @@ const palabrasProhibidas = [
     "mugrienta", "naco", "naca", "necio", "necia", "ogro",
     "pajaro", "pajaraco", "pajuela", "paleto", "paleta", "pamplinas",
     "panfilo", "panfila", "pardillo", "pardilla", "parguela",
-    "pasmarote", "pataliebre", "patan", "patan", "payasada",
+    "pasmarote", "pataliebre", "patan", "payasada",
     "pedorro", "pedorra", "peich", "pelagatos", "pelandusca",
     "pelma", "pelmazo", "pendejadas", "penoso", "penosa",
     "peorro", "peorra", "perrazo", "perraza", "perreras",
@@ -119,7 +119,7 @@ const palabrasProhibidas = [
     "lmao", "lmfao", "mothafucka", "mothafucking", "muffdiver",
     "negro", "niglet", "nutsack", "paki", "panooch",
     "peckerhead", "penetration", "pisshead", "polack", "poon",
-    "poon自由", "poon-tang", "poontang", "pujer", "pussycat",
+    "poon-tang", "poontang", "pujer", "pussycat",
     "queers", "raghead", "rape", "raper", "rapist",
     "rectum", "sadism", "scrotum", "sexx", "sexy",
     "shagging", "shitass", "shitbird", "shitface", "shithead",
@@ -319,7 +319,7 @@ const palabrasProhibidas = [
     "bolzen", "bordell", "bordelle", "bordells", "buh",
     "buhen", "bulle", "bullen", "bulles",
     "bullenscheiße", "bullenscheisse", "deppen", "deppin", "deppinnen",
-    "deppisch", "deppische", "deppischer", "deppisches", "dreck",
+    "deppisch", "deppisch-e", "deppischer", "deppisches", "dreck",
     "dreckig", "dreckige", "dreckiger", "dreckiges", "dreckskerl",
     "dreckskerle", "dreckskerles", "dumm", "dumme",
     "dummer", "dummes", "dummheit", "dummheiten",
@@ -332,7 +332,6 @@ const palabrasProhibidas = [
     "geil", "geile", "geiler", "geiles",
     "geilheit", "gift", "gifte", "gifts",
     "giftig", "giftige", "giftiger", "giftiges",
-    "h**e", "h***nsohn", "hurensöhne", "hurensohn",
     "idiot", "idioten", "idiotin", "idiotinnen",
     "idiotisch", "idiotische", "idiotischer", "idiotisches", "imbecille",
     "kacke", "kacken", "kacker", "kackere",
@@ -390,13 +389,15 @@ const obtenerRegexOptimizado = () => {
             .replace(/[\u0300-\u036f]/g, "")
             .toLowerCase();
 
-        // Convertir cada letra a: letra + opcional no-alfanumérico
+        // Convertir cada letra a: letra + opcional no-alfanumérico (con escape correcto de caracteres especiales)
         const pattern = palabraNorm
             .split("")
             .map((char, index) => {
                 if (char === " ") return "\\s+";
-                if (index === palabraNorm.length - 1) return char;
-                return `${char}[^a-z0-9]*`;
+                // Escapar caracteres especiales de expresiones regulares como '-' o '*'
+                const escapedChar = char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                if (index === palabraNorm.length - 1) return escapedChar;
+                return `${escapedChar}[^a-z0-9]*`;
             })
             .join("");
 
@@ -444,4 +445,3 @@ export const contienePalabrasInapropiadas = (mensaje) => {
     const regex = obtenerRegexOptimizado();
     return regex.test(mensajeNormalizado);
 };
-
