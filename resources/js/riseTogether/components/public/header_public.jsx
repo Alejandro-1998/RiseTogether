@@ -66,6 +66,12 @@ export default function HeaderPublic({ isAuth }) {
           <div className="flex flex-1 items-center justify-end gap-2">
             <div className="hidden items-center justify-end gap-3 md:flex">
               <Link
+                to="/proyectos"
+                className="flex h-10 min-w-[130px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+              >
+                Proyectos
+              </Link>
+              <Link
                 to="/usuarios"
                 className="flex h-10 min-w-[130px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
               >
@@ -202,6 +208,7 @@ export default function HeaderPublic({ isAuth }) {
             </div>
 
             <div className="flex flex-col gap-4">
+              <Link to="/proyectos" className="font-bold text-lg text-[#1c140d] dark:text-white hover:text-[#f2780d]">Proyectos</Link>
               <Link to="/usuarios" className="font-bold text-lg text-[#1c140d] dark:text-white hover:text-[#f2780d]">Comunidad</Link>
               <Link to="/eventos" className="font-bold text-lg text-[#1c140d] dark:text-white hover:text-[#f2780d]">Eventos</Link>
               
