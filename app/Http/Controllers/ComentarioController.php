@@ -123,6 +123,7 @@ class ComentarioController extends Controller
     public function comentariosRelevantes()
     {
         $comentarios = Comentario::with('user')
+            ->whereNull('idActualizacion')
             // ->where('estado', 'aprobado') // Commented out to show all comments for now
             ->withCount([
                 'estrellasRecibidas as estrellas_recientes' => function ($query) {
@@ -175,6 +176,7 @@ class ComentarioController extends Controller
         // Fetch all comments for the project with user data and like counts
         $allComments = Comentario::with('user')
             ->where('idProyecto', $projectId)
+            ->whereNull('idActualizacion')
             ->withCount(['estrellasRecibidas as likes_count'])
             ->orderBy('created_at', 'desc')
             ->get();
