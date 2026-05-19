@@ -51,6 +51,15 @@ class ComentarioController extends Controller
             'estrellas.max' => 'La valoración máxima son 5 estrellas.',
         ]);
 
+        if ($this->contienePalabrasInapropiadas($request->mensaje)) {
+            return response()->json([
+                'message' => 'El comentario contiene lenguaje inapropiado y no se puede publicar.',
+                'errors' => [
+                    'mensaje' => ['El comentario contiene lenguaje inapropiado y no se puede publicar.']
+                ]
+            ], 422);
+        }
+
         $comentario = Comentario::create([
             'idUsuario' => Auth::id(),
             'idProyecto' => $request->idProyecto,
@@ -100,6 +109,15 @@ class ComentarioController extends Controller
             'estrellas.min' => 'La valoración mínima es 1 estrella.',
             'estrellas.max' => 'La valoración máxima son 5 estrellas.',
         ]);
+
+        if ($this->contienePalabrasInapropiadas($request->mensaje)) {
+            return response()->json([
+                'message' => 'El comentario contiene lenguaje inapropiado y no se puede publicar.',
+                'errors' => [
+                    'mensaje' => ['El comentario contiene lenguaje inapropiado y no se puede publicar.']
+                ]
+            ], 422);
+        }
 
         $comentario->update($request->only(['mensaje', 'estrellas']));
 
@@ -254,5 +272,24 @@ class ComentarioController extends Controller
         $comentario->save();
 
         return response()->json(['message' => 'Comentario actualizado', 'comentario' => $comentario]);
+    }
+
+    private function contienePalabrasInapropiadas($mensaje)
+    {
+        $palabrasProhibidas = [
+            'mierda', 'puto', 'puta', 'cabron', 'cabrón', 'gilipollas', 'coño', 
+            'joder', 'maricon', 'maricón', 'basura', 'estafa', 'pendejo', 'pendeja',
+            'hijodeputa', 'hijo de puta'
+        ];
+
+        $mensajeMinuscula = mb_strtolower($mensaje, 'UTF-8');
+
+        foreach ($palabrasProhibidas as $palabra) {
+            if (str_contains($mensajeMinuscula, $palabra)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -121,6 +121,10 @@ export default function FooterPublic() {
               className="ml-1 h-4 w-4"
             />
             <span className="mx-2 text-[#9c7049]/50">|</span>
+            <Link to="/politica-privacidad" className="font-semibold hover:text-[#f2780d]">
+              Política de Privacidad
+            </Link>
+            <span className="mx-2 text-[#9c7049]/50">|</span>
             <Link to="/terminos-y-condiciones" className="font-semibold hover:text-[#f2780d]">
               Términos y Condiciones
             </Link>

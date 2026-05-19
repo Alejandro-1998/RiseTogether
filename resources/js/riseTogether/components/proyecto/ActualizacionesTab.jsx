@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import useAuth from "../../hooks/useAuth";
+import { contienePalabrasInapropiadas } from "../../utils/validation";
 
 // Formateador de fecha similar al de ComentariosTab
 const formatearFecha = (fecha) => {
@@ -222,6 +223,7 @@ function UpdateCommentsSection({ actualizacionId, proyectoId }) {
     const [loading, setLoading] = useState(true);
     const [mensaje, setMensaje] = useState("");
     const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         cargarComentarios();
@@ -242,6 +244,13 @@ function UpdateCommentsSection({ actualizacionId, proyectoId }) {
         e.preventDefault();
         if (!mensaje.trim()) return;
 
+        setError("");
+
+        if (contienePalabrasInapropiadas(mensaje)) {
+            setError("El comentario contiene lenguaje inapropiado y no se puede enviar.");
+            return;
+        }
+
         setSubmitting(true);
         try {
             await axios.post("/api/comentarios", {
@@ -255,6 +264,8 @@ function UpdateCommentsSection({ actualizacionId, proyectoId }) {
             cargarComentarios();
         } catch (err) {
             console.error("Error enviando comentario:", err);
+            const msg = err.response?.data?.message || "No se pudo enviar el comentario. Inténtalo de nuevo.";
+            setError(msg);
         } finally {
             setSubmitting(false);
         }
@@ -267,13 +278,16 @@ function UpdateCommentsSection({ actualizacionId, proyectoId }) {
             {/* Formulario */}
             {isAuth ? (
                 <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-                    <textarea
-                        value={mensaje}
-                        onChange={(e) => setMensaje(e.target.value)}
-                        placeholder="Escribe un comentario sobre esta actualización..."
-                        className="w-full rounded-xl border border-[#e6dbd1] dark:border-[#3a2c20] bg-[#ffffff] dark:bg-[#1a120d] p-3 text-sm text-[#1c140d] dark:text-gray-200 outline-none focus:border-[#f2780d] focus:ring-1 focus:ring-[#f2780d]"
-                        rows="2"
-                    />
+                    <div>
+                        <textarea
+                            value={mensaje}
+                            onChange={(e) => setMensaje(e.target.value)}
+                            placeholder="Escribe un comentario sobre esta actualización..."
+                            className="w-full rounded-xl border border-[#e6dbd1] dark:border-[#3a2c20] bg-[#ffffff] dark:bg-[#1a120d] p-3 text-sm text-[#1c140d] dark:text-gray-200 outline-none focus:border-[#f2780d] focus:ring-1 focus:ring-[#f2780d]"
+                            rows="2"
+                        />
+                        {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+                    </div>
                     <div className="flex justify-end">
                         <button
                             type="submit"

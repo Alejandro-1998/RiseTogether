@@ -22,6 +22,7 @@ import SobreNosotrosPage from "./pages/public/SobreNosotrosPage";
 import ContactoPage from "./pages/public/ContactoPage";
 import AvisoLegalPage from "./pages/public/AvisoLegalPage";
 import TerminosCondicionesPage from "./pages/public/TerminosCondicionesPage";
+import PoliticaPrivacidadPage from "./pages/public/PoliticaPrivacidadPage";
 import EventosPage from "./pages/public/EventosPage";
 import BuscarUsuariosPage from "./pages/public/BuscarUsuariosPage";
 import UsuarioActividadPage from "./pages/public/UsuarioActividadPage";
@@ -90,6 +91,9 @@ function App() {
 
           {/* Términos y Condiciones */}
           <Route path="/terminos-y-condiciones" element={<TerminosCondicionesPage />} />
+
+          {/* Política de Privacidad */}
+          <Route path="/politica-privacidad" element={<PoliticaPrivacidadPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />

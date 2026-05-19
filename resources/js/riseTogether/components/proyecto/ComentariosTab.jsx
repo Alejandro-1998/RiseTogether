@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import useAuth from "../../hooks/useAuth";
 import { Link, useLocation } from "react-router-dom";
+import { contienePalabrasInapropiadas } from "../../utils/validation";
 
 const formatearFecha = (fecha) => {
     if (!fecha) return "";
@@ -256,8 +257,14 @@ export default function ComentariosTab({ proyectoId }) {
 
         if (!texto.trim()) return;
 
-        setSubmitting(true);
         setError("");
+
+        if (contienePalabrasInapropiadas(texto)) {
+            setError("El comentario contiene lenguaje inapropiado y no se puede enviar.");
+            return;
+        }
+
+        setSubmitting(true);
 
         try {
             await axios.post("/api/comentarios", {
@@ -278,7 +285,8 @@ export default function ComentariosTab({ proyectoId }) {
             cargarComentarios(); // Recargar lista
         } catch (err) {
             console.error("Error enviando comentario:", err);
-            setError("No se pudo enviar el comentario. Inténtalo de nuevo.");
+            const msg = err.response?.data?.message || "No se pudo enviar el comentario. Inténtalo de nuevo.";
+            setError(msg);
         } finally {
             setSubmitting(false);
         }
