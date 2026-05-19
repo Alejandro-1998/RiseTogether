@@ -79,9 +79,6 @@ export default function RelevantesComunidad() {
           </div>
         </div>
       </section>
-
-      {/* HR inferior (igual que Blade) */}
-      <hr className="my-20 border-t border-gray-300/70 dark:border-gray-700/40" />
     </>
   );
 }

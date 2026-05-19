@@ -5,7 +5,7 @@ import RelevantesComunidad from "./home/relevantes_comunidad";
 
 export default function Home() {
   return (
-    <main className="space-y-20 pb-24">
+    <main className="space-y-20 pb-12">
       <Hero />
       <TopProyectos />
       <HistoriasExito />

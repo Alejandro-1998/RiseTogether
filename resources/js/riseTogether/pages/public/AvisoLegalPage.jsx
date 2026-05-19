@@ -124,158 +124,84 @@ function CtaCard() {
 }
 
 export default function LegalNoticePage() {
-  const lastUpdated = "20 de enero, 2026";
-  const legalEmail = "legal@risetogether.com";
+  const lastUpdated = "19 de mayo, 2026";
+  const legalEmail = "info@montillaexperience.com";
 
   const sections = useMemo(
     () => [
       {
         id: "sec-01",
         num: "01",
-        title: "Identificación del titular",
-        render: ({ onCopyEmail }) => (
+        title: "Aviso Legal",
+        render: () => (
           <>
             <p className="mb-4">
-              En cumplimiento de la Ley 34/2002, de 11 de julio (LSSI-CE), se
-              informa que RiseTogether es una plataforma gestionada por:
+              En cumplimiento con el deber de información recogido en el artículo 10 de la
+              Ley 34/2002 de Servicios de la Sociedad de la Información y de Comercio
+              Electrónico, se informa de que el presente sitio web pertenece a Montilla
+              Experience.
             </p>
-
-            <ul className="list-none space-y-1 font-medium text-gray-900 dark:text-gray-300">
-              <li>• Denominación Social: RiseTogether Community S.L.</li>
-              <li>• NIF: B-00000000</li>
-              <li>• Domicilio: Calle de la Innovación 42, 28001 Madrid, España.</li>
-
-              <li className="flex items-center gap-2 flex-wrap">
-                • Email:
-                <button
-                  type="button"
-                  onClick={() => onCopyEmail(legalEmail)}
-                  className="inline-flex items-center gap-2 px-2 py-1 rounded-lg bg-gray-100 dark:bg-[#393028] text-gray-900 dark:text-white hover:brightness-105 transition"
-                >
-                  <span className="material-symbols-outlined text-base">
-                    content_copy
-                  </span>
-                  <span>{legalEmail}</span>
-                </button>
-              </li>
-            </ul>
+            <p>
+              Sitio web dedicado a la promoción y difusión de experiencias
+              enogastronómicas vinculadas al vino, la cultura y al territorio de Montilla. Para
+              cualquier consulta o comunicación, el usuario podrá ponerse en contacto a
+              través de los medios habilitados en el sitio web.
+            </p>
           </>
         ),
       },
       {
         id: "sec-02",
         num: "02",
-        title: "Objeto del sitio web",
+        title: "Condiciones de uso",
         render: () => (
           <>
-            El presente sitio web tiene como objeto facilitar una plataforma de
-            financiación participativa (crowdfunding) donde creadores pueden
-            presentar proyectos y conectar con una comunidad de personas
-            interesadas en apoyarlos.
+            El usuario se compromete a utilizar el sitio web de forma adecuada, respetando
+            la legislación vigente, la buena fe y el orden público. Queda prohibido el uso del
+            sitio web con fines ilícitos, lesivos o que puedan dañar, inutilizar o sobrecargar
+            la plataforma.
           </>
         ),
       },
       {
         id: "sec-03",
         num: "03",
-        title: "Condiciones de uso",
+        title: "Propiedad intelectual",
         render: () => (
           <>
-            <p className="mb-3">
-              El acceso y uso de RiseTogether atribuye la condición de usuario e
-              implica la aceptación de este Aviso Legal.
-            </p>
-
-            <p className="mb-3 font-semibold text-gray-900 dark:text-gray-200">
-              Se prohíbe expresamente:
-            </p>
-
-            <ul className="list-disc pl-5 space-y-1">
-              <li>Publicar contenido fraudulento, ilegal o engañoso.</li>
-              <li>Vulnerar derechos de propiedad intelectual o industrial de terceros.</li>
-              <li>Difundir contenido ofensivo, violento, discriminatorio o que incite al odio.</li>
-              <li>Suplantar identidad o manipular campañas de forma deshonesta.</li>
-            </ul>
-
-            <p className="mt-3">
-              RiseTogether podrá moderar, retirar contenidos y suspender cuentas
-              cuando detecte incumplimientos o riesgos para la comunidad.
-            </p>
+            Todos los contenidos dentro del sitio web, incluyendo textos, diseño, estructura,
+            imágenes y elementos gráficos, son propiedad de Montilla Experience o se
+            utilizan con autorización, quedando prohibida su reproducción, distribución o
+            transformación sin autorización.
           </>
         ),
       },
       {
         id: "sec-04",
         num: "04",
-        title: "Propiedad intelectual e industrial",
+        title: "Responsabilidad",
         render: () => (
           <>
-            Todos los contenidos del sitio (diseño, estructura, textos, logotipos e
-            imágenes) son propiedad de RiseTogether o de sus licenciantes y están
-            protegidos por la normativa aplicable. Los usuarios conservan la autoría
-            de sus contenidos, otorgando a RiseTogether una licencia no exclusiva para
-            mostrarlos dentro de la plataforma.
+            Montilla Experience no se responsabiliza de posibles errores en los
+            contenidos ni de los daños que pudieran derivarse del uso del sitio web o de la
+            falta de disponibilidad del mismo.
           </>
         ),
       },
       {
         id: "sec-05",
         num: "05",
-        title: "Responsabilidad",
-        render: () => (
-          <>
-            RiseTogether actúa como intermediario tecnológico y no se hace responsable
-            de la veracidad de la información proporcionada por los creadores ni del
-            éxito o ejecución de los proyectos. El usuario asume la responsabilidad
-            de sus aportaciones. No obstante, mantenemos medidas de seguridad y mejora
-            continua para proteger a la comunidad.
-          </>
-        ),
-      },
-      {
-        id: "sec-06",
-        num: "06",
         title: "Enlaces externos",
         render: () => (
           <>
-            La plataforma puede contener enlaces a sitios de terceros. RiseTogether no
-            ejerce control sobre dichos sitios ni se responsabiliza de sus contenidos
-            o políticas.
-          </>
-        ),
-      },
-      {
-        id: "sec-07",
-        num: "07",
-        title: "Protección de datos",
-        render: () => (
-          <>
-            El tratamiento de datos personales se rige por nuestra Política de Privacidad
-            y se realiza conforme al RGPD y la LOPDGDD. Puedes ejercer tus derechos a
-            través de los canales habilitados en dicha política.
-          </>
-        ),
-      },
-      {
-        id: "sec-08",
-        num: "08",
-        title: "Uso de cookies",
-        render: () => (
-          <>
-            Utilizamos cookies propias y de terceros para mejorar la experiencia de usuario.
-            Para más información, consulta nuestra Política de Cookies.
-          </>
-        ),
-      },
-      {
-        id: "sec-09",
-        num: "09",
-        title: "Legislación y jurisdicción",
-        render: () => (
-          <>
-            Para la resolución de controversias relacionadas con el uso del sitio web,
-            será de aplicación la legislación española. Las partes se someten a los
-            Juzgados y Tribunales de Madrid, salvo que la normativa disponga otra cosa.
+            El sitio web puede incluir enlaces a páginas de terceros con el fin de facilitar al
+            usuario el acceso a información adicional o recursos de interés. Montilla Wine
+            Experience no ejerce control sobre dichos sitios y, por tanto, no asume
+            responsabilidad alguna por sus contenidos, disponibilidad, políticas o
+            prácticas. La inclusión de estos enlaces no implica en ningún caso la existencia
+            de relación, recomendación o aprobación por parte de Montilla Experience. El
+            acceso a dichos sitios se realiza bajo la exclusiva responsabilidad propia del
+            usuario.
           </>
         ),
       },
@@ -371,7 +297,7 @@ export default function LegalNoticePage() {
               </h1>
               <p className="text-gray-600 dark:text-[#baaa9c] text-lg font-normal leading-relaxed">
                 Transparencia y compromiso con nuestra comunidad. Aquí detallamos los
-                términos legales de RiseTogether.
+                términos legales de Montilla Experience.
               </p>
             </div>
 

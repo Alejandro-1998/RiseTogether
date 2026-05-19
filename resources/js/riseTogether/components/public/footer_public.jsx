@@ -68,16 +68,25 @@ export default function FooterPublic() {
             <ul className="mt-4 space-y-2">
               {[
                 { label: "Centro de contacto", to: "#" },
-                { label: "Nuestras normas", to: "#" },
+                { label: "Aviso Legal", to: "/aviso-legal" },
                 { label: "Recursos para creadores", to: "#" },
               ].map((l) => (
                 <li key={l.label}>
-                  <a
-                    href={l.to}
-                    className="text-sm text-[#9c7049] transition-colors hover:text-[#f2780d] dark:text-[#a18a7a] dark:hover:text-[#f2780d]"
-                  >
-                    {l.label}
-                  </a>
+                  {l.to.startsWith('/') ? (
+                    <Link
+                      to={l.to}
+                      className="text-sm text-[#9c7049] transition-colors hover:text-[#f2780d] dark:text-[#a18a7a] dark:hover:text-[#f2780d]"
+                    >
+                      {l.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={l.to}
+                      className="text-sm text-[#9c7049] transition-colors hover:text-[#f2780d] dark:text-[#a18a7a] dark:hover:text-[#f2780d]"
+                    >
+                      {l.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>

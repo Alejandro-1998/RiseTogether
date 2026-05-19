@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import useAuth from "../../hooks/useAuth";
 import PanelContactos from "./PanelContactos";
@@ -9,6 +9,8 @@ export default function ChatFlotante() {
   const [estaAbierto, setEstaAbierto] = useState(false);
   const [totalNoLeidos, setTotalNoLeidos] = useState(0);
   const [contactoSeleccionado, setContactoSeleccionado] = useState(null);
+  const [debeSaltar, setDebeSaltar] = useState(false);
+  const prevNoLeidosRef = useRef(null);
 
   useEffect(() => {
     if (!isAuth) return;
@@ -16,7 +18,14 @@ export default function ChatFlotante() {
     const obtenerNoLeidos = async () => {
       try {
         const { data } = await axios.get("/api/chat/no-leidos");
-        setTotalNoLeidos(data.total);
+        const nuevoTotal = data.total;
+        
+        if (prevNoLeidosRef.current !== null && nuevoTotal > prevNoLeidosRef.current) {
+          setDebeSaltar(true);
+        }
+        
+        prevNoLeidosRef.current = nuevoTotal;
+        setTotalNoLeidos(nuevoTotal);
       } catch (error) {
         console.error("Error al obtener no leídos:", error);
       }
@@ -64,7 +73,10 @@ export default function ChatFlotante() {
       {/* Botón Flotante */}
       <button
         onClick={() => setEstaAbierto(!estaAbierto)}
-        className="relative bg-[#f2780d] hover:bg-[#d96a0a] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 pointer-events-auto"
+        onAnimationEnd={() => setDebeSaltar(false)}
+        className={`relative bg-[#f2780d] hover:bg-[#d96a0a] text-white w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-110 pointer-events-auto ${
+          debeSaltar ? "animate-chat-jump" : ""
+        }`}
         aria-label="Abrir chat"
       >
         <span className="material-symbols-outlined text-[28px]">
