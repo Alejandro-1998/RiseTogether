@@ -266,6 +266,8 @@ class ComentarioController extends Controller
         if ($request->estado === 'rechazado') {
             $comentario->delete();
             return response()->json(['message' => 'Comentario eliminado']);
+        }
+
         $comentario->estado = $request->estado;
         $comentario->save();
 
