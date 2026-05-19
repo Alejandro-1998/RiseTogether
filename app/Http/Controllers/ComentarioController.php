@@ -266,30 +266,459 @@ class ComentarioController extends Controller
         if ($request->estado === 'rechazado') {
             $comentario->delete();
             return response()->json(['message' => 'Comentario eliminado']);
-        }
-
         $comentario->estado = $request->estado;
         $comentario->save();
 
         return response()->json(['message' => 'Comentario actualizado', 'comentario' => $comentario]);
     }
 
-    private function contienePalabrasInapropiadas($mensaje)
+    private static $regexProhibido = null;
+
+    private function obtenerRegexOptimizado()
     {
+        if (self::$regexProhibido) {
+            return self::$regexProhibido;
+        }
+
         $palabrasProhibidas = [
-            'mierda', 'puto', 'puta', 'cabron', 'cabrón', 'gilipollas', 'coño', 
-            'joder', 'maricon', 'maricón', 'basura', 'estafa', 'pendejo', 'pendeja',
-            'hijodeputa', 'hijo de puta'
+            // === ESPAÑOL ===
+            "mierda", "puto", "puta", "cabron", "gilipollas", "coño", "joder",
+            "maricon", "basura", "estafa", "pendejo", "pendeja", "hijodeputa",
+            "hijo de puta", "mamon", "culero", "culera", "zorra", "puton",
+            "pajero", "pajera", "marica", "idiota", "imbecil", "estupido",
+            "tarado", "tarada", "boludo", "boluda", "pelotudo", "pelotuda",
+            "concha", "chupa", "polla", "verga", "carajo", "cagar", "cagada",
+            "pico", "tonto", "tonta", "bobo", "boba", "capullo", "gilipollez",
+            "choche", "chingar", "pijo", "pija", "mamada", "orto", "lameculos",
+            "baboso", "bastardo", "cabrongilipollas", "cabronazo", "capulla",
+            "chocho", "cornudo", "culazo", "escoria", "hiaputa", "hdp",
+            "malparido", "pajillero", "perra", "putita", "puton verbenero",
+            "singar", "soplanucas", "tragasables", "violacion", "violar",
+            "mariconazo", "panoli", "payaso", "gilipuertas", "huevon", "huevón",
+            "cojones", "cojonudo", "caraculo", "hijo de perra", "hijodeperra",
+            "meapilas", "soplapollas", "lamepollas", "chupaculos", "pelagatos",
+            "gili", "pendejada", "singada", "mamarracho", "chupapollas",
+            "aborto", "alcornoque", "animal", "arrastrado", "arrastrada",
+            "asno", "atontado", "atontada", "azote", "barriobajero", "barriobajera",
+            "bellaco", "bellaca", "bestia", "bicoca", "bodrio", "bofetada",
+            "caca", "cagadero", "cagallon", "calzonazos", "cancano", "cancana",
+            "cantamañanas", "caracartula", "caracartona", "caradura", "carapapa",
+            "casposo", "casposa", "cateto", "cateta", "cazurro", "cazurra",
+            "ceporro", "chabacano", "chabacana", "chalado", "chalada",
+            "charlatan", "charlatana", "chiche", "chimba", "chinfles",
+            "chiquilicuatro", "chiripa", "chochear", "choto", "chotoa",
+            "chufa", "chulapo", "chulapa", "chulo", "chula", "chupatintas",
+            "chuposte", "cipote", "cobarde", "cojona", "comerda", "comemierda",
+            "comino", "cretino", "cretina", "cuero", "culon", "culona",
+            "desgraciado", "desgraciada", "desorejado", "desorejada", "desvergonzado",
+            "desvergonzada", "donnadie", "embustero", "embustera", "enano", "enana",
+            "engendro", "entrometido", "entrometida", "estafador", "estafadora",
+            "estupidez", "fantoche", "farsante", "filibustero", "flaco", "flaca",
+            "fornicar", "fornicacion", "fracasado", "fracasada", "fregona",
+            "gandul", "gandula", "garrapata", "gato", "gili-pollas", "gilipollo",
+            "guarra", "guarro", "gili-puertas", "hediondo", "hedionda", "hijo-puta",
+            "hinchapelotas", "hocicon", "hocicona", "holgazan", "holgazana",
+            "hortera", "huesped", "hp", "ignorante", "incompetente", "infeliz",
+            "inmundicia", "inutil", "inútil", "jodienda", "ladron", "ladrona",
+            "lame-culos", "lameplatos", "lamenalgas", "lelo", "lela",
+            "lerdo", "lerda", "limosnero", "limosnera", "llorica", "lloron",
+            "llorona", "macarra", "madiquita", "majadero", "majadera",
+            "malnacido", "malnacida", "mamporrero", "mamarrachada", "mangante",
+            "mangasverdes", "mangon", "mangona", "mariconada", "mariconera",
+            "marimacho", "masca chapas", "mascachapas", "mastuerzo", "matasanos",
+            "mequetrefe", "mentecato", "mentecata", "mentiroso", "mentirosa",
+            "mercachifle", "miserable", "mocoso", "mocosa", "mojon", "mojón",
+            "monigote", "morroco", "muerto de hambre", "muertodehambre", "mugriento",
+            "mugrienta", "naco", "naca", "necio", "necia", "ogro",
+            "pajaro", "pajaraco", "pajuela", "paleto", "paleta", "pamplinas",
+            "panfilo", "panfila", "pardillo", "pardilla", "parguela",
+            "pasmarote", "pataliebre", "patán", "patan", "payasada",
+            "pedorro", "pedorra", "peich", "pelagatos", "pelandusca",
+            "pelma", "pelmazo", "pendejadas", "penoso", "penosa",
+            "peorro", "peorra", "perrazo", "perraza", "perreras",
+            "pesado", "pesada", "petardo", "petarda", "picapleitos",
+            "pichabrava", "piche", "pichi", "pichon", "pichona",
+            "piltrafa", "pinche", "pintamonas", "pipilolo", "pirata",
+            "piruja", "pisaverdes", "plasta", "plomizo", "plomiza",
+            "pocacosa", "pocajanta", "porquerias", "puerco", "puerca",
+            "putear", "putero", "putiferio", "putilla", "puto-amo",
+            "rácano", "racano", "racana", "rapiña", "rastrero",
+            "rastrera", "rata", "renegado", "renegada", "repugnante",
+            "retrasado", "retrasada", "roñoso", "roñosa", "rufián",
+            "rufian", "sabelotodo", "sabandija", "sacamuelas", "saqueador",
+            "saqueadora", "sarnoso", "sarnosa", "sinverguenza", "sinvergüenza",
+            "sobón", "sobon", "sobona", "sodomia", "sodomita",
+            "soplador", "soplagaitas", "tarugo", "tontaco", "tontaca",
+            "tontolaba", "tontorron", "tontorrona", "tragon", "tragona",
+            "traidor", "traidora", "tranza", "tranzado", "trepa",
+            "usurero", "usurera", "vago", "vaga", "vago-redomado",
+            "vividor", "vividora", "zopenco", "zopenca", "zoquete",
+
+            // === INGLÉS ===
+            "shit", "fuck", "fucking", "asshole", "bitch", "cunt", "bastard",
+            "dick", "pussy", "wanker", "scam", "fake", "fraud", "garbage",
+            "trash", "motherfucker", "cock", "dumb", "ass", "idiot", "stupid",
+            "retard", "crap", "bullshit", "bollocks", "piss", "slut", "whore",
+            "twat", "dyke", "faggot", "prick", "bugger", "bastards", "cocksucker",
+            "dipshit", "douchebag", "jackass", "jerk", "pissed", "screw", "shitty",
+            "spastic", "tosser", "prick", "clit", "cum", "ejaculate", "masturbate",
+            "bullcrap", "dumbass", "dumbfuck", "fuckhead", "motherfucking",
+            "shithole", "bitchy", "craphead", "pissing", "pissoff", "piss-off",
+            "shithead", "whorehouse", "slutty", "spaz", "bastardize", "dickhead",
+            "anus", "arse", "arsehole", "asswipe", "ballbag", "balls",
+            "blowjob", "bollock", "boob", "boobs", "buggery", "butt",
+            "clitoris", "coon", "crapbag", "crapper", "crook", "cuck",
+            "cuckold", "dago", "damn", "damned", "dickweed", "dildo",
+            "doofus", "douch", "douche", "dumass", "dykes", "fag",
+            "faggots", "fatass", "foreskin", "fuckin", "fucks", "fuckup",
+            "gook", "heeb", "homo", "honkey", "horny", "injun",
+            "jap", "kike", "kraut", "lardass", "lesbo", "mick",
+            "milf", "muff", "nigger", "nigga", "orgasm", "pecker",
+            "phlem", "pikey", "pissbag", "pisser", "playboy", "poof",
+            "porn", "porno", "prickhead", "punani", "queer", "rimjob",
+            "sadist", "scumbag", "semen", "sex", "shag", "shemale",
+            "shitbag", "shitcan", "shitdick", "shite", "shiter",
+            "shitfaced", "shitfit", "shitpost", "shitspitter", "shittier",
+            "shitting", "skank", "sleaze", "smegma", "snatch", "sod",
+            "sonofabitch", "son-of-a-bitch", "spade", "spic", "spooge",
+            "tard", "testicle", "tit", "tits", "turd", "undies",
+            "vagina", "violation", "wetback", "wog", "wop", "yankee",
+            "abuse", "abusive", "assmunch", "bagging", "beef curtains",
+            "bellend", "bitchass", "bitcher", "bitchy", "blow",
+            "bolloxing", "boner", "bullcrap", "butch", "butt-munch",
+            "chesticle", "choade", "choad", "chode", "clits",
+            "cockhead", "cockteaser", "coochie", "coochy", "cooter",
+            "cumming", "cums", "cuntbag", "cuntlicker", "dego",
+            "dickbag", "dickcheese", "dickish", "dicklicker", "dick-wad",
+            "dickwad", "dong", "double penetration", "dp", "dykey",
+            "fagging", "faggoty", "fanny", "fat-ass", "felch",
+            "feltch", "flamer", "fuckface", "fucknut", "fucktard",
+            "fuckwit", "fudgepacker", "gaylord", "goddamn", "god-damn",
+            "gringo", "guido", "hardon", "hard-on", "heeb",
+            "hoe", "homophobe", "jackoff", "jerkoff", "jizz",
+            "knobend", "knobhead", "koon", "labia", "lame",
+            "lmao", "lmfao", "mothafucka", "mothafucking", "muffdiver",
+            "negro", "niglet", "nutsack", "paki", "panooch",
+            "peckerhead", "penetration", "pisshead", "polack", "poon",
+            "poon自由", "poon-tang", "poontang", "pujer", "pussycat",
+            "queers", "raghead", "rape", "raper", "rapist",
+            "rectum", "sadism", "scrotum", "sexx", "sexy",
+            "shagging", "shitass", "shitbird", "shitface", "shithead",
+            "shithouse", "shitload", "shitter", "shitting", "skanky",
+            "slutbag", "snatch", "spic", "turd", "twats",
+            "uncle tom", "va-j-j", "vajayjay", "vulva", "wank",
+            "wankers", "wanking", "wetback", "whores", "zip",
+
+            // === FRANCÉS ===
+            "merde", "putain", "connard", "connarde", "salope", "fdp", "encule",
+            "enculé", "chier", "bite", "couille", "con", "conne", "bordel",
+            "niquer", "nique", "pd", "batard", "bâtard", "salaud", "associal",
+            "abruti", "baise", "baiser", "bouffon", "branleur", "chieur",
+            "crevard", "cul", "enfoire", "enfoiré", "salopard", "tocard",
+            "putain de merde", "connasse", "petasse", "pétasse", "trou du cul",
+            "trouduecul", "abrute", "va te faire foutre", "vtff", "baiseur",
+            "couilles", "chiasse", "couillon", "merdeux",
+            "abrutis", "abrutie", "associale", "baiseurs", "baisers",
+            "bâtards", "bâtarde", "bites", "bouse", "bousier",
+            "branleuse", "branleurs", "caca", "cacatoes", "chiasse",
+            "chieuse", "chieuses", "chieurs", "clito", "clitoris",
+            "conards", "conardes", "connards", "connardes", "cons",
+            "connes", "couillonne", "couillons", "couille", "crevards",
+            "crevarded", "culs", "dechet", "déchet", "dechets",
+            "déchets", "degeulasse", "dégueulasse", "emmerder", "emmerdeur",
+            "emmerdeuse", "enculer", "enculée", "enculés", "enculées",
+            "enfoires", "enfoirées", "foutre", "foutoir", "garce",
+            "garces", "gogol", "gogole", "lope", "lopette",
+            "lopettes", "merdes", "merdeux", "merdeuse", "merdeuses",
+            "niqueur", "niqueurs", "niqueuse", "niqueuses", "orgasme",
+            "pede", "pédé", "pedes", "pédés", "pessac",
+            "petasses", "pétasses", "pine", "pines", "pipi",
+            "pisser", "pouffiasse", "pouffiasses", "putains", "putes",
+            "pute", "racaille", "racailles", "salauds", "salopes",
+            "salopards", "saloparde", "salopardes", "sodomie", "sodomite",
+            "sodomites", "suceur", "suceurs", "suceuse", "suceuses",
+            "tringler", "tringles", "trous", "va-te-faire-foutre", "voleur",
+            "voleurs", "voleuse", "voleuses", "voyou", "voyous",
+            "abruti", "baise", "bordel", "bougnoule", "bougnoules",
+            "chienne", "chiennes", "chochotte", "chochottes", "clochard",
+            "clochards", "connerie", "conneries", "couillon", "debile",
+            "débile", "debiles", "débiles", "enculage", "enculages",
+            "feignant", "feignants", "feignante", "feignantes", "fion",
+            "fions", "fouteur", "fouteurs", "frapouille", "frapouilles",
+            "gland", "glands", "glandeur", "glandeuse", "glandeurs",
+            "glandeuses", "gros", "grosse", "grosses", "imbecile",
+            "imbécile", "imbeciles", "imbéciles", "michto", "michtos",
+            "nigaud", "nigauds", "nigaude", "nigaudes", "péquenaud",
+            "pequenaud", "pequenauds", "péquenauds", "pignouf", "pignoufs",
+            "pignoufe", "pignoufes", "plouc", "ploucs", "pouffe",
+            "pouffes", "sacrebleu", "saligaud", "saligauds", "saligaude",
+            "saligaudes", "taré", "tare", "tarés", "tares",
+            "tarée", "tarées", "teub", "teubs", "teube",
+            "teubes", "tocards", "trouduc", "trouducs", "vaurien",
+            "vauriens", "voyeuse", "voyeuses", "zob", "zobs",
+
+            // === PORTUGUÉS ===
+            "caralho", "fodase", "foda-se", "filhodaputa", "filho da puta",
+            "cabrao", "porra", "cagado", "cagada", "cabrões",
+            "paneleiro", "putaria", "pariu", "foder", "foda", "cona", "cu",
+            "porrarecheada", "rapariga", "bosta", "pinto", "xoxo", "buceta",
+            "cuzao", "cuzão", "caralhos", "punheta", "paneleirice", "rabeta",
+            "abostado", "abostada", "arrombado", "arrombada", "babaca", "babacas",
+            "babaquice", "babaquices", "bacanal", "bicha", "bichas",
+            "bichona", "bichonas", "boquete", "boquetes", "bostas",
+            "bostinha", "bostinhas", "bostoso", "bostosa", "bucetas",
+            "cabrões", "cagador", "cagadora", "cagados", "cagadas",
+            "cagando", "cagão", "cagona", "caralhão", "caralhice",
+            "chifrudo", "chifruda", "chifrudos", "chifrudas", "chochota",
+            "chochotas", "chupador", "chupadora", "chupadores", "chupadoras",
+            "chupagem", "chupar", "coca", "cocas",
+            "cocô", "cocos", "cona", "conas",
+            "corno", "cornos", "cornuda", "cornudas",
+            "cretino", "cretinos", "cretina", "cretinas",
+            "cuzao", "cuzões", "cuzada", "cuzadas",
+            "desgraçado", "desgraçados", "desgraçada", "desgraçadas", "doido",
+            "doida", "doidos", "doidas", "escroto",
+            "escrotos", "escrota", "escrotas", "escrotice",
+            "estupidez", "estúpido", "estúpidos", "estúpida",
+            "estúpidas", "fecal", "filhos-da-puta", "filhas-da-puta",
+            "fodas", "fodendo", "fodido", "fodidos",
+            "fodida", "fodidas", "fodilhão", "fodiço",
+            "fodiçoa", "fodiços", "fodiçoas", "idiota",
+            "idiotas", "imbecil", "imbecis", "ladrão",
+            "ladrões", "ladra", "ladras", "lixo",
+            "lixos", "macaco", "macacos", "macaca",
+            "macacas", "mamada", "mamadas", "mamador",
+            "mamadora", "mamar", "merda", "merdas",
+            "merdoso", "merdosa", "merdosos", "merdosas",
+            "merdinha", "merdinhas", "mongol", "mongóis",
+            "mulher da vida", "mulher-da-vida", "nazi", "nazis",
+            "nazismo", "nazista", "nazistas", "orgasmo",
+            "orgasmos", "otário", "otários", "otária",
+            "otárias", "paspalho", "paspalhos", "paspalha",
+            "paspalhas", "peido", "peidos", "peidar",
+            "paspalhice", "pelo", "pelos", "pênis",
+            "penis", "penises", "perua", "peruas",
+            "pinto", "pintos", "pintinho", "pintinhos",
+            "piranha", "piranhas", "porra", "porras",
+            "porralhada", "prostituta", "prostitutas", "puta",
+            "putas", "putedo", "puteiro", "puteiros",
+            "putinha", "putinhas", "quenga", "quengas",
+            "rabeta", "rabetas", "rabo", "rabos",
+            "rabudo", "rabuda", "sacanagem", "sacanagens",
+            "safado", "safados", "safada", "safadas",
+            "sapatão", "sapatões", "sodomia", "sodomita",
+            "sodomitas", "tarado", "tarados", "tarada",
+            "taradas", "teta", "tetas", "tonto",
+            "tontos", "tonta", "tontas", "trouxa",
+            "trouxas", "vaca", "vacas", "vaciador",
+            "vaciadora", "vadiagem", "vadio", "vadia",
+            "vadios", "vadias", "veado", "veados",
+            "viado", "viados", "vigarista", "vigaristas",
+            "xana", "xanas", "xereca", "xerecas",
+            "xoxota", "xoxotas", "zorra", "zorras",
+
+            // === ITALIANO ===
+            "cazzo", "stronzo", "stronza", "puttana", "vaffanculo", "figa",
+            "culattone", "bastardo", "bastarda", "cazzata", "coglia", "coglione",
+            "finocchio", "merdoso", "troia", "vacca",
+            "stronzata", "scemo", "scema", "imbecille", "merdaccia", "cazzone",
+            "fanculo", "porco", "puttaniere", "rompipalle", "sfigato",
+            "accidente", "accidenti", "allupato", "allupata", "allupati",
+            "allupate", "arrapato", "arrapata", "arrapati", "arrapate",
+            "associale", "associali", "bagascia", "bagasce", "baldracca",
+            "baldracche", "bastardata", "bastardate", "bastardi", "bastarde",
+            "becchino", "becchini", "bischero", "bischeri", "bocchinara",
+            "bocchinare", "bocchinaro", "bocchinari", "bocchino", "bocchini",
+            "bordello", "bordelli", "cacare", "cacata", "cacate",
+            "cagata", "cagate", "cagnaccia", "cagnaccie", "cafone",
+            "cafoni", "cafona", "cafone", "cagone", "cagoni",
+            "cagona", "cagone", "cappella", "cappelle", "carogna",
+            "carogne", "cazzate", "cazzimma", "cazzimma", "cazzoni",
+            "cazzuto", "cazzuta", "cazzuti", "cazzute", "cessa",
+            "cesse", "cesso", "cessi", "chiavare",
+            "chiavata", "chiavate", "chiavatore", "chiavatori", "chierichetto",
+            "ciolla", "ciolle", "ciula", "ciule", "cogliona",
+            "coglione", "coglioni", "coglionaggine", "coglioneria", "cornuto",
+            "cornuti", "cornuda", "cornude", "crepa", "crepare",
+            "cretino", "cretini", "cretina", "cretine", "culattoni",
+            "culo", "culi", "deficiente", "deficienti", "demente",
+            "dementi", "depravato", "depravata", "depravati", "depravate",
+            "disgraziato", "disgraziati", "disgraziata", "disgraziate", "fanculo",
+            "fighe", "figo", "figi", "finocchi",
+            "fottere", "fottuto", "fottuta", "fottuti", "fottute",
+            "frocio", "froci", "frociata", "frociate", "gazza",
+            "gazzia", "gazzia", "gnocca", "gnocche", "gogna",
+            "gogne", "idiota", "idioti", "imbecilli", "incazzarsi",
+            "incazzato", "incazzata", "incazzati", "incazzate", "infame",
+            "infami", "infamone", "infamoni", "ladro", "ladri",
+            "ladra", "ladre", "luffa", "luffe", "malnato",
+            "malnati", "malnata", "malnate", "mammona", "mammoni",
+            "merda", "merde", "merdaiolo", "merdaioli", "merdate",
+            "merdosi", "merdose", "mignotta", "mignotte", "minchione",
+            "minchioni", "minchia", "minchie", "mona", "mone",
+            "nazi", "nazista", "nazisti", "nazismo", "negro",
+            "negri", "negra", "negre", "orgasmo", "orgasmi",
+            "patacca", "patacche", "peccia", "peccie", "pedofilo",
+            "pedofili", "pedofilia", "peluche", "pene", "peni",
+            "pici", "picio", "picia", "pice",
+            "pipì", "pipì", "pisciare", "piscio", "pisciata",
+            "pisciate", "pito", "piti", "pola",
+            "pole", "poppa", "poppe", "porca",
+            "porche", "porcellona", "porcellone", "porcelloni", "porcheria",
+            "porcherie", "porco", "porci", "puttane",
+            "puttanaio", "puttanesco", "puttaniere", "puttanieri", "rompiballe",
+            "rompicoglioni", "ruffiano", "ruffiani", "ruffiana", "ruffiane",
+            "scemenza", "scemenze", "scemi", "scemo",
+            "scema", "sceme", "scopare", "scopata",
+            "scopate", "scopatore", "scopatori", "sculacciata", "sculacciate",
+            "sfaccendato", "sfaccendati", "sfigati", "sfigata", "sfigate",
+            "sodomia", "sodomita", "sodomiti", "spazzatura", "spazzature",
+            "sputare", "sputo", "stronze", "stronzi",
+            "stronzata", "stronzate", "stronzeria", "stronzerie", "suciatore",
+            "suciatori", "suciatrice", "suciatrici", "tetta", "tette",
+            "tordo", "tordi", "torda", "torde", "troie",
+            "troietta", "troiette", "vacche", "vaffanculo", "vagina",
+            "vagine", "viados", "vigliacco", "vigliacchi", "vigliacca",
+            "vigliacche", "vulva", "vulve", "zoccola", "zoccole",
+
+            // === ALEMÁN ===
+            "scheisse", "scheiße", "arschloch", "schlampe", "hurensohn", "fotze",
+            "wichser", "arsch", "depp", "miststück", "pisser",
+            "fotzenkopf", "schweinehund", "miststueck", "wichse", "kacke",
+            "scheisser", "scheißer", "mist", "arschkriecher", "hure",
+            "abartig", "abartige", "abartiger", "abartiges", "abfackeln",
+            "abfalleimer", "abfalleimere", "abfalleimeres", "abschaum", "arschgeige",
+            "arschgeigen", "arschgesicht", "arschgesichter", "arschkriecher", "arschlöcher",
+            "arschlochere", "arschlochered", "arschwackeln", "arschwischer", "arschwischere",
+            "asso", "assozial", "assoziale", "assozialer", "assoziales",
+            "bastard", "bastarde", "bastardes", "bekloppt", "bekloppte",
+            "bekloppter", "beklopptes", "bescheuert", "bescheuerte", "bescheuerter",
+            "bescheuertes", "bettnässer", "bettnässere", "bettnässeres", "blöd",
+            "blöde", "blöder", "blödes", "blödsinn",
+            "blödsinnig", "blödsinnige", "blödsinniger", "blödsinniges", "bock",
+            "böcke", "bocks", "bockt", "bockte",
+            "bolzen", "bordell", "bordelle", "bordells", "buh",
+            "buhen", "bulle", "bullen", "bulles",
+            "bullenscheiße", "bullenscheisse", "deppen", "deppin", "deppinnen",
+            "deppisch", "deppische", "deppischer", "deppisches", "dreck",
+            "dreckig", "dreckige", "dreckiger", "dreckiges", "dreckskerl",
+            "dreckskerle", "dreckskerles", "dumm", "dumme",
+            "dummer", "dummes", "dummheit", "dummheiten",
+            "dummkopf", "dummköpfe", "dummkopfes", "eigenartig", "eigenartige",
+            "eigenartiger", "eigenartiges", "elend", "elende",
+            "elender", "elendes", "fick", "ficken",
+            "ficker", "fickere", "fickeres", "fotzen",
+            "fotzenköpfe", "fraude", "frech", "freche",
+            "frecher", "freches", "frechheit", "frechheiten",
+            "geil", "geile", "geiler", "geiles",
+            "geilheit", "gift", "gifte", "gifts",
+            "giftig", "giftige", "giftiger", "giftiges",
+            "h**e", "h***nsohn", "hurensöhne", "hurensohn",
+            "idiot", "idioten", "idiotin", "idiotinnen",
+            "idiotisch", "idiotische", "idiotischer", "idiotisches", "imbecille",
+            "kacke", "kacken", "kacker", "kackere",
+            "kackeres", "kakerlak", "kakerlaken", "kot",
+            "kotzen", "kotzer", "kotzere", "kotzeres",
+            "luder", "ludern", "luders", "lüge",
+            "lügen", "lügner", "lügnerin", "lügnerinnen",
+            "lügnerisch", "lügnerische", "lügnerischer", "lügnerisches", "miststück",
+            "miststücke", "miststückes", "müll", "mülle",
+            "müller", "müllere", "mülleres", "nazi",
+            "nazis", "nazistisch", "nazistische", "nazistischer",
+            "nazistisches", "nutte", "nutten", "orgasmus",
+            "orgasmen", "pimmel", "pimmeln", "pimmels",
+            "piss", "pissen", "pisser", "pissere",
+            "pisseres", "popel", "popeln", "popels",
+            "porno", "pornos", "pornografie", "penis",
+            "penise", "penises", "raub", "raube",
+            "räuber", "räuberin", "räuberinnen", "räuberisch",
+            "räuberische", "räuberischer", "räuberisches", "sau",
+            "säue", "sauber", "saubere", "sauberer",
+            "sauberes", "scheiss", "scheisse", "scheissen",
+            "scheisser", "scheissere", "scheisseres", "scheiß",
+            "scheiße", "scheißen", "scheißer", "scheißere",
+            "scheißeres", "schlampe", "schlampen", "schlampig",
+            "schlampige", "schlampiger", "schlampiges", "schmutz",
+            "schmutzig", "schmutzige", "schmutziger", "schmutziges", "schweinehund",
+            "schweinehunde", "schweinehundes", "schweinesystem", "schwein", "schweine",
+            "schweines", "sodomie", "sodomit", "sodomiten",
+            "spast", "spasti", "spastis", "spastisch",
+            "spastische", "spastischer", "spastisches", "sperma",
+            "stumpf", "stumpfe", "stumpfer", "stumpfes",
+            "tucke", "tucken", "vagina", "vaginen",
+            "verdammt", "verdammte", "verdammter", "verdammtes",
+            "vergewaltigen", "vergewaltigung", "vergewaltigungen", "verrückt",
+            "verrückte", "verrückter", "verrücktes", "vieh",
+            "vieher", "viehes", "vollidiot", "vollidioten",
+            "vollidiotin", "vollidiotinnen", "vulva", "vulven",
+            "wichse", "wichsen", "wichser", "wichsere",
+            "wichseres", "wixer", "wixeren", "wixeres",
+            "zigeuner", "zigeunerin", "zigeunerinnen", "zorn",
+            "zorne", "zornes", "zornig", "zornige",
+            "zorniger", "zorniges"
         ];
 
-        $mensajeMinuscula = mb_strtolower($mensaje, 'UTF-8');
-
+        $patterns = [];
         foreach ($palabrasProhibidas as $palabra) {
-            if (str_contains($mensajeMinuscula, $palabra)) {
-                return true;
+            $palabraNorm = $this->quitarAcentos(mb_strtolower($palabra, 'UTF-8'));
+            $chars = preg_split('//u', $palabraNorm, -1, PREG_SPLIT_NO_EMPTY);
+            
+            $pattern = '';
+            $len = count($chars);
+            for ($i = 0; $i < $len; $i++) {
+                $char = $chars[$i];
+                if ($char === ' ') {
+                    $pattern .= '\s+';
+                } elseif ($i === $len - 1) {
+                    $pattern .= preg_quote($char, '/');
+                } else {
+                    $pattern .= preg_quote($char, '/') . '[^a-z0-9]*';
+                }
+            }
+
+            if (mb_strlen($palabraNorm, 'UTF-8') < 4) {
+                $patterns[] = '\b' . $pattern . '\b';
+            } else {
+                $patterns[] = $pattern;
             }
         }
 
-        return false;
+        self::$regexProhibido = '/' . implode('|', $patterns) . '/i';
+        return self::$regexProhibido;
+    }
+
+    private function contienePalabrasInapropiadas($mensaje)
+    {
+        // 1. Quitar acentos
+        $mensajeLimpio = $this->quitarAcentos($mensaje);
+
+        // 2. Normalizar Leet Speak
+        $leetMap = [
+            '4' => 'a',
+            '@' => 'a',
+            '3' => 'e',
+            '1' => 'i',
+            '!' => 'i',
+            '|' => 'i',
+            '0' => 'o',
+            '5' => 's',
+            '$' => 's',
+            '7' => 't',
+            '8' => 'b'
+        ];
+        $textoNormalizado = str_replace(array_keys($leetMap), array_values($leetMap), mb_strtolower($mensajeLimpio, 'UTF-8'));
+
+        // 3. Ejecutar la expresión regular consolidada
+        $regex = $this->obtenerRegexOptimizado();
+        return (bool)preg_match($regex, $textoNormalizado);
+    }
+
+    private function quitarAcentos($str) {
+        $replaces = [
+            'á' => 'a', 'é' => 'e', 'í' => 'i', 'ó' => 'o', 'ú' => 'u',
+            'Á' => 'a', 'É' => 'e', 'Í' => 'i', 'Ó' => 'o', 'Ú' => 'u',
+            'ü' => 'u', 'Ü' => 'u', 'ñ' => 'n', 'Ñ' => 'n'
+        ];
+        return strtr($str, $replaces);
     }
 }
