@@ -194,7 +194,7 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
                     Entrega: {rec.tipoEntrega}
                   </p>
                 </div>
-                {!rec.deleted_at && (
+                {!rec.deleted_at ? (
                   <div className="flex gap-2">
                     <button
                       type="button"
@@ -209,6 +209,28 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
                       className="flex-1 px-3 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-bold hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
                     >
                       Bloquear
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        try {
+                          await axios.put(`/api/recompensas/${rec.id}/restore`);
+                          premiumToast.success('Recompensa desbloqueada correctamente');
+                          if (onUpdate) {
+                            const updatedProjectRes = await axios.get(`/api/proyectos/${proyecto.id}`);
+                            onUpdate(updatedProjectRes.data);
+                          }
+                        } catch (error) {
+                          console.error('Error restoring reward:', error);
+                          premiumToast.error(error.response?.data?.message || 'Error al desbloquear la recompensa');
+                        }
+                      }}
+                      className="flex-1 px-3 py-2 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-xl text-sm font-bold hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
+                    >
+                      Desbloquear
                     </button>
                   </div>
                 )}

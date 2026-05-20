@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/recompensas', [\App\Http\Controllers\RecompensaController::class, 'store']);
     Route::put('/recompensas/{id}', [\App\Http\Controllers\RecompensaController::class, 'update']);
     Route::delete('/recompensas/{id}', [\App\Http\Controllers\RecompensaController::class, 'destroy']);
+    Route::put('/recompensas/{id}/restore', [\App\Http\Controllers\RecompensaController::class, 'restore']);
     Route::post('/proyectos/{id}/faqs', [\App\Http\Controllers\FaqController::class, 'store']);
     
     Route::post('/users/{id}/follow', [SeguidorController::class, 'alternarSeguir']);

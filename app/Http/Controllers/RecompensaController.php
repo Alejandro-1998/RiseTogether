@@ -135,4 +135,18 @@ class RecompensaController extends Controller
 
         return response()->json(null, 204);
     }
+
+    public function restore(string $id)
+    {
+        $recompensa = Recompensa::withTrashed()->findOrFail($id);
+        
+        $proyecto = \App\Models\Proyecto::findOrFail($recompensa->idProyecto);
+        if ($proyecto->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+            return response()->json(['message' => 'No tienes permiso para restaurar esta recompensa.'], 403);
+        }
+
+        $recompensa->restore();
+
+        return response()->json($recompensa);
+    }
 }
