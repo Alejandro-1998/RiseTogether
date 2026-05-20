@@ -61,6 +61,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/proyectos/{id}/donaciones', [ProyectoController::class, 'donaciones']);
     
     Route::post('/recompensas', [\App\Http\Controllers\RecompensaController::class, 'store']);
+    Route::put('/recompensas/{id}', [\App\Http\Controllers\RecompensaController::class, 'update']);
+    Route::delete('/recompensas/{id}', [\App\Http\Controllers\RecompensaController::class, 'destroy']);
     Route::post('/proyectos/{id}/faqs', [\App\Http\Controllers\FaqController::class, 'store']);
     
     Route::post('/users/{id}/follow', [SeguidorController::class, 'alternarSeguir']);

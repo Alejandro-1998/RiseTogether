@@ -81,7 +81,7 @@ export default function DonacionesAdminTab({ proyectoId }) {
                     )}
                   </td>
                   <td className="py-4 px-4 text-sm text-[#9c7049]">
-                    {new Date(donacion.fechaCompra).toLocaleDateString('es-ES', {
+                    {new Date(donacion.created_at).toLocaleDateString('es-ES', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',

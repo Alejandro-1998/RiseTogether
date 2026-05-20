@@ -133,15 +133,17 @@ const CommentItem = ({
                                     <span className="material-symbols-outlined text-[20px] block">more_vert</span>
                                 </button>
                                 {menuOpen && (
-                                    <div className="absolute right-0 mt-1 w-32 bg-white dark:bg-[#1a120d] border border-[#eceae8] dark:border-[#3a2c20] rounded-xl shadow-lg z-30 py-1">
-                                        <button
-                                            type="button"
-                                            onClick={handleReport}
-                                            className="w-full text-left px-4 py-2 text-xs font-bold text-[#9c7049] hover:text-[#ef4444] hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center gap-2"
-                                        >
-                                            <span className="material-symbols-outlined text-[16px]">report</span>
-                                            Reportar
-                                        </button>
+                                    <div className="absolute right-0 top-full pt-1 w-32 z-30">
+                                        <div className="bg-white dark:bg-[#1a120d] border border-[#eceae8] dark:border-[#3a2c20] rounded-xl shadow-lg py-1">
+                                            <button
+                                                type="button"
+                                                onClick={handleReport}
+                                                className="w-full text-left px-4 py-2 text-xs font-bold text-[#9c7049] hover:text-[#ef4444] hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors flex items-center gap-2"
+                                            >
+                                                <span className="material-symbols-outlined text-[16px]">report</span>
+                                                Reportar
+                                            </button>
+                                        </div>
                                     </div>
                                 )}
                             </div>

@@ -4,7 +4,7 @@ export default function FooterPublic() {
   return (
     <footer className="bg-[#f4ede7] dark:bg-[#2a2017]">
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-3">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {/* Logo */}
           <div className="col-span-2 md:col-span-1">
             <div className="flex items-center gap-8">
@@ -57,6 +57,29 @@ export default function FooterPublic() {
               ))}
             </ul>
           </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider text-[#1c140d] dark:text-[#fcfaf8]">
+              Legal
+            </h3>
+            <ul className="mt-4 space-y-2">
+              {[
+                { label: "Política de Privacidad", to: "/politica-privacidad" },
+                { label: "Términos y Condiciones", to: "/terminos-y-condiciones" },
+                { label: "Aviso Legal", to: "/aviso-legal" },
+              ].map((l) => (
+                <li key={l.label}>
+                  <Link
+                    to={l.to}
+                    className="text-sm text-[#9c7049] transition-colors hover:text-[#f2780d] dark:text-[#a18a7a] dark:hover:text-[#f2780d]"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
         {/* Línea inferior */}
@@ -96,18 +119,6 @@ export default function FooterPublic() {
               alt="ND"
               className="ml-1 h-4 w-4"
             />
-            <span className="mx-2 text-[#9c7049]/50">|</span>
-            <Link to="/politica-privacidad" className="font-semibold hover:text-[#f2780d]">
-              Política de Privacidad
-            </Link>
-            <span className="mx-2 text-[#9c7049]/50">|</span>
-            <Link to="/terminos-y-condiciones" className="font-semibold hover:text-[#f2780d]">
-              Términos y Condiciones
-            </Link>
-            <span className="mx-2 text-[#9c7049]/50">|</span>
-            <Link to="/aviso-legal" className="font-semibold hover:text-[#f2780d]">
-              Aviso Legal
-            </Link>
           </p>
         </div>
       </div>

@@ -16,6 +16,7 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
     tipoEntrega: 'fisica',
   });
   const [isAddingReward, setIsAddingReward] = useState(false);
+  const [editingRewardId, setEditingRewardId] = useState(null);
 
   const premiumToast = {
     success: (msg) => toast.success(msg, {
@@ -52,16 +53,22 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
         idProyecto: proyecto.id,
         ...rewardData
       };
-      const res = await axios.post('/api/recompensas', payload);
-      premiumToast.success('Recompensa creada correctamente');
+      
+      if (editingRewardId) {
+        await axios.put(`/api/recompensas/${editingRewardId}`, payload);
+        premiumToast.success('Recompensa actualizada correctamente');
+      } else {
+        await axios.post('/api/recompensas', payload);
+        premiumToast.success('Recompensa creada correctamente');
+      }
       
       // Update local state or notify parent to reload
       if (onUpdate) {
-        // We just fetch the updated project to get the new rewards list easily
         const updatedProjectRes = await axios.get(`/api/proyectos/${proyecto.id}`);
         onUpdate(updatedProjectRes.data);
       }
       
+      setEditingRewardId(null);
       setRewardData({
         nombreRecompensa: '',
         costoRecompensa: '',
@@ -69,10 +76,46 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
         tipoEntrega: 'fisica',
       });
     } catch (error) {
-      console.error('Error creating reward:', error);
-      premiumToast.error(error.response?.data?.message || 'Error al crear la recompensa');
+      console.error('Error saving reward:', error);
+      premiumToast.error(error.response?.data?.message || 'Error al guardar la recompensa');
     } finally {
       setIsAddingReward(false);
+    }
+  };
+
+  const handleEditReward = (reward) => {
+    setEditingRewardId(reward.id);
+    setRewardData({
+      nombreRecompensa: reward.nombreRecompensa,
+      costoRecompensa: reward.costoRecompensa,
+      descripcionRecompensa: reward.descripcionRecompensa,
+      tipoEntrega: reward.tipoEntrega,
+    });
+    // Scroll to form optionally, but it's fine
+  };
+
+  const handleDeleteReward = async (rewardId) => {
+    if (!window.confirm('¿Estás seguro de que quieres bloquear/eliminar esta recompensa? Los donantes anteriores la conservarán.')) return;
+    
+    try {
+      await axios.delete(`/api/recompensas/${rewardId}`);
+      premiumToast.success('Recompensa eliminada correctamente');
+      if (onUpdate) {
+        const updatedProjectRes = await axios.get(`/api/proyectos/${proyecto.id}`);
+        onUpdate(updatedProjectRes.data);
+      }
+      if (editingRewardId === rewardId) {
+        setEditingRewardId(null);
+        setRewardData({
+          nombreRecompensa: '',
+          costoRecompensa: '',
+          descripcionRecompensa: '',
+          tipoEntrega: 'fisica',
+        });
+      }
+    } catch (error) {
+      console.error('Error deleting reward:', error);
+      premiumToast.error(error.response?.data?.message || 'Error al eliminar la recompensa');
     }
   };
 
@@ -120,11 +163,72 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
         </form>
       </section>
 
-      {/* Crear Nueva Recompensa */}
+      {/* Gestión de Recompensas Existentes */}
+      {proyecto.recompensas && proyecto.recompensas.length > 0 && (
+        <section className="bg-white dark:bg-[#1a120d] rounded-3xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-6 sm:p-8">
+          <h3 className="text-xl font-bold text-[#1c140d] dark:text-white mb-6 border-b border-[#f4ede7] dark:border-[#3a2c20] pb-4">
+            Tus Recompensas
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {proyecto.recompensas.map((rec) => (
+              <div key={rec.id} className="border border-[#e6dbd1] dark:border-[#3a2c20] rounded-2xl p-4 flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-bold text-[#1c140d] dark:text-white text-lg">{rec.nombreRecompensa}</h4>
+                    <span className="bg-[#f2780d]/10 text-[#f2780d] px-2 py-1 rounded text-sm font-bold">
+                      {rec.costoRecompensa}€
+                    </span>
+                  </div>
+                  <p className="text-sm text-[#6b7280] dark:text-[#9ca3af] line-clamp-2 mb-2">
+                    {rec.descripcionRecompensa}
+                  </p>
+                  <p className="text-xs text-[#9c7049] uppercase font-bold mb-4">
+                    Entrega: {rec.tipoEntrega}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEditReward(rec)}
+                    className="flex-1 px-3 py-2 bg-[#f4ede7] dark:bg-[#3a2c20] text-[#1c140d] dark:text-white rounded-xl text-sm font-bold hover:bg-[#e6dbd1] dark:hover:bg-[#4a3c30] transition-colors"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDeleteReward(rec.id)}
+                    className="flex-1 px-3 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-bold hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Crear / Editar Recompensa */}
       <section className="bg-white dark:bg-[#1a120d] rounded-3xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-6 sm:p-8">
-        <h3 className="text-xl font-bold text-[#1c140d] dark:text-white mb-6 border-b border-[#f4ede7] dark:border-[#3a2c20] pb-4">
-          Crear Nueva Recompensa
-        </h3>
+        <div className="flex justify-between items-center mb-6 border-b border-[#f4ede7] dark:border-[#3a2c20] pb-4">
+          <h3 className="text-xl font-bold text-[#1c140d] dark:text-white">
+            {editingRewardId ? 'Editar Recompensa' : 'Crear Nueva Recompensa'}
+          </h3>
+          {editingRewardId && (
+            <button
+              onClick={() => {
+                setEditingRewardId(null);
+                setRewardData({
+                  nombreRecompensa: '',
+                  costoRecompensa: '',
+                  descripcionRecompensa: '',
+                  tipoEntrega: 'fisica',
+                });
+              }}
+              className="text-sm text-[#f2780d] font-bold hover:underline"
+            >
+              Cancelar Edición
+            </button>
+          )}
+        </div>
         <form onSubmit={handleRewardSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -188,7 +292,7 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
               disabled={isAddingReward}
               className="px-6 py-3 bg-[#1c140d] dark:bg-white text-white dark:text-[#1c140d] hover:opacity-90 font-bold rounded-xl transition-colors disabled:opacity-50"
             >
-              {isAddingReward ? 'Creando...' : 'Crear Recompensa'}
+              {isAddingReward ? 'Guardando...' : (editingRewardId ? 'Guardar Cambios' : 'Crear Recompensa')}
             </button>
           </div>
         </form>

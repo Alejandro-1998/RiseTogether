@@ -88,6 +88,11 @@ class RecompensaController extends Controller
     {
         $recompensa = Recompensa::findOrFail($id);
 
+        $proyecto = \App\Models\Proyecto::findOrFail($recompensa->idProyecto);
+        if ($proyecto->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+            return response()->json(['message' => 'No tienes permiso para editar esta recompensa.'], 403);
+        }
+
         $request->validate([
             'nombreRecompensa' => 'required|string|max:255',
             'costoRecompensa' => 'required|numeric|min:0',
@@ -120,6 +125,12 @@ class RecompensaController extends Controller
     public function destroy(string $id)
     {
         $recompensa = Recompensa::findOrFail($id);
+        
+        $proyecto = \App\Models\Proyecto::findOrFail($recompensa->idProyecto);
+        if ($proyecto->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+            return response()->json(['message' => 'No tienes permiso para eliminar esta recompensa.'], 403);
+        }
+
         $recompensa->delete();
 
         return response()->json(null, 204);

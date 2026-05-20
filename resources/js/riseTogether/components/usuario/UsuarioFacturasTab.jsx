@@ -11,7 +11,6 @@ export default function UsuarioFacturasTab({ usuario, isMe }) {
   const [proyectoId, setProyectoId] = useState('');
   const [numeroFactura, setNumeroFactura] = useState('');
   const [cif, setCif] = useState('');
-  const [fechaFactura, setFechaFactura] = useState('');
   const [costo, setCosto] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [direccionFiscal, setDireccionFiscal] = useState('');
@@ -49,7 +48,7 @@ export default function UsuarioFacturasTab({ usuario, isMe }) {
     formData.append('proyecto_id', proyectoId);
     formData.append('numeroFactura', numeroFactura);
     formData.append('cif', cif);
-    formData.append('fechaFactura', fechaFactura);
+    formData.append('fechaFactura', new Date().toISOString().split('T')[0]);
     formData.append('costo', costo);
     formData.append('descripcion', descripcion);
     formData.append('direccionFiscal', direccionFiscal);
@@ -65,7 +64,6 @@ export default function UsuarioFacturasTab({ usuario, isMe }) {
       // Reset form
       setNumeroFactura('');
       setCif('');
-      setFechaFactura('');
       setCosto('');
       setDescripcion('');
       setDireccionFiscal('');
@@ -111,10 +109,7 @@ export default function UsuarioFacturasTab({ usuario, isMe }) {
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">CIF / NIF</label>
             <input required type="text" minLength="9" maxLength="9" value={cif} onChange={e => setCif(e.target.value)} className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha</label>
-            <input required type="date" value={fechaFactura} onChange={e => setFechaFactura(e.target.value)} className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
-          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Costo Total (€)</label>
             <input required type="number" step="0.01" value={costo} onChange={e => setCosto(e.target.value)} className="w-full border border-gray-300 dark:border-gray-700 rounded-xl px-4 py-2 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100" />
@@ -150,7 +145,7 @@ export default function UsuarioFacturasTab({ usuario, isMe }) {
               <div key={f.id} className="bg-white dark:bg-[#2d2d2d] border border-[#e8dace] dark:border-[#374151] rounded-2xl p-5 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div className="flex flex-col">
                   <span className="font-bold text-[#1c140d] dark:text-white">Factura #{f.numeroFactura} - {f.proyecto?.titulo}</span>
-                  <span className="text-sm text-gray-500">Subida el {new Date(f.created_at).toLocaleDateString()} | Costo: {f.costo}€</span>
+                  <span className="text-sm text-gray-500">Subida el {new Date(f.created_at).toLocaleDateString()} | Costo: {Number(f.costo).toLocaleString('es-ES', {minimumFractionDigits: 2})}€</span>
                   <span className="text-sm text-gray-500">Desc: {f.descripcion}</span>
                 </div>
                 <div className="flex items-center gap-3">

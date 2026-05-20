@@ -18,11 +18,17 @@ class Evento extends Model
         'nombre',
         'fechaInicio',
         'fechaFinal',
-        'cantidadMaxParticipantes'
+        'cantidadMaxParticipantes',
+        'idFinalidad'
     ];
 
     function proyectos()
     {
         return $this->belongsToMany(Proyecto::class, 'proyectos_eventos', 'idEvento', 'idProyecto');
+    }
+
+    function finalidad()
+    {
+        return $this->belongsTo(Finalidad::class, 'idFinalidad');
     }
 }

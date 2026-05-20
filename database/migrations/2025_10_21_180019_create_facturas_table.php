@@ -16,7 +16,7 @@ return new class extends Migration
             $table->integer('numeroFactura');
             $table->string('cif', 9);
             $table->date('fechaFactura');
-            $table->integer('costo');
+            $table->decimal('costo', 10, 2);
             $table->string('descripcion');
             $table->string('direccionFiscal');
             $table->string('pdf');
