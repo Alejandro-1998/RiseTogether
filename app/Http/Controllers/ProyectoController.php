@@ -163,7 +163,13 @@ class ProyectoController extends Controller
 
     public function show(string $id)
     {
-        $proyecto = Proyecto::with(['categoria', 'recompensas' => function ($query) {
+        $user = Auth::guard('sanctum')->user();
+        $isOwner = $user && Proyecto::where('id', $id)->where('user_id', $user->id)->exists();
+
+        $proyecto = Proyecto::with(['categoria', 'recompensas' => function ($query) use ($isOwner) {
+            if ($isOwner) {
+                $query->withTrashed();
+            }
             $query->orderBy('costoRecompensa', 'asc');
         }, 'user', 'faqs'])->findOrFail($id);
 

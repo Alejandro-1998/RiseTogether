@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
@@ -17,6 +17,7 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
   });
   const [isAddingReward, setIsAddingReward] = useState(false);
   const [editingRewardId, setEditingRewardId] = useState(null);
+  const titleInputRef = useRef(null);
 
   const premiumToast = {
     success: (msg) => toast.success(msg, {
@@ -91,15 +92,19 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
       descripcionRecompensa: reward.descripcionRecompensa,
       tipoEntrega: reward.tipoEntrega,
     });
-    // Scroll to form optionally, but it's fine
+    
+    setTimeout(() => {
+      if (titleInputRef.current) {
+        titleInputRef.current.focus();
+        titleInputRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
   };
 
-  const handleDeleteReward = async (rewardId) => {
-    if (!window.confirm('¿Estás seguro de que quieres bloquear/eliminar esta recompensa? Los donantes anteriores la conservarán.')) return;
-    
+  const handleBlockReward = async (rewardId) => {
     try {
       await axios.delete(`/api/recompensas/${rewardId}`);
-      premiumToast.success('Recompensa eliminada correctamente');
+      premiumToast.success('Recompensa bloqueada correctamente');
       if (onUpdate) {
         const updatedProjectRes = await axios.get(`/api/proyectos/${proyecto.id}`);
         onUpdate(updatedProjectRes.data);
@@ -114,8 +119,8 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
         });
       }
     } catch (error) {
-      console.error('Error deleting reward:', error);
-      premiumToast.error(error.response?.data?.message || 'Error al eliminar la recompensa');
+      console.error('Error blocking reward:', error);
+      premiumToast.error(error.response?.data?.message || 'Error al bloquear la recompensa');
     }
   };
 
@@ -171,10 +176,13 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {proyecto.recompensas.map((rec) => (
-              <div key={rec.id} className="border border-[#e6dbd1] dark:border-[#3a2c20] rounded-2xl p-4 flex flex-col justify-between">
+              <div key={rec.id} className={`border rounded-2xl p-4 flex flex-col justify-between ${rec.deleted_at ? 'opacity-60 grayscale border-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50' : 'border-[#e6dbd1] dark:border-[#3a2c20]'}`}>
                 <div>
                   <div className="flex justify-between items-start mb-2">
-                    <h4 className="font-bold text-[#1c140d] dark:text-white text-lg">{rec.nombreRecompensa}</h4>
+                    <h4 className="font-bold text-[#1c140d] dark:text-white text-lg">
+                      {rec.nombreRecompensa}
+                      {rec.deleted_at && <span className="ml-2 text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full inline-block align-middle">Bloqueada</span>}
+                    </h4>
                     <span className="bg-[#f2780d]/10 text-[#f2780d] px-2 py-1 rounded text-sm font-bold">
                       {rec.costoRecompensa}€
                     </span>
@@ -186,20 +194,24 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
                     Entrega: {rec.tipoEntrega}
                   </p>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handleEditReward(rec)}
-                    className="flex-1 px-3 py-2 bg-[#f4ede7] dark:bg-[#3a2c20] text-[#1c140d] dark:text-white rounded-xl text-sm font-bold hover:bg-[#e6dbd1] dark:hover:bg-[#4a3c30] transition-colors"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => handleDeleteReward(rec.id)}
-                    className="flex-1 px-3 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-bold hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
-                  >
-                    Eliminar
-                  </button>
-                </div>
+                {!rec.deleted_at && (
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleEditReward(rec)}
+                      className="flex-1 px-3 py-2 bg-[#f4ede7] dark:bg-[#3a2c20] text-[#1c140d] dark:text-white rounded-xl text-sm font-bold hover:bg-[#e6dbd1] dark:hover:bg-[#4a3c30] transition-colors"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleBlockReward(rec.id)}
+                      className="flex-1 px-3 py-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-sm font-bold hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+                    >
+                      Bloquear
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -236,6 +248,7 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
                 Título de la Recompensa
               </label>
               <input
+                ref={titleInputRef}
                 type="text"
                 value={rewardData.nombreRecompensa}
                 onChange={(e) => setRewardData({ ...rewardData, nombreRecompensa: e.target.value })}
