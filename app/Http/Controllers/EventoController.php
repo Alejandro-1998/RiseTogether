@@ -298,12 +298,15 @@ class EventoController extends Controller
             'fechaInicio' => 'required|date',
             'fechaFinal' => 'required|date|after:fechaInicio',
             'cantidadMaxParticipantes' => 'nullable|integer|min:1',
+            'idFinalidad' => 'required|exists:finalidades,id',
         ], [
             'nombre.required' => 'El nombre del evento es obligatorio.',
             'fechaInicio.required' => 'La fecha de inicio es obligatoria.',
             'fechaFinal.required' => 'La fecha de fin es obligatoria.',
             'fechaFinal.after' => 'La fecha de fin debe ser posterior a la de inicio.',
             'cantidadMaxParticipantes.integer' => 'La cantidad de participantes debe ser un número entero.',
+            'idFinalidad.required' => 'Debes seleccionar una finalidad.',
+            'idFinalidad.exists' => 'La finalidad seleccionada no es válida.',
         ]);
 
         $evento = Evento::create([
@@ -311,6 +314,7 @@ class EventoController extends Controller
             'fechaInicio' => $request->fechaInicio,
             'fechaFinal' => $request->fechaFinal,
             'cantidadMaxParticipantes' => $request->cantidadMaxParticipantes,
+            'idFinalidad' => $request->idFinalidad,
         ]);
 
         return response()->json($evento, 201);
@@ -345,12 +349,15 @@ class EventoController extends Controller
             'fechaInicio' => 'required|date',
             'fechaFinal' => 'required|date|after:fechaInicio',
             'cantidadMaxParticipantes' => 'nullable|integer|min:1',
+            'idFinalidad' => 'required|exists:finalidades,id',
         ], [
             'nombre.required' => 'El nombre del evento es obligatorio.',
             'fechaInicio.required' => 'La fecha de inicio es obligatoria.',
             'fechaFinal.required' => 'La fecha de fin es obligatoria.',
             'fechaFinal.after' => 'La fecha de fin debe ser posterior a la de inicio.',
             'cantidadMaxParticipantes.integer' => 'La cantidad de participantes debe ser un número entero.',
+            'idFinalidad.required' => 'Debes seleccionar una finalidad.',
+            'idFinalidad.exists' => 'La finalidad seleccionada no es válida.',
         ]);
 
         $evento->update([
@@ -358,6 +365,7 @@ class EventoController extends Controller
             'fechaInicio' => $request->fechaInicio,
             'fechaFinal' => $request->fechaFinal,
             'cantidadMaxParticipantes' => $request->cantidadMaxParticipantes,
+            'idFinalidad' => $request->idFinalidad,
         ]);
 
         return response()->json($evento);

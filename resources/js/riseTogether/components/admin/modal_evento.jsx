@@ -5,6 +5,18 @@ export default function ModalEvento({ open, onClose, evento, onSave }) {
     const [fechaInicio, setFechaInicio] = useState("");
     const [fechaFinal, setFechaFinal] = useState("");
     const [cantidadMaxParticipantes, setCantidadMaxParticipantes] = useState("");
+    const [idFinalidad, setIdFinalidad] = useState("");
+    const [finalidades, setFinalidades] = useState([]);
+
+    useEffect(() => {
+        import("axios").then((axios) => {
+            axios.default.get("/api/finalidades").then((res) => {
+                if (Array.isArray(res.data)) {
+                    setFinalidades(res.data);
+                }
+            }).catch(console.error);
+        });
+    }, []);
 
     useEffect(() => {
         if (evento) {
@@ -12,23 +24,26 @@ export default function ModalEvento({ open, onClose, evento, onSave }) {
             setFechaInicio(evento.fechaInicio || "");
             setFechaFinal(evento.fechaFinal || "");
             setCantidadMaxParticipantes(evento.cantidadMaxParticipantes || "");
+            setIdFinalidad(evento.idFinalidad || "");
         } else {
             setNombre("");
             setFechaInicio("");
             setFechaFinal("");
             setCantidadMaxParticipantes("");
+            setIdFinalidad("");
         }
     }, [evento, open]);
 
     if (!open) return null;
 
     const handleSave = () => {
-        if (!nombre.trim() || !fechaInicio || !fechaFinal) return;
+        if (!nombre.trim() || !fechaInicio || !fechaFinal || !idFinalidad) return;
         onSave?.({
             nombre: nombre.trim(),
             fechaInicio,
             fechaFinal,
             cantidadMaxParticipantes: cantidadMaxParticipantes || null,
+            idFinalidad: parseInt(idFinalidad, 10),
         });
     };
 
@@ -87,16 +102,33 @@ export default function ModalEvento({ open, onClose, evento, onSave }) {
                         </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                            Max. Participantes
-                        </label>
-                        <input
-                            type="number"
-                            value={cantidadMaxParticipantes}
-                            onChange={(e) => setCantidadMaxParticipantes(e.target.value)}
-                            className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 focus:border-[#f2780d] outline-none"
-                        />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                                Max. Participantes
+                            </label>
+                            <input
+                                type="number"
+                                value={cantidadMaxParticipantes}
+                                onChange={(e) => setCantidadMaxParticipantes(e.target.value)}
+                                className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 focus:border-[#f2780d] outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                                Finalidad
+                            </label>
+                            <select
+                                value={idFinalidad}
+                                onChange={(e) => setIdFinalidad(e.target.value)}
+                                className="w-full px-4 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 focus:border-[#f2780d] outline-none appearance-none"
+                            >
+                                <option value="" disabled>Selecciona una finalidad</option>
+                                {finalidades.map(f => (
+                                    <option key={f.id} value={f.id}>{f.tipoFinalidad}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </div>
 
