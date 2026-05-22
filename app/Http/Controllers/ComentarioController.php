@@ -5,29 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Comentario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ComentarioEstrella;
 
 class ComentarioController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $comentarios = Comentario::all();
         return response()->json($comentarios);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -74,26 +61,12 @@ class ComentarioController extends Controller
         return response()->json($comentario, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $comentario = Comentario::findOrFail($id);
         return response()->json($comentario);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $comentario = Comentario::where('idUsuario', Auth::id())->findOrFail($id);
@@ -124,9 +97,6 @@ class ComentarioController extends Controller
         return response()->json($comentario);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $comentario = Comentario::where('idUsuario', Auth::id())->findOrFail($id);
@@ -135,14 +105,10 @@ class ComentarioController extends Controller
         return response()->json(null, 204);
     }
 
-    /**
-     * Comentarios con más estrellas de los últimos 7 días.
-     */
     public function comentariosRelevantes()
     {
         $comentarios = Comentario::with('user')
             ->whereNull('idActualizacion')
-            // ->where('estado', 'aprobado') // Commented out to show all comments for now
             ->withCount([
                 'estrellasRecibidas as estrellas_recientes' => function ($query) {
                     $query->where('created_at', '>=', now()->subDays(7));
@@ -154,16 +120,13 @@ class ComentarioController extends Controller
 
         return response()->json($comentarios);
     }
-    /**
-     * Toggle like for a comment.
-     */
+
     public function toggleLike($id)
     {
         $comentario = Comentario::findOrFail($id);
         $user = Auth::user();
 
-        // Check if already liked
-        $existingLike = \App\Models\ComentarioEstrella::where('user_id', $user->id)
+        $existingLike = ComentarioEstrella::where('user_id', $user->id)
             ->where('comentario_id', $comentario->id)
             ->first();
 
@@ -171,7 +134,7 @@ class ComentarioController extends Controller
             $existingLike->delete();
             $liked = false;
         } else {
-            \App\Models\ComentarioEstrella::create([
+            ComentarioEstrella::create([
                 'user_id' => $user->id,
                 'comentario_id' => $comentario->id,
             ]);
@@ -184,14 +147,10 @@ class ComentarioController extends Controller
         ]);
     }
 
-    /**
-     * Obtener comentarios de un proyecto específico.
-     */
     public function getProjectComments($projectId)
     {
         $userId = Auth::id();
 
-        // Fetch all comments for the project with user data and like counts
         $allComments = Comentario::with('user')
             ->where('idProyecto', $projectId)
             ->whereNull('idActualizacion')
@@ -199,39 +158,32 @@ class ComentarioController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Check if current user liked each comment
-        // Efficient way: get all likes for these comments by this user
         $userLikes = [];
         if ($userId) {
             $commentIds = $allComments->pluck('id');
-            $userLikes = \App\Models\ComentarioEstrella::where('user_id', $userId)
+            $userLikes = ComentarioEstrella::where('user_id', $userId)
                 ->whereIn('comentario_id', $commentIds)
                 ->pluck('comentario_id')
                 ->flip()
                 ->toArray();
         }
 
-        // Build a tree structure
         $commentsById = [];
         $rootComments = [];
 
-        // First pass: Index by ID and initialize relations and attributes
         foreach ($allComments as $comment) {
-            $comment->setRelation('comentarios_respuesta', collect([])); // Initialize as empty collection
+            $comment->setRelation('comentarios_respuesta', collect([]));
             $comment->is_liked = isset($userLikes[$comment->id]);
             $commentsById[$comment->id] = $comment;
         }
 
-        // Second pass: Link children to parents
         foreach ($allComments as $comment) {
             if ($comment->idComentario) {
-                // It's a reply
                 if (isset($commentsById[$comment->idComentario])) {
                     $parent = $commentsById[$comment->idComentario];
                     $parent->comentarios_respuesta->push($comment);
                 }
             } else {
-                // It's a root comment
                 $rootComments[] = $comment;
             }
         }
@@ -239,9 +191,6 @@ class ComentarioController extends Controller
         return response()->json(array_values($rootComments));
     }
 
-    /**
-     * Obtener comentarios pendientes para el panel de administración.
-     */
     public function pendientesAdmin()
     {
         $comentarios = Comentario::with(['user', 'proyecto'])
@@ -252,9 +201,6 @@ class ComentarioController extends Controller
         return response()->json($comentarios);
     }
 
-    /**
-     * Actualizar estado de comentario o eliminar (admin).
-     */
     public function updateEstadoAdmin(Request $request, $id)
     {
         $comentario = Comentario::findOrFail($id);
@@ -276,9 +222,6 @@ class ComentarioController extends Controller
         return response()->json(['message' => 'Comentario aprobado', 'comentario' => $comentario]);
     }
 
-    /**
-     * Reportar un comentario (lo pasa a estado pendiente).
-     */
     public function reportar($id)
     {
         $comentario = Comentario::findOrFail($id);
@@ -674,7 +617,6 @@ class ComentarioController extends Controller
             "zorniger", "zorniges"
         ];
 
-        // Limpiar dinámicamente palabras problemáticas con asteriscos o duplicados raros
         $palabrasProhibidasCleaned = [];
         foreach ($palabrasProhibidas as $palabra) {
             if (str_contains($palabra, '**') || str_contains($palabra, '***') || str_contains($palabra, '自由')) {
@@ -720,10 +662,8 @@ class ComentarioController extends Controller
 
     private function contienePalabrasInapropiadas($mensaje)
     {
-        // 1. Quitar acentos
         $mensajeLimpio = $this->quitarAcentos($mensaje);
 
-        // 2. Normalizar Leet Speak
         $leetMap = [
             '4' => 'a',
             '@' => 'a',
@@ -739,7 +679,6 @@ class ComentarioController extends Controller
         ];
         $textoNormalizado = str_replace(array_keys($leetMap), array_values($leetMap), mb_strtolower($mensajeLimpio, 'UTF-8'));
 
-        // 3. Ejecutar las expresiones regulares en bloques pequeños para evitar rebasar límites de PCRE
         foreach ($this->obtenerRegexOptimizadoList() as $regex) {
             if (preg_match($regex, $textoNormalizado)) {
                 return true;

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Proyecto;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\Evento;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -19,7 +21,6 @@ class AdminController extends Controller
 
         $usuarios = User::count();
 
-        // Suma total recaudada de todos los proyectos
         $ingresos = Proyecto::sum('cantidad_recaudada');
 
         return response()->json([
@@ -35,8 +36,7 @@ class AdminController extends Controller
         $limit = $request->query('limit', 10);
         $actividades = collect();
 
-        // Proyectos
-        $proyectos = \App\Models\Proyecto::orderBy('created_at', 'desc')->take(10)->get();
+        $proyectos = Proyecto::orderBy('created_at', 'desc')->take(10)->get();
         foreach ($proyectos as $p) {
             $actividades->push([
                 'tipo' => 'proyecto',
@@ -47,8 +47,7 @@ class AdminController extends Controller
             ]);
         }
 
-        // Usuarios
-        $usuarios = \App\Models\User::orderBy('created_at', 'desc')->take(10)->get();
+        $usuarios = User::orderBy('created_at', 'desc')->take(10)->get();
         foreach ($usuarios as $u) {
             $actividades->push([
                 'tipo' => 'usuario',
@@ -59,8 +58,7 @@ class AdminController extends Controller
             ]);
         }
 
-        // Eventos
-        $eventos = \App\Models\Evento::orderBy('created_at', 'desc')->take(10)->get();
+        $eventos = Evento::orderBy('created_at', 'desc')->take(10)->get();
         foreach ($eventos as $e) {
             $actividades->push([
                 'tipo' => 'evento',
@@ -71,12 +69,10 @@ class AdminController extends Controller
             ]);
         }
 
-        // Ordenar y tomar los más recientes según el límite
         $actividades = $actividades->sortByDesc('fecha')->take($limit)->values();
 
-        // Formatear el tiempo
         $actividades->transform(function ($item) {
-            $item['tiempo'] = \Carbon\Carbon::parse($item['fecha'])->locale('es')->diffForHumans();
+            $item['tiempo'] = Carbon::parse($item['fecha'])->locale('es')->diffForHumans();
             return $item;
         });
 

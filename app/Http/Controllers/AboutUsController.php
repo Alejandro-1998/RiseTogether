@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\User;
+use App\Models\SiteContent;
 
 class AboutUsController extends Controller
 {
     public function index()
     {
-        // Obtener usuario con rol admin
-        $team = \App\Models\User::role('admin')->get()->map(function ($user) {
+        $team = User::role('admin')->get()->map(function ($user) {
             return [
                 'id' => $user->id,
                 'name' => $user->nombreCompleto ?? $user->nombreUsuario,
@@ -18,8 +18,7 @@ class AboutUsController extends Controller
             ];
         });
 
-        // Obtener contenidos del sitio
-        $contents = \App\Models\SiteContent::where('group', 'about_us')
+        $contents = SiteContent::where('group', 'about_us')
             ->get()
             ->pluck('value', 'key');
 

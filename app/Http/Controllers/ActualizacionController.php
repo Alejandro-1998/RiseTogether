@@ -7,6 +7,7 @@ use App\Models\ProyectoActualizacion;
 use App\Models\Comentario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ComentarioEstrella;
 
 class ActualizacionController extends Controller
 {
@@ -45,26 +46,23 @@ class ActualizacionController extends Controller
     {
         $actualizacion = ProyectoActualizacion::findOrFail($id);
         
-        // Get comments for this specific update
         $allComments = Comentario::with('user')
             ->where('idActualizacion', $id)
             ->withCount(['estrellasRecibidas as likes_count'])
             ->orderBy('created_at', 'desc')
             ->get();
 
-        // Check if current user liked each comment
         $userId = Auth::id();
         $userLikes = [];
         if ($userId) {
             $commentIds = $allComments->pluck('id');
-            $userLikes = \App\Models\ComentarioEstrella::where('user_id', $userId)
+            $userLikes = ComentarioEstrella::where('user_id', $userId)
                 ->whereIn('comentario_id', $commentIds)
                 ->pluck('comentario_id')
                 ->flip()
                 ->toArray();
         }
 
-        // Build tree structure (similar to ComentarioController)
         $commentsById = [];
         $rootComments = [];
 

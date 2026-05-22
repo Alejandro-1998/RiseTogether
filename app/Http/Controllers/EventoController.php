@@ -9,12 +9,10 @@ use App\Models\Proyecto;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class EventoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $this->checkAndAssignWinners();
@@ -22,12 +20,8 @@ class EventoController extends Controller
         return response()->json($eventos);
     }
 
-    /**
-     * Clean dummy events with latin text
-     */
     public function cleanDummyEvents()
     {
-        // Delete events whose names contain latin identifiers or specific dummy data
         $deleted = Evento::whereIn('id', [2, 3, 4])
                          ->orWhere('nombre', 'like', '%Ut eos%')
                          ->orWhere('nombre', 'like', '%Iure nihil%')
@@ -37,9 +31,6 @@ class EventoController extends Controller
         return response()->json(['message' => "Se eliminaron $deleted eventos de prueba."]);
     }
 
-    /**
-     * Get the currently active event.
-     */
     public function active()
     {
         $this->checkAndAssignWinners();
@@ -51,9 +42,6 @@ class EventoController extends Controller
         return response()->json($evento);
     }
 
-    /**
-     * Get upcoming events.
-     */
     public function upcoming()
     {
         $this->checkAndAssignWinners();
@@ -66,9 +54,6 @@ class EventoController extends Controller
         return response()->json($eventos);
     }
 
-    /**
-     * Get the leaderboard for a specific event.
-     */
     public function leaderboard(Request $request, $id)
     {
         $this->checkAndAssignWinners();
@@ -77,7 +62,6 @@ class EventoController extends Controller
         
         $query = $evento->proyectos()->with(['user', 'categoria']);
 
-        // Filtrar por categoría si se proporciona
         if ($request->has('categoria') && $request->categoria != 'Todas las Categorías') {
             $query->whereHas('categoria', function($q) use ($request) {
                 $q->where('nombre', $request->categoria);
@@ -114,9 +98,6 @@ class EventoController extends Controller
         return response()->json($projects);
     }
 
-    /**
-     * Get global stats for a specific event.
-     */
     public function stats($id)
     {
         $evento = Evento::with('finalidad')->findOrFail($id);
@@ -147,9 +128,6 @@ class EventoController extends Controller
         return response()->json($stats);
     }
 
-    /**
-     * Get the latest 5 activities/milestones for a specific event.
-     */
     public function actividadReciente($id)
     {
         $evento = Evento::findOrFail($id);
@@ -157,7 +135,6 @@ class EventoController extends Controller
 
         $actividades = collect();
 
-        // 1. Inscripciones
         $inscripciones = DB::table('proyectos_eventos')
             ->join('proyectos', 'proyectos_eventos.idProyecto', '=', 'proyectos.id')
             ->where('proyectos_eventos.idEvento', $id)
@@ -176,7 +153,6 @@ class EventoController extends Controller
             ]);
         }
 
-        // 2. Donaciones
         $donaciones = \App\Models\Donacion::with(['users', 'proyectos'])
             ->whereIn('idProyecto', $proyectosIds)
             ->where('estadoDonacion', 'pagada')
@@ -196,7 +172,6 @@ class EventoController extends Controller
             ]);
         }
 
-        // 3. Seguimientos
         $seguimientos = DB::table('users_proyectos')
             ->join('proyectos', 'users_proyectos.idProyecto', '=', 'proyectos.id')
             ->join('users', 'users_proyectos.idUsuario', '=', 'users.id')
@@ -217,12 +192,10 @@ class EventoController extends Controller
             ]);
         }
 
-        // Sort by date desc and take 5
         $actividades = $actividades->sortByDesc(function ($act) {
             return Carbon::parse($act['fecha']);
         })->take(5)->values();
 
-        // Format time diffForHumans
         $actividades->transform(function ($item) {
             $item['time'] = \Carbon\Carbon::parse($item['fecha'])->locale('es')->diffForHumans();
             return $item;
@@ -231,9 +204,6 @@ class EventoController extends Controller
         return response()->json($actividades);
     }
 
-    /**
-     * Get the impact of the authenticated user in a specific event.
-     */
     public function userImpact($id)
     {
         /** @var \App\Models\User $user */
@@ -264,9 +234,6 @@ class EventoController extends Controller
         ]);
     }
 
-    /**
-     * Inscribe a project to a specific event
-     */
     public function inscribirProject(Request $request, $id)
     {
         $request->validate([
@@ -275,13 +242,11 @@ class EventoController extends Controller
 
         $evento = Evento::findOrFail($id);
         
-        // Verify event hasn't finished yet (Allow Pre-registration)
         $now = Carbon::now();
         if ($evento->fechaFinal < $now) {
             return response()->json(['message' => 'El evento ya ha finalizado.'], 400);
         }
 
-        // Verify project belongs to user
         $proyecto = Proyecto::where('id', $request->proyecto_id)
                             ->where('user_id', Auth::id())
                             ->first();
@@ -290,11 +255,9 @@ class EventoController extends Controller
             return response()->json(['message' => 'No tienes permisos para inscribir este proyecto.'], 403);
         }
 
-        // Attach safely
         if (!$evento->proyectos()->where('idProyecto', $proyecto->id)->exists()) {
             
-            // CHECK: A project can ONLY be in ONE active or upcoming event at a time.
-            $alreadyInEvent = \DB::table('proyectos_eventos')
+            $alreadyInEvent = DB::table('proyectos_eventos')
                 ->join('eventos', 'proyectos_eventos.idEvento', '=', 'eventos.id')
                 ->where('proyectos_eventos.idProyecto', $proyecto->id)
                 ->where('eventos.fechaFinal', '>=', $now)
@@ -305,7 +268,6 @@ class EventoController extends Controller
                 return response()->json(['message' => 'Este proyecto ya está inscrito en otro evento activo o próximo.'], 400);
             }
 
-            // Depending on relationship, we might need to use attach
             $evento->proyectos()->attach($proyecto->id);
             return response()->json(['message' => 'Proyecto inscrito exitosamente.']);
         }
@@ -313,17 +275,6 @@ class EventoController extends Controller
         return response()->json(['message' => 'El proyecto ya estaba inscrito en este evento.'], 400);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -353,26 +304,12 @@ class EventoController extends Controller
         return response()->json($evento, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $evento = Evento::findOrFail($id);
         return response()->json($evento);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $evento = Evento::findOrFail($id);
@@ -404,9 +341,6 @@ class EventoController extends Controller
         return response()->json($evento);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $evento = Evento::findOrFail($id);
@@ -415,9 +349,6 @@ class EventoController extends Controller
         return response()->json(null, 204);
     }
 
-    /**
-     * Obtener proyectos del usuario autenticado para inscripción.
-     */
     public function misProyectos(Request $request)
     {
         /** @var \App\Models\User $user */
@@ -434,18 +365,13 @@ class EventoController extends Controller
         return response()->json($proyectos);
     }
 
-    /**
-     * Check ended events and assign the winning project as ganadorEvento = true.
-     */
     private function checkAndAssignWinners()
     {
         $now = Carbon::now();
         
-        // Find all events that have ended
         $endedEvents = Evento::with('finalidad')->where('fechaFinal', '<', $now)->get();
         
         foreach ($endedEvents as $evento) {
-            // Check if any project associated with this event is already marked as ganadorEvento = true
             $hasWinner = $evento->proyectos()->where('ganadorEvento', true)->exists();
             
             if (!$hasWinner) {
@@ -466,10 +392,9 @@ class EventoController extends Controller
                     if ($winner) {
                         $winner->ganadorEvento = true;
                         $winner->save();
-                        \Illuminate\Support\Facades\Log::info("Evento ID {$evento->id} ({$evento->nombre}) finalizado. Ganador por votos: Proyecto ID {$winner->id} ({$winner->titulo}) con {$winnerId->total_votos} votos.");
+                        Log::info("Evento ID {$evento->id} ({$evento->nombre}) finalizado. Ganador por votos: Proyecto ID {$winner->id} ({$winner->titulo}) con {$winnerId->total_votos} votos.");
                     }
                 } else {
-                    // Find the project in this event with the highest cantidad_recaudada
                     $winner = $evento->proyectos()
                         ->orderBy('cantidad_recaudada', 'desc')
                         ->first();
@@ -478,7 +403,7 @@ class EventoController extends Controller
                         $winner->ganadorEvento = true;
                         $winner->save();
                         
-                        \Illuminate\Support\Facades\Log::info("Evento ID {$evento->id} ({$evento->nombre}) finalizado. Ganador por recaudación: Proyecto ID {$winner->id} ({$winner->titulo}) con {$winner->cantidad_recaudada}€.");
+                        Log::info("Evento ID {$evento->id} ({$evento->nombre}) finalizado. Ganador por recaudación: Proyecto ID {$winner->id} ({$winner->titulo}) con {$winner->cantidad_recaudada}€.");
                     }
                 }
             }
