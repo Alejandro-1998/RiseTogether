@@ -6,6 +6,7 @@ export default function TablaEventos({ eventos = [], onEdit, onDelete }) {
                     <thead className="bg-[#f2780d]/20 dark:bg-[#f2780d]/10 text-[#1e293b] dark:text-[#f2780d]">
                         <tr className="text-left">
                             <th className="px-6 py-4 text-sm font-extrabold">NOMBRE</th>
+                            <th className="px-6 py-4 text-sm font-extrabold">FINALIDAD</th>
                             <th className="px-6 py-4 text-sm font-extrabold">FECHA INICIO</th>
                             <th className="px-6 py-4 text-sm font-extrabold">FECHA FINAL</th>
                             <th className="px-6 py-4 text-sm font-extrabold">PARTICIPANTES</th>
@@ -27,9 +28,10 @@ export default function TablaEventos({ eventos = [], onEdit, onDelete }) {
                                     className="border-t border-black/10 dark:border-white/10"
                                 >
                                     <td className="px-6 py-5 font-bold">{e.nombre}</td>
+                                    <td className="px-6 py-5 opacity-80">{e.finalidad?.tipo_finalidad || 'No asignada'}</td>
                                     <td className="px-6 py-5 opacity-80">{e.fechaInicio}</td>
                                     <td className="px-6 py-5 opacity-80">{e.fechaFinal}</td>
-                                    <td className="px-6 py-5">{e.cantidadMaxParticipantes}</td>
+                                    <td className="px-6 py-5">{e.cantidadMaxParticipantes || 'Ilimitado'}</td>
 
                                     <td className="px-6 py-5">
                                         <div className="flex justify-end gap-3">

@@ -43,6 +43,7 @@ export default function EventosPage() {
     const [targetEvent, setTargetEvent] = useState(null); // The event currently chosen for enrollment
     const [selectedProjectId, setSelectedProjectId] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [userVote, setUserVote] = useState(null);
 
     // Modal Helper
     const openEnrollModal = (event) => {
@@ -103,18 +104,28 @@ export default function EventosPage() {
                     console.error("Error fetching event activities", e);
                 }
 
-                if (user) {
-                    // Fetch User Impact and User Projects if logged in
-                    try {
-                        const impactRes = await axios.get(`/api/eventos/${hero.id}/user-impact`);
-                        setUserImpact(impactRes.data);
+                    if (user) {
+                        // Fetch User Impact and User Projects if logged in
+                        try {
+                            const impactRes = await axios.get(`/api/eventos/${hero.id}/user-impact`);
+                            setUserImpact(impactRes.data);
 
-                        const projectsRes = await axios.get(`/api/user/mis-proyectos`);
-                        setUserProjects(projectsRes.data || []);
-                    } catch (e) {
-                        console.error("Error fetching user data", e);
+                            const projectsRes = await axios.get(`/api/user/mis-proyectos`);
+                            setUserProjects(projectsRes.data || []);
+                            
+                            // Si es evento de votación, intentamos recuperar el voto
+                            try {
+                                const voteRes = await axios.get(`/api/eventos/${hero.id}/mivoto`);
+                                if (voteRes.data && voteRes.data.voted_project_id) {
+                                    setUserVote(voteRes.data.voted_project_id);
+                                }
+                            } catch (e) {
+                                // Ignoring vote error if endpoint doesn't exist yet or it's not a voting event
+                            }
+                        } catch (e) {
+                            console.error("Error fetching user data", e);
+                        }
                     }
-                }
             }
 
             setLoading(false);
@@ -273,6 +284,31 @@ export default function EventosPage() {
                 fontWeight: 'bold',
             },
         }),
+    };
+
+    const handleVote = async (projectId) => {
+        if (!user) {
+            premiumToast.error('Inicia sesión para votar');
+            return;
+        }
+        if (userVote) {
+            premiumToast.error('Ya has emitido tu voto en este evento');
+            return;
+        }
+
+        try {
+            const res = await axios.post(`/api/eventos/${featuredEvent.id}/votar/${projectId}`);
+            premiumToast.success(res.data.message || 'Voto registrado exitosamente');
+            setUserVote(projectId);
+            // Refrescar el leaderboard
+            fetchLeaderboard(featuredEvent.id, selectedCategory);
+            // Refrescar stats
+            const statsRes = await axios.get(`/api/eventos/${featuredEvent.id}/stats`);
+            setEventStats(statsRes.data);
+        } catch (error) {
+            const msg = error.response?.data?.message || 'Error al emitir el voto';
+            premiumToast.error(msg);
+        }
     };
 
     const handleNotify = (eventName) => {
@@ -450,19 +486,25 @@ export default function EventosPage() {
                                     </div>
 
                                     {/* Stats Grid inside Hero */}
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 py-4">
+                                    <div className={`grid grid-cols-2 ${eventStats.es_votacion ? '' : 'md:grid-cols-3'} gap-4 py-4`}>
                                         <div className="flex flex-col items-center lg:items-start p-4 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm">
-                                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Recaudado</p>
-                                            <p className="text-2xl md:text-3xl font-black text-[#f27f0d]">€{Number(eventStats.total_recaudado).toLocaleString()}</p>
+                                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
+                                                {eventStats.es_votacion ? 'Votos Emitidos' : 'Recaudado'}
+                                            </p>
+                                            <p className={`text-2xl md:text-3xl font-black ${eventStats.es_votacion ? 'text-[#f27f0d]' : 'text-[#f27f0d]'}`}>
+                                                {eventStats.es_votacion ? (eventStats.total_votos || 0) : `€${Number(eventStats.total_recaudado || 0).toLocaleString()}`}
+                                            </p>
                                         </div>
                                         <div className="flex flex-col items-center lg:items-start p-4 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm">
                                             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Proyectos</p>
-                                            <p className="text-2xl md:text-3xl font-black text-white">{eventStats.total_proyectos}</p>
+                                            <p className="text-2xl md:text-3xl font-black text-white">{eventStats.total_proyectos || 0}</p>
                                         </div>
-                                        <div className="hidden md:flex flex-col items-center lg:items-start p-4 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm">
-                                            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Donantes</p>
-                                            <p className="text-2xl md:text-3xl font-black text-white">{eventStats.total_donantes}</p>
-                                        </div>
+                                        {!eventStats.es_votacion && (
+                                            <div className="hidden md:flex flex-col items-center lg:items-start p-4 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm">
+                                                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">Donantes</p>
+                                                <p className="text-2xl md:text-3xl font-black text-white">{eventStats.total_donantes || 0}</p>
+                                            </div>
+                                        )}
                                     </div>
 
                                     {/* Countdown */}
@@ -563,9 +605,21 @@ export default function EventosPage() {
                                             </div>
                                             <div className="text-center">
                                                 <h3 className="font-bold text-lg line-clamp-1">{leaderboard[1].titulo}</h3>
-                                                <p className="text-sm text-gray-500">€{Number(leaderboard[1].cantidad_recaudada).toLocaleString()}</p>
+                                                <p className="text-sm text-gray-500">
+                                                    {leaderboard[1].es_votacion ? `${leaderboard[1].votos_count || 0} Votos` : `€${Number(leaderboard[1].cantidad_recaudada).toLocaleString()}`}
+                                                </p>
                                             </div>
-                                            <Link to={`/proyecto/${leaderboard[1].id}`} className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-white/5 font-bold text-sm text-center hover:bg-slate-200 transition-colors">Ver Proyecto</Link>
+                                            {leaderboard[1].es_votacion ? (
+                                                <button 
+                                                    onClick={() => handleVote(leaderboard[1].id)}
+                                                    disabled={!!userVote}
+                                                    className={`w-full py-2.5 rounded-xl font-bold text-sm text-center transition-colors ${userVote === leaderboard[1].id ? 'bg-orange-500 text-white' : userVote ? 'bg-gray-100 dark:bg-white/5 text-gray-400 cursor-not-allowed opacity-50' : 'bg-slate-100 dark:bg-white/5 text-slate-700 dark:text-gray-200 hover:bg-slate-200 dark:hover:bg-white/10'}`}
+                                                >
+                                                    {userVote === leaderboard[1].id ? 'Votado' : 'Votar'}
+                                                </button>
+                                            ) : (
+                                                <Link to={`/proyecto/${leaderboard[1].id}`} className="w-full py-2.5 rounded-xl bg-slate-100 dark:bg-white/5 font-bold text-sm text-center hover:bg-slate-200 transition-colors">Ver Proyecto</Link>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -586,10 +640,20 @@ export default function EventosPage() {
                                             <div className="text-center">
                                                 <h3 className="font-black text-2xl lg:text-3xl line-clamp-1 text-[#1c140d] dark:text-white">{leaderboard[0].titulo}</h3>
                                                 <div className="mt-2 inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-orange-500/10 text-orange-600 font-black text-lg">
-                                                    €{Number(leaderboard[0].cantidad_recaudada).toLocaleString()}
+                                                    {leaderboard[0].es_votacion ? `${leaderboard[0].votos_count || 0} Votos` : `€${Number(leaderboard[0].cantidad_recaudada).toLocaleString()}`}
                                                 </div>
                                             </div>
-                                            <Link to={`/proyecto/${leaderboard[0].id}`} className="w-full py-4 rounded-2xl bg-orange-500 text-white font-black text-center shadow-lg shadow-orange-500/30 hover:bg-orange-600 hover:shadow-orange-600/40 transition-all">Impulsar Líder</Link>
+                                            {leaderboard[0].es_votacion ? (
+                                                <button 
+                                                    onClick={() => handleVote(leaderboard[0].id)}
+                                                    disabled={!!userVote}
+                                                    className={`w-full py-4 rounded-2xl font-black text-center shadow-lg transition-all ${userVote === leaderboard[0].id ? 'bg-orange-600 text-white shadow-orange-600/40' : userVote ? 'bg-orange-500/50 text-white/50 cursor-not-allowed shadow-none' : 'bg-orange-500 text-white shadow-orange-500/30 hover:bg-orange-600 hover:shadow-orange-600/40'}`}
+                                                >
+                                                    {userVote === leaderboard[0].id ? '¡Votado!' : 'Votar al Líder'}
+                                                </button>
+                                            ) : (
+                                                <Link to={`/proyecto/${leaderboard[0].id}`} className="w-full py-4 rounded-2xl bg-orange-500 text-white font-black text-center shadow-lg shadow-orange-500/30 hover:bg-orange-600 hover:shadow-orange-600/40 transition-all">Impulsar Líder</Link>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -609,9 +673,21 @@ export default function EventosPage() {
                                             </div>
                                             <div className="text-center">
                                                 <h3 className="font-bold text-lg line-clamp-1">{leaderboard[2].titulo}</h3>
-                                                <p className="text-sm text-gray-500">€{Number(leaderboard[2].cantidad_recaudada).toLocaleString()}</p>
+                                                <p className="text-sm text-gray-500">
+                                                    {leaderboard[2].es_votacion ? `${leaderboard[2].votos_count || 0} Votos` : `€${Number(leaderboard[2].cantidad_recaudada).toLocaleString()}`}
+                                                </p>
                                             </div>
-                                            <Link to={`/proyecto/${leaderboard[2].id}`} className="w-full py-2.5 rounded-xl bg-orange-50/50 dark:bg-white/5 font-bold text-sm text-center hover:bg-orange-100 transition-colors">Ver Proyecto</Link>
+                                            {leaderboard[2].es_votacion ? (
+                                                <button 
+                                                    onClick={() => handleVote(leaderboard[2].id)}
+                                                    disabled={!!userVote}
+                                                    className={`w-full py-2.5 rounded-xl font-bold text-sm text-center transition-colors ${userVote === leaderboard[2].id ? 'bg-orange-500 text-white' : userVote ? 'bg-orange-50/50 dark:bg-white/5 text-gray-400 cursor-not-allowed opacity-50' : 'bg-orange-50/50 dark:bg-white/5 text-orange-800 dark:text-orange-200 hover:bg-orange-100 dark:hover:bg-white/10'}`}
+                                                >
+                                                    {userVote === leaderboard[2].id ? 'Votado' : 'Votar'}
+                                                </button>
+                                            ) : (
+                                                <Link to={`/proyecto/${leaderboard[2].id}`} className="w-full py-2.5 rounded-xl bg-orange-50/50 dark:bg-white/5 font-bold text-sm text-center hover:bg-orange-100 transition-colors">Ver Proyecto</Link>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
@@ -703,7 +779,7 @@ export default function EventosPage() {
                                         <th className="px-8 py-5 w-20 text-center" scope="col">RANK</th>
                                         <th className="px-6 py-5" scope="col">PROYECTO</th>
                                         <th className="px-6 py-5 hidden md:table-cell" scope="col">CREADOR</th>
-                                        <th className="px-6 py-5 text-right" scope="col">RECAUDACIÓN</th>
+                                        <th className="px-6 py-5 text-right" scope="col">{leaderboard[0]?.es_votacion ? 'VOTOS' : 'RECAUDACIÓN'}</th>
                                         <th className="px-8 py-5 text-right" scope="col">ACCIÓN</th>
                                     </tr>
                                 </thead>
@@ -739,7 +815,9 @@ export default function EventosPage() {
                                             </td>
                                             <td className="px-6 py-6 text-right">
                                                 <div className="flex flex-col items-end">
-                                                    <span className="font-black text-lg text-[#1c140d] dark:text-white">€{Number(project.cantidad_recaudada).toLocaleString()}</span>
+                                                    <span className="font-black text-lg text-[#1c140d] dark:text-white">
+                                                        {project.es_votacion ? `${project.votos_count || 0} Votos` : `€${Number(project.cantidad_recaudada).toLocaleString()}`}
+                                                    </span>
                                                     {project.trend === 'subiendo' && (
                                                         <div className="flex items-center gap-1 text-[10px] text-green-500 font-bold uppercase tracking-wider">
                                                             <span className="material-symbols-outlined text-[12px] font-black">trending_up</span>
@@ -762,6 +840,15 @@ export default function EventosPage() {
                                             </td>
                                             <td className="px-8 py-6 text-right">
                                                 <div className="flex justify-end gap-3">
+                                                    {project.es_votacion && (
+                                                        <button 
+                                                            onClick={() => handleVote(project.id)}
+                                                            disabled={!!userVote}
+                                                            className={`px-4 py-2 rounded-xl flex items-center justify-center font-bold transition-all ${userVote === project.id ? 'bg-orange-500 text-white' : userVote ? 'bg-gray-100 text-gray-400 cursor-not-allowed opacity-50' : 'bg-[#f27f0d]/10 text-[#f27f0d] hover:bg-[#f27f0d] hover:text-white'}`}
+                                                        >
+                                                            {userVote === project.id ? 'Votado' : 'Votar'}
+                                                        </button>
+                                                    )}
                                                     <Link to={`/proyecto/${project.id}`} className="size-10 rounded-xl bg-gray-50 dark:bg-white/5 flex items-center justify-center text-gray-400 hover:bg-orange-500 hover:text-white transition-all"><span className="material-symbols-outlined font-black">visibility</span></Link>
                                                     <button 
                                                         onClick={() => handleFollow(project.id)} 

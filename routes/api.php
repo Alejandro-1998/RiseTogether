@@ -74,6 +74,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/eventos/{id}/inscribir', [EventoController::class, 'inscribirProject']);
     Route::get('/user/mis-proyectos', [EventoController::class, 'misProyectos']);
     
+    // Votaciones Eventos
+    Route::post('/eventos/{eventoId}/votar/{proyectoId}', [\App\Http\Controllers\VotoController::class, 'votar']);
+    Route::get('/eventos/{eventoId}/mivoto', [\App\Http\Controllers\VotoController::class, 'miVoto']);
+    
     // Chat Privado
     Route::get('/chat/no-leidos', [\App\Http\Controllers\ChatPrivadoController::class, 'obtenerTotalNoLeidos']);
     Route::get('/chat/contactos', [\App\Http\Controllers\ChatPrivadoController::class, 'obtenerContactosChat']);

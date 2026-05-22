@@ -18,7 +18,7 @@ class EventoController extends Controller
     public function index()
     {
         $this->checkAndAssignWinners();
-        $eventos = Evento::all();
+        $eventos = Evento::with('finalidad')->get();
         return response()->json($eventos);
     }
 
@@ -72,7 +72,8 @@ class EventoController extends Controller
     public function leaderboard(Request $request, $id)
     {
         $this->checkAndAssignWinners();
-        $evento = Evento::findOrFail($id);
+        $evento = Evento::with('finalidad')->findOrFail($id);
+        $esVotacion = stripos($evento->finalidad->tipo_finalidad ?? '', 'votacion') !== false;
         
         $query = $evento->proyectos()->with(['user', 'categoria']);
 
@@ -83,7 +84,7 @@ class EventoController extends Controller
             });
         }
 
-        $projects = $query->get()->map(function($proyecto) {
+        $projects = $query->get()->map(function($proyecto) use ($esVotacion) {
             $isFollowing = false;
             /** @var \App\Models\User|null $user */
             $user = Auth::guard('sanctum')->user();
@@ -91,8 +92,24 @@ class EventoController extends Controller
                 $isFollowing = $user->proyectos()->where('idProyecto', $proyecto->id)->exists();
             }
             $proyecto->setAttribute('is_following', $isFollowing);
+            $proyecto->setAttribute('es_votacion', $esVotacion);
+
+            if ($esVotacion && $proyecto->pivot) {
+                $votosCount = DB::table('votos')
+                    ->where('idProyectoEvento', $proyecto->pivot->id)
+                    ->whereNull('deleted_at')
+                    ->count();
+                $proyecto->setAttribute('votos_count', $votosCount);
+            }
+
             return $proyecto;
-        })->sortByDesc('cantidad_recaudada')->values();
+        });
+        
+        if ($esVotacion) {
+            $projects = $projects->sortByDesc('votos_count')->values();
+        } else {
+            $projects = $projects->sortByDesc('cantidad_recaudada')->values();
+        }
 
         return response()->json($projects);
     }
@@ -102,14 +119,30 @@ class EventoController extends Controller
      */
     public function stats($id)
     {
-        $evento = Evento::findOrFail($id);
+        $evento = Evento::with('finalidad')->findOrFail($id);
         $proyectos = $evento->proyectos();
+        $esVotacion = stripos($evento->finalidad->tipo_finalidad ?? '', 'votacion') !== false;
         
-        $stats = [
-            'total_recaudado' => $proyectos->sum('cantidad_recaudada'),
-            'total_proyectos' => $proyectos->count(),
-            'total_donantes' => \App\Models\Donacion::whereIn('idProyecto', $proyectos->pluck('proyectos.id'))->distinct('idUsuario')->count(),
-        ];
+        if ($esVotacion) {
+            $totalVotos = DB::table('votos')
+                ->join('proyectos_eventos', 'votos.idProyectoEvento', '=', 'proyectos_eventos.id')
+                ->where('proyectos_eventos.idEvento', $id)
+                ->whereNull('votos.deleted_at')
+                ->count();
+                
+            $stats = [
+                'total_votos' => $totalVotos,
+                'total_proyectos' => $proyectos->count(),
+                'es_votacion' => true,
+            ];
+        } else {
+            $stats = [
+                'total_recaudado' => $proyectos->sum('cantidad_recaudada'),
+                'total_proyectos' => $proyectos->count(),
+                'total_donantes' => \App\Models\Donacion::whereIn('idProyecto', $proyectos->pluck('proyectos.id'))->distinct('idUsuario')->count(),
+                'es_votacion' => false,
+            ];
+        }
 
         return response()->json($stats);
     }
@@ -409,23 +442,44 @@ class EventoController extends Controller
         $now = Carbon::now();
         
         // Find all events that have ended
-        $endedEvents = Evento::where('fechaFinal', '<', $now)->get();
+        $endedEvents = Evento::with('finalidad')->where('fechaFinal', '<', $now)->get();
         
         foreach ($endedEvents as $evento) {
             // Check if any project associated with this event is already marked as ganadorEvento = true
             $hasWinner = $evento->proyectos()->where('ganadorEvento', true)->exists();
             
             if (!$hasWinner) {
-                // Find the project in this event with the highest cantidad_recaudada
-                $winner = $evento->proyectos()
-                    ->orderBy('cantidad_recaudada', 'desc')
-                    ->first();
+                $esVotacion = stripos($evento->finalidad->tipo_finalidad ?? '', 'votacion') !== false;
                 
-                if ($winner) {
-                    $winner->ganadorEvento = true;
-                    $winner->save();
+                if ($esVotacion) {
+                    $winnerId = DB::table('votos')
+                        ->join('proyectos_eventos', 'votos.idProyectoEvento', '=', 'proyectos_eventos.id')
+                        ->where('proyectos_eventos.idEvento', $evento->id)
+                        ->whereNull('votos.deleted_at')
+                        ->select('proyectos_eventos.idProyecto', DB::raw('count(*) as total_votos'))
+                        ->groupBy('proyectos_eventos.idProyecto')
+                        ->orderByDesc('total_votos')
+                        ->first();
+                        
+                    $winner = $winnerId ? Proyecto::find($winnerId->idProyecto) : null;
                     
-                    \Illuminate\Support\Facades\Log::info("Evento ID {$evento->id} ({$evento->nombre}) finalizado. Ganador: Proyecto ID {$winner->id} ({$winner->titulo}) con {$winner->cantidad_recaudada}€.");
+                    if ($winner) {
+                        $winner->ganadorEvento = true;
+                        $winner->save();
+                        \Illuminate\Support\Facades\Log::info("Evento ID {$evento->id} ({$evento->nombre}) finalizado. Ganador por votos: Proyecto ID {$winner->id} ({$winner->titulo}) con {$winnerId->total_votos} votos.");
+                    }
+                } else {
+                    // Find the project in this event with the highest cantidad_recaudada
+                    $winner = $evento->proyectos()
+                        ->orderBy('cantidad_recaudada', 'desc')
+                        ->first();
+                    
+                    if ($winner) {
+                        $winner->ganadorEvento = true;
+                        $winner->save();
+                        
+                        \Illuminate\Support\Facades\Log::info("Evento ID {$evento->id} ({$evento->nombre}) finalizado. Ganador por recaudación: Proyecto ID {$winner->id} ({$winner->titulo}) con {$winner->cantidad_recaudada}€.");
+                    }
                 }
             }
         }
