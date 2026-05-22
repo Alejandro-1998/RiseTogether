@@ -3,49 +3,37 @@ import { Link, useLocation } from "react-router-dom";
 export default function ProyectoCard({ proyecto }) {
     const { pathname } = useLocation();
 
-    // Verificamos si estamos en la ruta de crear (ajustar según tus rutas reales)
     const isCrearProyecto = pathname.includes("/crear-proyecto");
 
     const titulo = proyecto?.titulo ?? "Proyecto sin título";
 
-    // NOTA: Para que esto funcione, en el controlador debes usar ->with('categoria')
     const categoria = proyecto?.categoria?.nombre ?? "General";
 
-    // 1. LÓGICA DE IMAGEN MEJORADA
-    // Soporta URLs externas (Faker), rutas 'img/' (public) y rutas locales (storage)
-    let imagen = "/img/default-project.png"; // Imagen por defecto
+    let imagen = "/img/default-project.png";
     if (proyecto?.imagen_portada) {
         if (proyecto.imagen_portada.startsWith('http') || proyecto.imagen_portada.startsWith('blob')) {
             imagen = proyecto.imagen_portada;
         } else if (proyecto.imagen_portada.startsWith('img/')) {
-            // Rutas directas a public/img (seeders)
             const baseUrl = window.Laravel?.assetUrl || '/';
             const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
             imagen = `${cleanBaseUrl}${proyecto.imagen_portada}`;
         } else {
-            // Usamos la URL base inyectada desde Laravel o vacía por defecto
             const baseUrl = window.Laravel?.assetUrl || '/';
-            // Nos aseguramos de no duplicar barras si baseUrl ya termina en /
             const cleanBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
 
             imagen = `${cleanBaseUrl}storage/${proyecto.imagen_portada}`;
         }
     }
 
-    // 2. CÁLCULO DEL PORCENTAJE (Tu BBDD no tiene el campo 'porcentaje_financiado')
     const objetivo = Number(proyecto?.objetivo_financiacion ?? 0);
     const recaudado = Number(proyecto?.cantidad_recaudada ?? 0);
 
-    // Evitamos división por cero
     const porcentajeCalculado = objetivo > 0 ? (recaudado / objetivo) * 100 : 0;
 
-    // Limitamos la barra visual al 100% aunque se recaude más
     const anchoBarra = Math.min(Math.max(porcentajeCalculado, 0), 100);
 
-    // Formateo de moneda
     const cantidadFmt = recaudado.toLocaleString("es-ES", { maximumFractionDigits: 0 });
 
-    // 3. LÓGICA DE FECHAS (Días restantes)
     const hoy = new Date();
     const limite = proyecto?.fecha_limite ? new Date(proyecto.fecha_limite) : null;
 
@@ -54,11 +42,10 @@ export default function ProyectoCard({ proyecto }) {
 
     if (limite instanceof Date && !Number.isNaN(limite.getTime())) {
         const ms = limite.getTime() - hoy.getTime();
-        diasRestantes = Math.ceil(ms / (1000 * 60 * 60 * 24)); // Usamos ceil para redondear hacia arriba
+        diasRestantes = Math.ceil(ms / (1000 * 60 * 60 * 24));
         esExpirado = diasRestantes < 0;
     }
 
-    // Ruta del enlace
     const toDetalle = proyecto?.id ? `/proyecto/${proyecto.id}` : "#";
 
     return (
@@ -133,7 +120,7 @@ export default function ProyectoCard({ proyecto }) {
                 {!isCrearProyecto && (
                     <Link
                         to={toDetalle}
-                        className="flex h-10 w-full min-w-[84px] items-center justify-center overflow-hidden rounded-lg bg-[#f2780d]/20 px-4 text-sm font-bold text-[#f2780d] transition-colors duration-300 group-hover:bg-[#f2780d] group-hover:text-white dark:bg-[#f2780d]/25 dark:group-hover:text-[#f3f4f6]"
+                        className="flex h-10 w-full min-w-21 items-center justify-center overflow-hidden rounded-lg bg-[#f2780d]/20 px-4 text-sm font-bold text-[#f2780d] transition-colors duration-300 group-hover:bg-[#f2780d] group-hover:text-white dark:bg-[#f2780d]/25 dark:group-hover:text-[#f3f4f6]"
                     >
                         Ver proyecto
                     </Link>

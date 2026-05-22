@@ -1,4 +1,3 @@
-// resources/js/riseTogether/components/admin/tabla_usuarios.jsx
 export default function TablaUsuarios({ usuarios = [], onEdit, onDelete }) {
   const badgeEstado = (estado) => {
     const base = "px-3 py-1 rounded-full text-xs font-bold inline-flex";
@@ -18,7 +17,7 @@ export default function TablaUsuarios({ usuarios = [], onEdit, onDelete }) {
   return (
     <div className="rounded-2xl overflow-hidden border border-white/10 bg-white/50 dark:bg-white/5">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[900px]">
+        <table className="w-full min-w-225">
           <thead className="bg-[#f2780d]/20 dark:bg-[#f2780d]/10 text-[#1e293b] dark:text-[#f2780d]">
             <tr className="text-left">
               <th className="px-6 py-4 text-sm font-extrabold">NOMBRE</th>

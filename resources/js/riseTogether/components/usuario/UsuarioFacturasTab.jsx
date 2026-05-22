@@ -7,7 +7,6 @@ export default function UsuarioFacturasTab({ usuario, isMe }) {
   const [proyectos, setProyectos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Form
   const [proyectoId, setProyectoId] = useState('');
   const [numeroFactura, setNumeroFactura] = useState('');
   const [cif, setCif] = useState('');
@@ -61,7 +60,6 @@ export default function UsuarioFacturasTab({ usuario, isMe }) {
       toast.success('Factura subida con éxito');
       setFacturas([res.data, ...facturas]);
       
-      // Reset form
       setNumeroFactura('');
       setCif('');
       setCosto('');

@@ -1,4 +1,3 @@
-// resources/js/riseTogether/components/admin/modal_usuario.jsx
 import { useEffect, useState } from "react";
 
 export default function ModalUsuario({ open, onClose, usuario, onSave }) {
@@ -41,7 +40,7 @@ export default function ModalUsuario({ open, onClose, usuario, onSave }) {
         onClick={onClose}
       />
 
-      {/* Modal Content */}
+      {/* Modal */}
       <div className="relative z-10 w-full max-w-lg overflow-hidden rounded-2xl bg-white dark:bg-[#1a120d] border border-gray-100 dark:border-gray-800 text-left shadow-2xl">
         {/* Header */}
         <div className="px-6 py-5 border-b border-gray-100 dark:border-gray-800">

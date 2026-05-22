@@ -98,7 +98,6 @@ function BadgeEstado({ estado }) {
   let cls = "bg-gray-100 dark:bg-white/5 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-white/10";
   let label = "Borrador";
 
-  // Map of states
   if (norm === "publicado" || norm === "activo") {
     cls = "bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-300 border-green-200 dark:border-green-500/20";
     label = "Publicado";
@@ -115,7 +114,6 @@ function BadgeEstado({ estado }) {
     cls = "bg-gray-50 dark:bg-gray-500/10 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-500/20";
     label = "Cancelado";
   } else if (norm === "borrador") {
-    // Default
     label = "Borrador";
   } else {
     label = estado;

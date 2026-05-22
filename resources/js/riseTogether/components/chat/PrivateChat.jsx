@@ -11,7 +11,6 @@ export default function PrivateChat({ destUser, onClose }) {
 
   useEffect(() => {
     fetchMessages();
-    // A simple polling to get new messages every 5 seconds (since no websockets are set up)
     const interval = setInterval(fetchMessages, 5000);
     return () => clearInterval(interval);
   }, [destUser.id]);
@@ -46,7 +45,7 @@ export default function PrivateChat({ destUser, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div className="bg-white dark:bg-[#2d2d2d] rounded-2xl w-full max-w-md h-[500px] flex flex-col shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+      <div className="bg-white dark:bg-[#2d2d2d] rounded-2xl w-full max-w-md h-125 flex flex-col shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
         
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-[#1a1a1a]">
@@ -71,7 +70,7 @@ export default function PrivateChat({ destUser, onClose }) {
           </button>
         </div>
 
-        {/* Messages list */}
+        {/* Lista Mensajes */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-[#f9fafb] dark:bg-[#1f1f1f]">
           {loading ? (
             <div className="flex items-center justify-center h-full">
@@ -102,7 +101,7 @@ export default function PrivateChat({ destUser, onClose }) {
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Message Input */}
+        {/* Input Mensaje */}
         <div className="p-4 bg-white dark:bg-[#2d2d2d] border-t border-gray-200 dark:border-gray-700">
           <form onSubmit={sendMessage} className="flex gap-2">
             <input

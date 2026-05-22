@@ -11,7 +11,6 @@ export default function ConversacionFlotante({ usuarioDestino, alVolver, alCerra
 
   useEffect(() => {
     obtenerMensajes();
-    // Polling cada 3 segundos
     const intervalo = setInterval(obtenerMensajes, 3000);
     return () => clearInterval(intervalo);
   }, [usuarioDestino.id]);

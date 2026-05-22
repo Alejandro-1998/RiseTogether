@@ -63,7 +63,6 @@ export default function ProyectoOpcionesTab({ proyecto, onUpdate }) {
         premiumToast.success('Recompensa creada correctamente');
       }
       
-      // Update local state or notify parent to reload
       if (onUpdate) {
         const updatedProjectRes = await axios.get(`/api/proyectos/${proyecto.id}`);
         onUpdate(updatedProjectRes.data);

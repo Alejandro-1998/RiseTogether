@@ -23,8 +23,8 @@ export default function UsuarioTabs({ tab, setTab, isMe, user }) {
               onClick={() => setTab(t.id)}
               className={
                 active
-                  ? "cursor-pointer flex flex-col items-center justify-center border-b-[3px] border-b-[#f2780d] shrink-0 pb-[13px] pt-4"
-                  : "cursor-pointer flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#6b7280] dark:text-[#9ca3af] hover:border-b-[#f2780d]/50 hover:text-[#1a1a1a] dark:hover:text-[#f0f0f0] shrink-0 pb-[13px] pt-4"
+                  ? "cursor-pointer flex flex-col items-center justify-center border-b-[3px] border-b-[#f2780d] shrink-0 pb-3.25 pt-4"
+                  : "cursor-pointer flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#6b7280] dark:text-[#9ca3af] hover:border-b-[#f2780d]/50 hover:text-[#1a1a1a] dark:hover:text-[#f0f0f0] shrink-0 pb-3.25 pt-4"
               }
               role="tab"
               aria-selected={active}
@@ -34,11 +34,11 @@ export default function UsuarioTabs({ tab, setTab, isMe, user }) {
           );
         })}
 
-        {/* Enlace Admin (si corresponde) */}
+        {/* Enlace Admin */}
         {isMe && user?.roles_list?.includes('admin') && (
           <a
             href="/administrador"
-            className="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#f2780d] hover:border-b-[#f2780d]/50 hover:bg-[#f2780d]/5 shrink-0 pb-[13px] pt-4 px-4 transition-colors font-bold"
+            className="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-[#f2780d] hover:border-b-[#f2780d]/50 hover:bg-[#f2780d]/5 shrink-0 pb-3.25 pt-4 px-4 transition-colors font-bold"
           >
             <span className="flex items-center gap-2">
               <span className="material-symbols-outlined text-[20px]">admin_panel_settings</span>

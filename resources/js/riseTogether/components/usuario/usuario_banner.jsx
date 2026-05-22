@@ -2,7 +2,7 @@ export default function UsuarioBanner({ usuario, soyYo, alAlternarSeguimiento, a
   return (
     <div className="relative mb-20">
       <div
-        className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden rounded-2xl min-h-[200px] sm:min-h-[280px] shadow-sm"
+        className="w-full bg-center bg-no-repeat bg-cover flex flex-col justify-end overflow-hidden rounded-2xl min-h-50 sm:min-h-70 shadow-sm"
         style={{ backgroundImage: `url("${usuario.bannerUrl}")` }}
       >
         <span className="sr-only">Banner del usuario</span>
@@ -12,7 +12,7 @@ export default function UsuarioBanner({ usuario, soyYo, alAlternarSeguimiento, a
         <div className="flex w-full flex-col gap-4 sm:flex-row sm:justify-between sm:items-end">
           <div className="flex gap-4">
             <div
-              className="relative bg-center bg-no-repeat aspect-square bg-cover rounded-full h-20 w-20 sm:h-28 sm:w-28 border-4 border-[#fcfaf8] dark:border-[#1a1a1a] flex-shrink-0"
+              className="relative bg-center bg-no-repeat aspect-square bg-cover rounded-full h-20 w-20 sm:h-28 sm:w-28 border-4 border-[#fcfaf8] dark:border-[#1a1a1a] shrink-0"
               style={{ backgroundImage: `url("${usuario.avatarUrl}")` }}
             >
               <span className="sr-only">Foto de perfil</span>
@@ -35,7 +35,7 @@ export default function UsuarioBanner({ usuario, soyYo, alAlternarSeguimiento, a
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto mb-5">
             <button 
               onClick={alAlternarSeguimiento}
-              className={`flex min-w-[84px] items-center justify-center overflow-hidden rounded-2xl h-10 px-6 text-sm font-bold w-full sm:w-auto shadow-sm hover:opacity-90 transition-colors ${
+              className={`flex min-w-21 items-center justify-center overflow-hidden rounded-2xl h-10 px-6 text-sm font-bold w-full sm:w-auto shadow-sm hover:opacity-90 transition-colors ${
                 usuario.siguiendo 
                   ? "bg-gray-200 dark:bg-gray-800 text-gray-900 dark:text-white" 
                   : "bg-[#f2780d] text-white"
@@ -46,7 +46,7 @@ export default function UsuarioBanner({ usuario, soyYo, alAlternarSeguimiento, a
 
             <button 
               onClick={alIniciarChat}
-              className="flex min-w-[84px] items-center justify-center overflow-hidden rounded-2xl h-10 px-6 border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] text-sm font-medium w-full sm:w-auto hover:bg-black/5 dark:hover:bg-white/5"
+              className="flex min-w-21 items-center justify-center overflow-hidden rounded-2xl h-10 px-6 border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] text-sm font-medium w-full sm:w-auto hover:bg-black/5 dark:hover:bg-white/5"
             >
               Enviar mensaje
             </button>

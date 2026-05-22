@@ -50,7 +50,7 @@ export default function FaqTab({ proyectoId, isOwner, initialFaqs = [], onFaqAdd
 
   return (
     <div className="space-y-8">
-      {/* Formulario para añadir FAQ (solo para el creador) */}
+      {/* Formulario para añadir FAQ */}
       {isOwner && (
         <section className="bg-white dark:bg-[#1a120d] rounded-3xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-6 sm:p-8">
           <h3 className="text-xl font-bold text-[#1c140d] dark:text-white mb-6 border-b border-[#f4ede7] dark:border-[#3a2c20] pb-4">
@@ -122,7 +122,7 @@ export default function FaqTab({ proyectoId, isOwner, initialFaqs = [], onFaqAdd
                 {/* Contenido desplegable */}
                 <div 
                   className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                    expandedIndex === index ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'
+                    expandedIndex === index ? 'max-h-250 opacity-100' : 'max-h-0 opacity-0'
                   }`}
                 >
                   <div className="p-5 sm:p-6 pt-0 text-[#5e4e42] dark:text-[#a18a7a] whitespace-pre-wrap border-t border-[#f4ede7] dark:border-[#3a2c20] mt-2">

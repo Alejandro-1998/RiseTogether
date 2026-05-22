@@ -1,5 +1,3 @@
-// src/components/admin/RevisionComentario.jsx
-
 export default function RevisionComentario({
   proyecto = "Dron ecológico",
   usuario = "@eco_fan21",

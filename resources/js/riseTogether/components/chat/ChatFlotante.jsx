@@ -34,7 +34,6 @@ export default function ChatFlotante() {
     obtenerNoLeidos();
     const intervalo = setInterval(obtenerNoLeidos, 5000);
     
-    // Escuchar eventos para abrir el chat desde otros componentes
     const manejarAperturaChat = (e) => {
       setContactoSeleccionado(e.detail);
       setEstaAbierto(true);
@@ -52,9 +51,9 @@ export default function ChatFlotante() {
   return (
     <div className="fixed bottom-6 right-6 z-100 flex flex-col items-end pointer-events-none">
       
-      {/* Panel Flotante (Contactos o Conversación) */}
+      {/* Panel Flotante */}
       {estaAbierto && (
-        <div className="mb-4 bg-white dark:bg-[#2d2d2d] rounded-2xl w-[350px] sm:w-[400px] h-[500px] flex flex-col shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden pointer-events-auto transform transition-all duration-300 origin-bottom-right scale-100">
+        <div className="mb-4 bg-white dark:bg-[#2d2d2d] rounded-2xl w-87.5 sm:w-100 h-125 flex flex-col shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden pointer-events-auto transform transition-all duration-300 origin-bottom-right scale-100">
           {contactoSeleccionado ? (
             <ConversacionFlotante 
               usuarioDestino={contactoSeleccionado} 

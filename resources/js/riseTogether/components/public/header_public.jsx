@@ -16,7 +16,6 @@ export default function HeaderPublic({ isAuth }) {
   }, []);
 
   const { isAuth: authState, logout, user } = useAuth();
-  // Allow prop override, otherwise use hook
   const authenticated = isAuth !== undefined ? isAuth : authState;
 
   const isLogin = pathname === "/login";
@@ -28,7 +27,6 @@ export default function HeaderPublic({ isAuth }) {
 
   const navigate = useNavigate();
 
-  // Cerrar el menú al cambiar de ruta
   useEffect(() => {
     setMobileMenuOpen(false);
   }, [pathname]);
@@ -67,19 +65,19 @@ export default function HeaderPublic({ isAuth }) {
             <div className="hidden items-center justify-end gap-3 md:flex">
               <Link
                 to="/proyectos"
-                className="flex h-10 min-w-[130px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                className="flex h-10 min-w-32.5 items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
               >
                 Proyectos
               </Link>
               <Link
                 to="/usuarios"
-                className="flex h-10 min-w-[130px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                className="flex h-10 min-w-32.5 items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
               >
                 Comunidad
               </Link>
               <Link
                 to="/eventos"
-                className="flex h-10 min-w-[130px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                className="flex h-10 min-w-32.5 items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
               >
                 Eventos
               </Link>
@@ -87,12 +85,12 @@ export default function HeaderPublic({ isAuth }) {
                 <>
                   <Link
                     to="/crear-proyecto"
-                    className="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                    className="flex h-10 min-w-37.5 items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
                   >
                     Crear Proyecto
                   </Link>
 
-                  {/* Círculo de perfil (visual, no click) */}
+                  {/* Círculo de perfil */}
                   <div
                     className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f4ede7] text-[#1c140d] cursor-pointer dark:bg-[#2a2017] dark:text-[#fcfaf8] overflow-hidden"
                     title="Sesión Iniciada"
@@ -131,7 +129,7 @@ export default function HeaderPublic({ isAuth }) {
                       <Link
                         to="/login"
                         state={{ from: pathname }}
-                        className="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#3a2c20]"
+                        className="flex h-10 min-w-33.75 items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#3a2c20]"
                       >
                         Iniciar Sesión
                       </Link>
@@ -140,14 +138,14 @@ export default function HeaderPublic({ isAuth }) {
                     <>
                       <Link
                         to="/"
-                        className="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#3a2c20]"
+                        className="flex h-10 min-w-33.75 items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#3a2c20]"
                       >
                         Volver a Inicio
                       </Link>
 
                       <Link
                         to="/registro"
-                        className="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                        className="flex h-10 min-w-37.5 items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
                       >
                         Registrarse
                       </Link>
@@ -156,7 +154,7 @@ export default function HeaderPublic({ isAuth }) {
                     <>
                       <Link
                         to="/"
-                        className="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#3a2c20]"
+                        className="flex h-10 min-w-33.75 items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#3a2c20]"
                       >
                         Volver a Inicio
                       </Link>
@@ -164,7 +162,7 @@ export default function HeaderPublic({ isAuth }) {
                       <Link
                         to="/login"
                         state={{ from: pathname }}
-                        className="flex h-10 min-w-[150px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+                        className="flex h-10 min-w-37.5 items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
                       >
                         Iniciar Sesión
                       </Link>

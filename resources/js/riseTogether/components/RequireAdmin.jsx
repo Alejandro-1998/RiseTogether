@@ -10,8 +10,6 @@ const RequireAdmin = () => {
         return <div className="flex h-screen items-center justify-center">Cargando...</div>;
     }
 
-    // Check if user exists and has the 'admin' role
-    // Since roles_list is an array of strings like ['admin', 'user']
     const isAdmin = user?.roles_list?.includes('admin');
 
     if (!isAdmin) {

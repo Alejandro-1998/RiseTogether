@@ -3,23 +3,23 @@ export default function ConfirmDelete({ open, titulo, descripcion, onCancel, onC
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop with blur */}
+      {/* Backdrop Blur */}
       <div
         className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
         onClick={onCancel}
       />
 
-      {/* Modal Container */}
+      {/* Contenedor Modal */}
       <div className="relative z-10 w-full max-w-sm transform overflow-hidden rounded-2xl bg-white dark:bg-[#1a120d] border border-gray-100 dark:border-gray-800 p-6 shadow-2xl transition-all sm:my-8 text-center">
 
-        {/* Icon */}
+        {/* Icono */}
         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30 mb-4">
           <span className="material-symbols-outlined text-3xl text-red-600 dark:text-red-500">
             warning
           </span>
         </div>
 
-        {/* Text */}
+        {/* Texto */}
         <h3 className="text-xl font-bold leading-6 text-gray-900 dark:text-white mb-2">
           {titulo || "Confirmar eliminación"}
         </h3>
@@ -27,7 +27,7 @@ export default function ConfirmDelete({ open, titulo, descripcion, onCancel, onC
           {descripcion || "¿Estás seguro de que quieres realizar esta acción? No se puede deshacer."}
         </p>
 
-        {/* Actions */}
+        {/* Acciones */}
         <div className="flex justify-center gap-3">
           <button
             onClick={onCancel}

@@ -74,7 +74,6 @@ const CommentItem = ({
         const previousLikes = likes;
         const previousIsLiked = isLiked;
 
-        // Optimistic update
         setIsLiked(!isLiked);
         setLikes(isLiked ? likes - 1 : likes + 1);
         setLikeLoading(true);
@@ -82,7 +81,6 @@ const CommentItem = ({
         try {
             await axios.post(`/api/comentarios/${comentario.id}/like`);
         } catch (error) {
-            // Revert
             setIsLiked(previousIsLiked);
             setLikes(previousLikes);
             console.error("Error liking comment:", error);
@@ -97,7 +95,6 @@ const CommentItem = ({
             className={`flex flex-col gap-2 ${isReply ? 'mt-3 pt-3 border-t border-[#eceae8] dark:border-[#3a2c20]' : 'p-4 bg-white dark:bg-[#1a120d] rounded-2xl border border-[#eceae8] dark:border-[#3a2c20]'}`}
         >
             <div className="flex gap-3">
-                {/* Column for Avatar and Vertical Line */}
                 <div className="flex flex-col items-center">
                     <div className={`${isReply ? 'h-8 w-8' : 'h-10 w-10'} shrink-0 overflow-hidden rounded-full bg-[#f2780d]/10 z-10`}>
                         {comentario.user?.profile_photo_url ? (
@@ -108,7 +105,6 @@ const CommentItem = ({
                             </span>
                         )}
                     </div>
-                    {/* Vertical Thread Line */}
                     {showReplies && hasReplies && (
                         <div className="w-0.5 flex-1 bg-[#f2780d]/20 mt-2 mb-2 rounded-full"></div>
                     )}
@@ -155,7 +151,7 @@ const CommentItem = ({
 
                     {comentario.mensaje !== 'Mensaje eliminado por un administrador' && comentario.estado !== 'rechazado' && (
                         <div className="flex items-center gap-4 mt-2">
-                            {/* Like Button */}
+                            {/* Botón Me Gusta */}
                             <button
                                 onClick={handleLike}
                                 disabled={!isAuth}
@@ -169,7 +165,6 @@ const CommentItem = ({
                                 <span>{likes}</span>
                             </button>
 
-                            {/* Toggle Replies Button */}
                             {hasReplies && (
                                 <button
                                     onClick={() => setShowReplies(!showReplies)}
@@ -186,7 +181,6 @@ const CommentItem = ({
                                 </button>
                             )}
 
-                            {/* Reply Button */}
                             {isAuth && (
                                 <button
                                     onClick={() => {
@@ -201,7 +195,6 @@ const CommentItem = ({
                         </div>
                     )}
 
-                    {/* Reply Form */}
                     {replyingTo === comentario.id && (
                         <form onSubmit={(e) => onSubmit(e, comentario.id)} className="mt-3 flex flex-col gap-2">
                             <div className="flex-1">
@@ -233,7 +226,6 @@ const CommentItem = ({
                         </form>
                     )}
 
-                    {/* Nested Replies */}
                     {showReplies && hasReplies && (
                         <div className="mt-3 flex flex-col pl-2">
                             {comentario.comentarios_respuesta.map(respuesta => (
@@ -268,26 +260,23 @@ export default function ComentariosTab({ proyectoId }) {
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState("");
 
-    // Reply state
-    const [replyingTo, setReplyingTo] = useState(null); // id of comment being replied to
+    const [replyingTo, setReplyingTo] = useState(null);
     const [replyMensaje, setReplyMensaje] = useState("");
 
     useEffect(() => {
         cargarComentarios();
     }, [proyectoId]);
 
-    // Handle scroll to comment from hash
     useEffect(() => {
         if (!loading && comentarios.length > 0 && location.hash) {
-            const id = location.hash.substring(1); // remove '#'
+            const id = location.hash.substring(1);
             const element = document.getElementById(id);
             if (element) {
                 setTimeout(() => {
                     element.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    // Optional: Highlight effect
                     element.classList.add('bg-[#f2780d]/10');
                     setTimeout(() => element.classList.remove('bg-[#f2780d]/10'), 2000);
-                }, 500); // Small delay to ensure rendering
+                }, 500);
             }
         }
     }, [loading, comentarios, location.hash]);
@@ -334,7 +323,7 @@ export default function ComentariosTab({ proyectoId }) {
                 setMensaje("");
             }
 
-            cargarComentarios(); // Recargar lista
+            cargarComentarios();
         } catch (err) {
             console.error("Error enviando comentario:", err);
             const msg = err.response?.data?.message || "No se pudo enviar el comentario. Inténtalo de nuevo.";

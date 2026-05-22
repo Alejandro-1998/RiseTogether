@@ -38,12 +38,10 @@ export default function FormularioLoginInicio() {
     try {
       await login({ email, password, remember });
 
-      // Si es exitoso, redirigimos logic is handled by awaiting login success
       const from = location.state?.from || "/";
       navigate(from);
 
     } catch (err) {
-      // Errors are set in context, but we can also set local generic error or read from hook
       if (err.response && err.response.status === 401) {
         setError("Credenciales incorrectas.");
       } else {
@@ -107,7 +105,7 @@ export default function FormularioLoginInicio() {
           )}
         </div>
 
-        {/* PASSWORD */}
+        {/* CONTRASEÑA */}
         <div>
           <label htmlFor="password" className="block text-sm font-medium">
             Contraseña

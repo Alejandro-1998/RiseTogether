@@ -38,14 +38,10 @@ export default function ProyectoCard({ proyecto, preview = false }) {
           alt={titulo}
           className="w-full h-full object-cover"
           onError={(e) => {
-            e.target.onerror = null; // Prevent loop
-            e.target.src = "/img/logo.png"; // Fallback to existing image
+            e.target.onerror = null;
+            e.target.src = "/img/logo.png";
           }}
         />
-        {/* DEBUG: Show path on screen temporarily */}
-        {/* <div className="absolute top-0 left-0 bg-black/80 text-white text-[10px] p-1 z-50">
-            {getImageSrc(imagen_portada)}
-        </div> */}
       </div>
 
       <div className="flex flex-col gap-4 px-4 flex-1">
@@ -103,7 +99,7 @@ export default function ProyectoCard({ proyecto, preview = false }) {
         <div className="px-4 pb-4">
           <Link
             to={`/proyecto/${proyecto.id}`}
-            className="w-full flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f2780d]/20 dark:bg-[#f2780d]/30 text-[#f2780d] text-sm font-bold group-hover:bg-[#f2780d] group-hover:text-white dark:group-hover:text-[#F3F4F6] transition-colors duration-300"
+            className="w-full flex min-w-21 cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#f2780d]/20 dark:bg-[#f2780d]/30 text-[#f2780d] text-sm font-bold group-hover:bg-[#f2780d] group-hover:text-white dark:group-hover:text-[#F3F4F6] transition-colors duration-300"
           >
             Ver proyecto
           </Link>

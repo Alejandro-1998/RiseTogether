@@ -25,7 +25,6 @@ export default function FormularioRegistro() {
 
     let newValue = type === "checkbox" ? checked : value;
 
-    // Strict Input Filtering
     if (name === "nombreUsuario") {
       newValue = value.replace(/[^a-zA-Z0-9]/g, "");
     } else if (name === "email") {
@@ -37,7 +36,6 @@ export default function FormularioRegistro() {
       [name]: newValue,
     }));
 
-    // Clear error for field on change
     if (errors[name]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -99,7 +97,6 @@ export default function FormularioRegistro() {
       const res = await window.axios.post("/api/registro", form);
       const data = res.data;
 
-      // Success logic adapted for axios response structure
       if (data.redirect) {
         window.location.href = data.redirect;
       } else {
@@ -143,8 +140,6 @@ export default function FormularioRegistro() {
           Únete para crear campañas o apoyar proyectos en Rise Together.
         </p>
       </div>
-
-      {/* generalError block removed as per user request */}
 
       <form onSubmit={submit} className="space-y-4">
         {/* Nombre Usuario */}

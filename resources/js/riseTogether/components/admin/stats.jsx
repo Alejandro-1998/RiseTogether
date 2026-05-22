@@ -1,5 +1,3 @@
-// src/components/admin/Stats.jsx
-
 export default function Stats({ title, value, trend, trendColor = "text-green-600 dark:text-green-500" }) {
   return (
     <div className="flex flex-col gap-2 rounded-3xl p-6 border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900/50">

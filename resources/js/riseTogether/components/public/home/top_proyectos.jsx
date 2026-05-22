@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ProyectoCard from "../../cards/ProyectoCard"; // Asegúrate que la ruta es correcta
+import ProyectoCard from "../../cards/ProyectoCard";
 import { Link } from "react-router-dom";
 
 export default function TopProyectos() {
@@ -22,7 +22,7 @@ export default function TopProyectos() {
       <hr className="my-20 border-t border-gray-300/70 dark:border-gray-700/40" />
 
       <section className="px-6">
-        <div className="mx-auto max-w-[1200px]">
+        <div className="mx-auto max-w-300">
           <div className="rounded-3xl bg-gray-100 p-10 shadow-sm dark:bg-[#2a2017] sm:p-14">
             <h2 className="mb-10 text-center">
               <Link 
@@ -38,7 +38,6 @@ export default function TopProyectos() {
               {hasProyectos ? (
                 proyectos.map((p) => (
                   <ProyectoCard
-                    // Usamos un fallback para la key por si acaso
                     key={p.id ?? p.slug}
                     proyecto={p}
                   />

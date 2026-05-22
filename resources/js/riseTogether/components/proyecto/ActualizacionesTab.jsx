@@ -4,7 +4,6 @@ import toast from "react-hot-toast";
 import useAuth from "../../hooks/useAuth";
 import { contienePalabrasInapropiadas } from "../../utils/validation";
 
-// Formateador de fecha similar al de ComentariosTab
 const formatearFecha = (fecha) => {
     if (!fecha) return "";
     const fechaObj = new Date(fecha);
@@ -29,13 +28,11 @@ export default function ActualizacionesTab({ proyectoId, isOwner }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
-    // Form state
     const [isCreating, setIsCreating] = useState(false);
     const [titulo, setTitulo] = useState("");
     const [contenido, setContenido] = useState("");
     const [submitting, setSubmitting] = useState(false);
 
-    // Selected update for comments
     const [selectedUpdate, setSelectedUpdate] = useState(null);
 
     useEffect(() => {
@@ -59,7 +56,6 @@ export default function ActualizacionesTab({ proyectoId, isOwner }) {
         e.preventDefault();
         if (!titulo.trim() || !contenido.trim()) return;
 
-        // Premium Toast Style
         const premiumToast = {
             success: (msg) => toast.success(msg, {
                 style: {
@@ -216,7 +212,6 @@ export default function ActualizacionesTab({ proyectoId, isOwner }) {
     );
 }
 
-// Componente interno para manejar los comentarios de una actualización específica
 function UpdateCommentsSection({ actualizacionId, proyectoId }) {
     const { isAuth, user } = useAuth();
     const [comentarios, setComentarios] = useState([]);
@@ -327,7 +322,7 @@ function UpdateCommentsSection({ actualizacionId, proyectoId }) {
                 <p className="text-xs text-[#9c7049]">Inicia sesión para comentar esta novedad.</p>
             )}
 
-            {/* Lista simple de comentarios (mejorable para soportar nesting si se desea) */}
+            {/* Lista simple de comentarios */}
             <div className="flex flex-col gap-4">
                 {comentarios.map(c => (
                     <div key={c.id} className="flex gap-3">

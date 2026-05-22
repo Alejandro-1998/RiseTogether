@@ -12,10 +12,8 @@ export default function VideoLoginInicio() {
         Tu navegador no soporta el vídeo.
       </video>
 
-      {/* Overlay */}
       <div className="absolute inset-0 bg-black/40" />
 
-      {/* TEXTO: MISMA ALTURA, CENTRADO SOLO EN HORIZONTAL */}
       <div className="absolute inset-0 z-10 flex justify-center items-start text-center text-white">
         <div className="p-10">
           <div className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-[#f2780d]/20 backdrop-blur-sm">

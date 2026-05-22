@@ -3,8 +3,8 @@ import { Link } from "react-router-dom";
 export default function Hero() {
   return (
     <section className="my-8 px-6">
-      <div className="mx-auto max-w-[1200px]">
-        <div className="relative isolate overflow-hidden rounded-2xl h-[520px] sm:h-[560px] md:h-[600px]">
+      <div className="mx-auto max-w-300">
+        <div className="relative isolate overflow-hidden rounded-2xl h-130 sm:h-140 md:h-150">
           <video
             autoPlay
             muted

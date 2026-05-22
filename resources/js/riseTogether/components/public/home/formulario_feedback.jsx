@@ -13,13 +13,12 @@ export default function FormularioFeedback() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    // De momento solo prueba: luego lo conectamos al backend
     console.log({ tipo, feedback });
   }
 
   return (
     <section className="mb-20 px-6">
-       <div className="mx-auto max-w-[1200px]">
+       <div className="mx-auto max-w-300">
         <div className="rounded-3xl bg-gray-100 p-10 shadow-sm dark:bg-[#2a2017] sm:p-14">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-bold leading-tight tracking-tight text-[#1c140d] dark:text-[#fcfaf8]">

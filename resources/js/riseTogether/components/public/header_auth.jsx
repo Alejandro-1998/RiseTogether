@@ -19,7 +19,7 @@ export default function HeaderAuth() {
           {pathname === "/login" && (
             <Link
               to="/registro"
-              className="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+              className="flex h-10 min-w-33.75 items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
             >
               Registrarse
             </Link>
@@ -28,7 +28,7 @@ export default function HeaderAuth() {
           {pathname === "/registro" && (
             <Link
               to="/login"
-              className="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
+              className="flex h-10 min-w-33.75 items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
             >
               Iniciar Sesión
             </Link>
@@ -36,7 +36,7 @@ export default function HeaderAuth() {
 
           <Link
             to="/"
-            className="flex h-10 min-w-[135px] items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#2a2017]/80 dark:focus-visible:ring-offset-[#1c140d]"
+            className="flex h-10 min-w-33.75 items-center justify-center rounded-lg bg-[#f4ede7] px-4 text-sm font-bold text-[#1c140d] transition-colors hover:bg-[#f4ede7]/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f2780d] focus-visible:ring-offset-2 focus-visible:ring-offset-[#fcfaf8] dark:bg-[#2a2017] dark:text-[#fcfaf8] dark:hover:bg-[#2a2017]/80 dark:focus-visible:ring-offset-[#1c140d]"
           >
             Volver a Inicio
           </Link>

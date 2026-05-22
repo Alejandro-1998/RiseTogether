@@ -112,7 +112,6 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
         return false;
     };
 
-    // Premium Toast Style
     const premiumToast = {
         success: (msg) => toast.success(msg, {
             style: {
@@ -146,7 +145,7 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
         setSuccessMessage('');
 
         const data = new FormData();
-        data.append('_method', 'PUT'); // Spoof PUT method
+        data.append('_method', 'PUT');
 
         for (const key in formData) {
             if (formData[key] !== null) {
@@ -212,10 +211,7 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-8">
-                {/* Photo Upload Section */}
-                {/* Photos Section */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                    {/* Profile Photo */}
                     <div className="flex flex-col items-center justify-center" id="photo-section">
                         <p className="mb-4 font-semibold text-gray-700 dark:text-gray-300">Foto de Perfil</p>
                         <div className="relative group">
@@ -242,7 +238,6 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
                         {errors.photo && <p className="text-red-500 text-xs mt-2">{errors.photo}</p>}
                     </div>
 
-                    {/* Banner Photo */}
                     <div className="flex flex-col items-center justify-center" id="banner-section">
                         <p className="mb-4 font-semibold text-gray-700 dark:text-gray-300">Banner del Perfil</p>
                         <div className="relative group w-full max-w-sm h-32 rounded-xl overflow-hidden border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-[#f2780d] transition bg-gray-50 dark:bg-gray-800">
@@ -255,7 +250,7 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
                                 </div>
                             )}
                             <label htmlFor="banner-upload" className="absolute inset-0 flex items-center justify-center cursor-pointer bg-black/0 hover:bg-black/10 transition">
-                                {/* Invisible overlay for click */}
+
                             </label>
                             <input
                                 id="banner-upload"
@@ -269,7 +264,6 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
                     </div>
                 </div>
 
-                {/* General Info */}
                 <div className="space-y-6">
                     <h4 className="text-md font-semibold text-gray-800 dark:text-gray-200 border-b pb-2">Información General</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -324,7 +318,6 @@ export default function UsuarioAjustes({ user, onUserUpdate }) {
                     </div>
                 </div>
 
-                {/* Password Change */}
                 <div className="space-y-6 pt-4">
                     <h4 className="text-md font-semibold text-gray-800 dark:text-gray-200 border-b pb-2">Cambiar Contraseña</h4>
                     <p className="text-sm text-gray-500">Deja estos campos vacíos si no quieres cambiar tu contraseña.</p>
