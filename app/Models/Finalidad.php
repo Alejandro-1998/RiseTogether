@@ -15,7 +15,7 @@ class Finalidad extends Model
     protected $primaryKey = "id";
 
     protected $fillable = [
-        'tipoFinalidad'
+        'tipo_finalidad'
     ];
 
     function eventos()

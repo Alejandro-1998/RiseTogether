@@ -13,8 +13,17 @@ class FinalidadController extends Controller
     public function index()
     {
         // Return all active finalidades
-        $finalidades = Finalidad::orderBy('tipoFinalidad', 'asc')->get();
-        return response()->json($finalidades);
+        $finalidades = Finalidad::orderBy('tipo_finalidad', 'asc')->get();
+        
+        // Map to expected camelCase for the frontend
+        $mapped = $finalidades->map(function ($f) {
+            return [
+                'id' => $f->id,
+                'tipoFinalidad' => $f->tipo_finalidad
+            ];
+        });
+        
+        return response()->json($mapped);
     }
 
     /**
@@ -23,7 +32,7 @@ class FinalidadController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tipoFinalidad' => 'required|string|max:255|unique:finalidades,tipoFinalidad'
+            'tipoFinalidad' => 'required|string|max:255|unique:finalidades,tipo_finalidad'
         ], [
             'tipoFinalidad.required' => 'El nombre de la finalidad es obligatorio.',
             'tipoFinalidad.unique' => 'Ya existe una finalidad con este nombre.',
@@ -31,10 +40,13 @@ class FinalidadController extends Controller
         ]);
 
         $finalidad = Finalidad::create([
-            'tipoFinalidad' => $request->tipoFinalidad
+            'tipo_finalidad' => $request->tipoFinalidad
         ]);
 
-        return response()->json($finalidad, 201);
+        return response()->json([
+            'id' => $finalidad->id,
+            'tipoFinalidad' => $finalidad->tipo_finalidad
+        ], 201);
     }
 
     /**
@@ -45,7 +57,7 @@ class FinalidadController extends Controller
         $finalidad = Finalidad::findOrFail($id);
 
         $request->validate([
-            'tipoFinalidad' => 'required|string|max:255|unique:finalidades,tipoFinalidad,' . $finalidad->id
+            'tipoFinalidad' => 'required|string|max:255|unique:finalidades,tipo_finalidad,' . $finalidad->id
         ], [
             'tipoFinalidad.required' => 'El nombre de la finalidad es obligatorio.',
             'tipoFinalidad.unique' => 'Ya existe una finalidad con este nombre.',
@@ -53,10 +65,13 @@ class FinalidadController extends Controller
         ]);
 
         $finalidad->update([
-            'tipoFinalidad' => $request->tipoFinalidad
+            'tipo_finalidad' => $request->tipoFinalidad
         ]);
 
-        return response()->json($finalidad);
+        return response()->json([
+            'id' => $finalidad->id,
+            'tipoFinalidad' => $finalidad->tipo_finalidad
+        ]);
     }
 
     /**
