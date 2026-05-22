@@ -10,17 +10,11 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-    /**
-     * Muestra una lista de todos los usuarios (para admin).
-     */
     public function index()
     {
         return response()->json(User::all());
     }
 
-    /**
-     * Retorna el usuario autenticado actual O un usuario específico por ID.
-     */
     public function show(Request $request, string $id = null)
     {
         $user = $id ? User::where('id', $id)->orWhere('nombreUsuario', $id)->firstOrFail() : $request->user();
@@ -75,9 +69,6 @@ class UserController extends Controller
         return $this->processUpdate($request, $usuario);
     }
 
-    /**
-     * Admin method to update another user
-     */
     public function updateAdmin(Request $request, string $id)
     {
         $usuario = User::findOrFail($id);
@@ -129,20 +120,14 @@ class UserController extends Controller
         }
 
         if ($request->has('role')) {
-             $nombreRol = $request->role; // 'admin' or 'usuario' or others
+             $nombreRol = $request->role;
              
-             // Ensure role exists to prevent 500 error
-             // Use \Spatie\Permission\Models\Role or import it
-             try {
-                 $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => $nombreRol, 'guard_name' => 'web']);
-                 $usuario->syncRoles([$role]);
-             } catch (\Exception $e) {
-                 // Fallback or log. Usually firstOrCreate handles it.
-                 // If table roles doesn't exist, this might fail, but migrations should be run.
-             }
+            try {
+                $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => $nombreRol, 'guard_name' => 'web']);
+                $usuario->syncRoles([$role]);
+            } catch (\Exception $e) {}
         }
 
-        // Logic for password update
         if ($request->filled('current_password')) {
             $request->validate([
                 'current_password' => ['required', 'current_password'],
@@ -178,7 +163,6 @@ class UserController extends Controller
         $user = User::where('id', $id)->orWhere('nombreUsuario', $id)->firstOrFail();
         $actividades = collect();
 
-        // 1. Creación de proyecto
         $proyectosCreados = \App\Models\Proyecto::where('user_id', $user->id)
             ->whereIn('estado', ['publicado', 'completado', 'fallido'])
             ->get();
@@ -191,7 +175,6 @@ class UserController extends Controller
             ]);
         }
 
-        // 2. Donación a un proyecto
         $donaciones = \App\Models\Donacion::with('proyectos')->where('idUsuario', $user->id)->get();
         foreach ($donaciones as $d) {
             if ($d->proyectos) {
@@ -204,7 +187,6 @@ class UserController extends Controller
             }
         }
 
-        // 3. Sigue a alguien
         $seguidos = $user->seguidos()->withPivot('created_at')->get();
         foreach ($seguidos as $s) {
             $actividades->push([
@@ -215,7 +197,6 @@ class UserController extends Controller
             ]);
         }
 
-        // 4. Alguien le ha seguido
         $seguidores = $user->seguidores()->withPivot('created_at')->get();
         foreach ($seguidores as $s) {
             $actividades->push([
@@ -226,7 +207,6 @@ class UserController extends Controller
             ]);
         }
 
-        // 5. Sigue a un proyecto
         $proyectosSeguidos = $user->proyectos()->withPivot('created_at')->get();
         foreach ($proyectosSeguidos as $p) {
             $actividades->push([
@@ -237,10 +217,8 @@ class UserController extends Controller
             ]);
         }
 
-        // Ordenar y tomar los más recientes según el límite
         $actividades = $actividades->sortByDesc('fecha')->take($limit)->values();
 
-        // Formatear el tiempo
         $actividades->transform(function ($item) {
             $item['tiempo'] = \Carbon\Carbon::parse($item['fecha'])->locale('es')->diffForHumans();
             return $item;

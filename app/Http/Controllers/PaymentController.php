@@ -26,7 +26,6 @@ class PaymentController extends Controller
         try {
             $proyecto = Proyecto::findOrFail($request->id_proyecto);
 
-            // Verificar si el proyecto ha finalizado
             $limite = \Carbon\Carbon::parse($proyecto->fecha_limite)->endOfDay();
             if (now()->greaterThan($limite)) {
                 return response()->json(['message' => 'El proyecto ya ha finalizado y no admite más aportaciones.'], 403);
@@ -85,7 +84,6 @@ class PaymentController extends Controller
                 DB::transaction(function () use ($sesion, $idProyecto, $idRecompensa, $idUsuario) {
                     $monto = $sesion->amount_total / 100;
 
-                    // Crear Donación
                     $donacion = Donacion::create([
                         'idRecompensa' => $idRecompensa ?: null,
                         'idUsuario' => $idUsuario,
@@ -95,7 +93,6 @@ class PaymentController extends Controller
                         'estadoDonacion' => 'pagada',
                     ]);
 
-                    // Actualizar Proyecto
                     $proyecto = Proyecto::lockForUpdate()->find($idProyecto);
                     $proyecto->cantidad_recaudada += $monto;
                     $proyecto->save();

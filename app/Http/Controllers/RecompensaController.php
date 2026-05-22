@@ -5,33 +5,21 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Recompensa;
+use App\Models\Proyecto;
+use Illuminate\Support\Facades\Auth;
 
 class RecompensaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $recompensas = Recompensa::all();
         return response()->json($recompensas);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        $proyecto = \App\Models\Proyecto::findOrFail($request->idProyecto);
-        if ($proyecto->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+        $proyecto = Proyecto::findOrFail($request->idProyecto);
+        if ($proyecto->user_id !== Auth::id()) {
             return response()->json(['message' => 'No tienes permiso para añadir recompensas a este proyecto.'], 403);
         }
         $request->validate([
@@ -64,31 +52,17 @@ class RecompensaController extends Controller
         return response()->json($recompensa, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(string $id)
     {
         $recompensa = Recompensa::findOrFail($id);
         return response()->json($recompensa);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, string $id)
     {
         $recompensa = Recompensa::findOrFail($id);
 
-        $proyecto = \App\Models\Proyecto::findOrFail($recompensa->idProyecto);
+        $proyecto = Proyecto::findOrFail($recompensa->idProyecto);
         if ($proyecto->user_id !== \Illuminate\Support\Facades\Auth::id()) {
             return response()->json(['message' => 'No tienes permiso para editar esta recompensa.'], 403);
         }
@@ -119,15 +93,12 @@ class RecompensaController extends Controller
         return response()->json($recompensa);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
         $recompensa = Recompensa::findOrFail($id);
         
-        $proyecto = \App\Models\Proyecto::findOrFail($recompensa->idProyecto);
-        if ($proyecto->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+        $proyecto = Proyecto::findOrFail($recompensa->idProyecto);
+        if ($proyecto->user_id !== Auth::id()) {
             return response()->json(['message' => 'No tienes permiso para eliminar esta recompensa.'], 403);
         }
 
@@ -140,8 +111,8 @@ class RecompensaController extends Controller
     {
         $recompensa = Recompensa::withTrashed()->findOrFail($id);
         
-        $proyecto = \App\Models\Proyecto::findOrFail($recompensa->idProyecto);
-        if ($proyecto->user_id !== \Illuminate\Support\Facades\Auth::id()) {
+        $proyecto = Proyecto::findOrFail($recompensa->idProyecto);
+        if ($proyecto->user_id !== Auth::id()) {
             return response()->json(['message' => 'No tienes permiso para restaurar esta recompensa.'], 403);
         }
 

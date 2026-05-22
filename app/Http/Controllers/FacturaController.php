@@ -6,7 +6,6 @@ use App\Models\Factura;
 use App\Models\Proyecto;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class FacturaController extends Controller
 {
@@ -29,10 +28,9 @@ class FacturaController extends Controller
             'costo' => 'required|numeric|min:0',
             'descripcion' => 'required|string|max:255',
             'direccionFiscal' => 'required|string|max:255',
-            'pdf' => 'required|file|mimes:pdf|max:10240', // 10MB max
+            'pdf' => 'required|file|mimes:pdf|max:10240',
         ]);
 
-        // Check ownership of the project
         $proyecto = Proyecto::findOrFail($request->proyecto_id);
         if ($proyecto->user_id !== Auth::id()) {
             return response()->json(['message' => 'No tienes permiso.'], 403);

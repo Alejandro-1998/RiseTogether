@@ -58,11 +58,9 @@ class LoginController extends Controller
 
         if (Auth::attempt($credenciales, $remember)) {
             $request->session()->regenerate();
-            // RESPUESTA JSON:
             return response()->json(['message' => 'Login exitoso', 'user' => Auth::user()], 200);
         }
 
-        // ERROR JSON:
         return response()->json(['message' => 'Credenciales incorrectas'], 401);
     }
 
@@ -73,7 +71,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        // Expire cookies matching session config exactly
         $domain = config('session.domain');
         $secure = config('session.secure');
         $httpOnly = config('session.http_only');
@@ -83,7 +80,6 @@ class LoginController extends Controller
         $cookieXsrf = Cookie::make('XSRF-TOKEN', '', -1, $path, $domain, $secure, false, false, $sameSite);
         $cookieSession = Cookie::make(config('session.cookie'), '', -1, $path, $domain, $secure, $httpOnly, false, $sameSite);
 
-        // Queue them to ensure they are attached to headers
         Cookie::queue($cookieXsrf);
         Cookie::queue($cookieSession);
 

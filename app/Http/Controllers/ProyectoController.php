@@ -14,9 +14,6 @@ use Exception;
 
 class ProyectoController extends Controller
 {
-    /**
-     * Obtiene todos los proyectos.
-     */
     public function index(Request $request)
     {
         $query = Proyecto::with(['categoria', 'user']);
@@ -38,8 +35,6 @@ class ProyectoController extends Controller
              $query->whereIn('id', $ids);
         }
 
-        // Filtro para usuarios públicos: solo mostrar estados públicos
-        // Asumiendo que esta ruta es pública (no auth)
         $query->whereIn('estado', ['publicado', 'completado', 'fallido']);
 
         $proyectos = $query->get()->map(function($proyecto) {
@@ -55,28 +50,18 @@ class ProyectoController extends Controller
         return response()->json($proyectos);
     }
 
-    /**
-     * Obtiene todos los proyectos para admin (incluyendo creador).
-     */
     public function indexAdmin()
     {
-        // Eager load creator (user) and category for admin display
         $proyectos = Proyecto::with(['user', 'categoria'])->orderBy('created_at', 'desc')->get();
         return response()->json($proyectos);
     }
 
-    /**
-     * Muestra el formulario.
-     */
     public function create()
     {
         $categorias = Categoria::all();
         return view('privado.crear_proyecto', compact('categorias'));
     }
 
-    /**
-     * Guarda el proyecto en la BBDD.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -119,16 +104,14 @@ class ProyectoController extends Controller
                 'video_url' => $request->video_url,
                 'objetivo_financiacion' => $request->objetivo_financiacion,
                 'fecha_limite' => $request->fecha_limite,
-                'estado' => 'revision', // Siempre se crea en revisión
+                'estado' => 'revision',
                 'cantidad_recaudada' => 0,
             ]);
 
-            // Guardar recompensas si vienen
             if ($request->has('recompensas')) {
                 $recompensasData = json_decode($request->recompensas, true);
                 if (is_array($recompensasData)) {
                     foreach ($recompensasData as $r) {
-                        // Validar campos: titulo no vacío, costo numérico
                         if (!empty($r['titulo']) && isset($r['cantidad']) && is_numeric($r['cantidad'])) {
                             $proyecto->recompensas()->create([
                                 'nombreRecompensa' => $r['titulo'],
@@ -143,7 +126,6 @@ class ProyectoController extends Controller
 
             DB::commit();
 
-            // Cargar la relación para devolverla en la respuesta
             $proyecto->load('categoria');
 
             return response()->json([
@@ -167,7 +149,6 @@ class ProyectoController extends Controller
             $query->withTrashed()->orderBy('costoRecompensa', 'asc');
         }, 'user', 'faqs'])->findOrFail($id);
 
-        // Seguridad: Proteger proyectos en revisión o cancelados
         if (in_array($proyecto->estado, ['revision', 'cancelado'])) {
             /** @var \App\Models\User|null $user */
             $user = Auth::guard('sanctum')->user();
@@ -177,7 +158,6 @@ class ProyectoController extends Controller
             }
         }
 
-        // Inject into the response object
         $isFollowing = false;
         /** @var \App\Models\User|null $user */
         $user = Auth::guard('sanctum')->user();
@@ -189,22 +169,10 @@ class ProyectoController extends Controller
         return response()->json($proyecto);
     }
 
-    /**
-     * Muestra el formulario de edición.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Actualiza un proyecto.
-     */
     public function update(Request $request, string $id)
     {
         $proyecto = Proyecto::findOrFail($id);
         
-        // Verificar propiedad (si no es admin, lógica adicional necesaria aquí o en middleware)
         if ($proyecto->user_id !== Auth::id() && !Auth::user()->hasRole('admin')) {
             return response()->json(['message' => 'No tienes permiso para editar este proyecto.'], 403);
         }
@@ -235,7 +203,6 @@ class ProyectoController extends Controller
         }
 
         if ($request->hasFile('imagen_portada')) {
-            // Borrar imagen antigua si existe
             if ($proyecto->imagen_portada) {
                 Storage::disk('public')->delete($proyecto->imagen_portada);
             }
@@ -244,7 +211,6 @@ class ProyectoController extends Controller
 
         $proyecto->update($datos);
 
-        // Actualizar recompensas si vienen
         if ($request->has('recompensas')) {
             $recompensasData = json_decode($request->recompensas, true);
             if (is_array($recompensasData)) {
@@ -275,7 +241,6 @@ class ProyectoController extends Controller
                     }
                 }
                 
-                // Eliminar las que no se enviaron
                 $recompensasAEliminar = $proyecto->recompensas()->whereNotIn('id', $idsEnviados)->get();
                 foreach ($recompensasAEliminar as $recompensaAEliminar) {
                     if (!$recompensaAEliminar->donaciones()->exists()) {
@@ -288,9 +253,6 @@ class ProyectoController extends Controller
         return response()->json($proyecto);
     }
 
-    /**
-     * Elimina un proyecto
-     */
     public function destroy(string $id)
     {
         $proyecto = Proyecto::findOrFail($id);
@@ -344,7 +306,6 @@ class ProyectoController extends Controller
         
         if (Auth::check()) {
             $user = Auth::user();
-            // Evitar duplicados
             if (!$user->proyectos()->where('idProyecto', $id)->exists()) {
                 $user->proyectos()->attach($id);
                 $proyecto->increment('seguidores');
@@ -377,9 +338,6 @@ class ProyectoController extends Controller
         return response()->json(['message' => 'Proyecto dejado de seguir', 'seguidores' => $proyecto->seguidores]);
     }
 
-    /**
-     * Obtiene las donaciones de un proyecto (Solo para el creador)
-     */
     public function donaciones(Request $request, string $id)
     {
         $proyecto = Proyecto::findOrFail($id);
@@ -388,15 +346,11 @@ class ProyectoController extends Controller
             return response()->json(['message' => 'No tienes permiso para ver las donaciones de este proyecto.'], 403);
         }
 
-        // The relationship is named 'users' and 'recompensas' in Donacion.php
         $donaciones = $proyecto->donaciones()->with(['users', 'recompensas'])->orderBy('fechaCompra', 'desc')->get();
 
         return response()->json($donaciones);
     }
 
-    /**
-     * Actualiza el estado de un proyecto (Solo Admin)
-     */
     public function updateEstado(Request $request, string $id)
     {
         $request->validate([
