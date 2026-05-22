@@ -22,9 +22,9 @@ class Evento extends Model
         'idFinalidad'
     ];
 
-    function proyectos()
+    public function proyectos()
     {
-        return $this->belongsToMany(Proyecto::class, 'proyectos_eventos', 'idEvento', 'idProyecto');
+        return $this->belongsToMany(Proyecto::class, 'proyectos_eventos', 'idEvento', 'idProyecto')->withPivot('id');
     }
 
     public function finalidad()
