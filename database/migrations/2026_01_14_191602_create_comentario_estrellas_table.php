@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('comentario_id')->constrained('comentarios')->onDelete('cascade');
             $table->timestamps();
 
-            $table->unique(['user_id', 'comentario_id']); // Un usuario solo puede dar una estrella a un comentario
+            $table->unique(['user_id', 'comentario_id']);
         });
     }
 

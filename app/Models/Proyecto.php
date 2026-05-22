@@ -78,15 +78,13 @@ class Proyecto extends Model
 
     public function getPorcentajeFinanciadoAttribute()
     {
-        // Evitar división por cero
         if ((float) $this->objetivo_financiacion <= 0) {
             return 0;
         }
         
-        // Calculamos el porcentaje real (puede ser mayor a 100)
         $porcentaje = ($this->cantidad_recaudada / $this->objetivo_financiacion) * 100;
         
-        return $porcentaje; // Quitamos el min(..., 100) de aquí
+        return $porcentaje;
     }
 
     public function faqs()
