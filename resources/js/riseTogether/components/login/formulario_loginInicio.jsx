@@ -5,6 +5,7 @@ import useAuth from "../../hooks/useAuth";
 export default function FormularioLoginInicio() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(false);
   const [error, setError] = useState(null);
   const [fieldErrors, setFieldErrors] = useState({});
   const navigate = useNavigate();
@@ -35,7 +36,7 @@ export default function FormularioLoginInicio() {
     if (!validate()) return;
 
     try {
-      await login({ email, password });
+      await login({ email, password, remember });
 
       // Si es exitoso, redirigimos logic is handled by awaiting login success
       const from = location.state?.from || "/";
@@ -138,23 +139,18 @@ export default function FormularioLoginInicio() {
           )}
         </div>
 
-        {/* RECUÉRDAME + OLVIDASTE */}
+        {/* RECUÉRDAME */}
         <div className="flex items-center justify-between">
           <label className="inline-flex items-center gap-2 text-sm">
             <input
               type="checkbox"
               name="remember"
+              checked={remember}
+              onChange={(e) => setRemember(e.target.checked)}
               className="border-[#9c7049] text-[#f2780d] focus:ring-[#f2780d] dark:border-[#a18a7a]"
             />
             Recuérdame
           </label>
-
-          <Link
-            to="/forgot-password"
-            className="text-sm font-semibold text-[#f2780d] hover:opacity-80"
-          >
-            ¿Olvidaste la contraseña?
-          </Link>
         </div>
 
         {/* BOTÓN */}

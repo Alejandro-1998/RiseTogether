@@ -21,11 +21,11 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const login = async ({ email, password }) => {
+    const login = async ({ email, password, remember = false }) => {
         await csrf();
         setErrors([]);
         try {
-            await axios.post("/api/login", { email, password });
+            await axios.post("/api/login", { email, password, remember });
             await getUser(); // Fetch user to update state
             return true;
         } catch (e) {
