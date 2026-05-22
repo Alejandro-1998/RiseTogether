@@ -15,6 +15,7 @@ import AdminGestionProyectos from "./pages/admin/AdminGestionProyectos";
 import AdminGestionUsuarios from "./pages/admin/AdminGestionUsuarios";
 import AdminCategorias from "./pages/admin/AdminCategorias";
 import AdminEventos from "./pages/admin/AdminEventos";
+import AdminFinalidades from "./pages/admin/AdminFinalidades";
 import AdminPagos from "./pages/admin/AdminPagos";
 import AdminActividadPage from "./pages/admin/AdminActividadPage";
 
@@ -56,6 +57,7 @@ function App() {
             <Route path="/administrador/proyectos" element={<AdminGestionProyectos />} />
             <Route path="/administrador/categorias" element={<AdminCategorias />} />
             <Route path="/administrador/eventos" element={<AdminEventos />} />
+            <Route path="/administrador/finalidades" element={<AdminFinalidades />} />
             <Route path="/administrador/pagos" element={<AdminPagos />} />
             <Route path="/administrador/actividad" element={<AdminActividadPage />} />
           </Route>

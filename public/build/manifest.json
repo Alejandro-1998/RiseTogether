@@ -1,6 +1,6 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-DhVUGxEh.css",
+    "file": "assets/app-BYs9KotN.css",
     "src": "resources/css/app.css",
     "isEntry": true,
     "name": "app",
@@ -9,12 +9,12 @@
     ]
   },
   "resources/js/riseTogether/index.jsx": {
-    "file": "assets/index-eRvGhnkk.js",
+    "file": "assets/index-BmVjoBY0.js",
     "name": "index",
     "src": "resources/js/riseTogether/index.jsx",
     "isEntry": true,
     "css": [
-      "assets/index-CWzuuzPi.css"
+      "assets/index-E7qCES6D.css"
     ]
   }
 }

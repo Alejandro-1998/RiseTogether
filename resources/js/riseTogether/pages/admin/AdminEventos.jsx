@@ -182,12 +182,20 @@ export default function AdminEventos() {
                                 </p>
                             </div>
 
-                            <button
-                                onClick={abrirCrear}
-                                className="rounded-xl bg-[#f2780d] px-5 py-2 font-bold text-white hover:brightness-110 transition"
-                            >
-                                + Nuevo evento
-                            </button>
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => window.location.href = '/administrador/finalidades'}
+                                    className="rounded-xl bg-[#f4ede7] dark:bg-[#3a2c20] px-5 py-2 font-bold text-[#1c140d] dark:text-white hover:brightness-95 transition"
+                                >
+                                    Gestionar Finalidades
+                                </button>
+                                <button
+                                    onClick={abrirCrear}
+                                    className="rounded-xl bg-[#f2780d] px-5 py-2 font-bold text-white hover:brightness-110 transition"
+                                >
+                                    + Nuevo evento
+                                </button>
+                            </div>
                         </div>
 
                         {/* FILTROS (Solo buscador) */}

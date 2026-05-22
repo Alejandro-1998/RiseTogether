@@ -107,8 +107,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/eventos', [App\Http\Controllers\EventoController::class, 'store']);
         Route::put('/eventos/{id}', [App\Http\Controllers\EventoController::class, 'update']);
         Route::delete('/eventos/{id}', [App\Http\Controllers\EventoController::class, 'destroy']);
+        // Finalidades CRUD
+        Route::post('/finalidades', [\App\Http\Controllers\FinalidadController::class, 'store']);
+        Route::put('/finalidades/{id}', [\App\Http\Controllers\FinalidadController::class, 'update']);
+        Route::delete('/finalidades/{id}', [\App\Http\Controllers\FinalidadController::class, 'destroy']);
     });
 
+    Route::get('/finalidades', [\App\Http\Controllers\FinalidadController::class, 'index']);
     Route::post('/logout', [LoginController::class, 'logout']);
     Route::post('/comentarios', [ComentarioController::class, 'store']);
     Route::post('/comentarios/{id}/like', [ComentarioController::class, 'toggleLike']);
