@@ -165,7 +165,8 @@ export default function EventosPage() {
                         } else if (currentRank > prevRank) {
                             trend = 'bajando';
                         } else {
-                            trend = proj.trend || 'estable'; // retain trend if same rank
+                            const oldProj = Array.isArray(prevLeaderboard) ? prevLeaderboard.find(p => p.id === proj.id) : null;
+                            trend = oldProj && oldProj.trend ? oldProj.trend : 'estable'; // retain trend if same rank
                         }
                     } else {
                         if (Object.keys(prevRanks).length > 0) {

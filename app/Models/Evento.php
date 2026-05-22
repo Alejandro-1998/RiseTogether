@@ -27,8 +27,8 @@ class Evento extends Model
         return $this->belongsToMany(Proyecto::class, 'proyectos_eventos', 'idEvento', 'idProyecto');
     }
 
-    function finalidad()
+    public function finalidad()
     {
-        return $this->belongsTo(Finalidad::class, 'idFinalidad');
+        return $this->belongsTo(Finalidad::class, 'idFinalidad', 'id');
     }
 }
