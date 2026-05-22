@@ -147,7 +147,7 @@ export default function LegalNoticePage() {
 
   const [openMap, setOpenMap] = useState(() => {
     const init = {};
-    sections.forEach((s, idx) => (init[s.id] = idx === 0)); // por defecto abre la 01
+    sections.forEach((s, idx) => (init[s.id] = idx === 0));
     return init;
   });
 
@@ -192,8 +192,7 @@ export default function LegalNoticePage() {
       <HeaderPublic />
 
       <main className="flex-1 flex flex-col items-center">
-        <div className="w-full max-w-[1100px] px-6 py-10 md:py-16">
-          {/* Breadcrumbs */}
+        <div className="w-full max-w-275 px-6 py-10 md:py-16">
           <div className="flex flex-wrap gap-2 mb-8">
             <Link
               className="text-gray-500 dark:text-gray-400 text-sm font-medium hover:text-[#f2780d] transition-colors"
@@ -231,7 +230,6 @@ export default function LegalNoticePage() {
             </div>
           </div>
 
-          {/* Layout: Contenido Centrado */}
           <div className="mx-auto max-w-3xl">
             {/* Contenido */}
             <section className="w-full">
@@ -257,7 +255,6 @@ export default function LegalNoticePage() {
 
       <FooterPublic />
 
-      {/* ✅ Estilos de impresión (mantenidos) */}
       <style>{`
         @media print {
           header, footer, .no-print, .toast { display: none !important; }

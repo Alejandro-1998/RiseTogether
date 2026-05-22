@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import HeaderPublic from "../../components/public/header_public";
 import FooterPublic from "../../components/public/footer_public";
 
-// --- Valores por defecto (Fallback) ---
 const DEFAULT_CONTENT = {
     about_hero_badge: "Nuestra historia",
     about_hero_title: "Nuestra Historia de Impacto",
@@ -15,8 +14,6 @@ const DEFAULT_CONTENT = {
     about_values_title: "Nuestros Valores",
     about_values_subtitle: "Los principios que guían cada paso que damos."
 };
-
-// --- Componentes Auxiliares ---
 
 function ValorCard({ icon, title, text }) {
     return (
@@ -64,18 +61,15 @@ function AdminCard({ admin }) {
     );
 }
 
-// --- Componente Principal ---
-
 export default function AboutPage() {
     const [team, setTeam] = useState([]);
-    const [content, setContent] = useState(DEFAULT_CONTENT); // Inicializar con defaults
+    const [content, setContent] = useState(DEFAULT_CONTENT);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         window.axios.get('/api/about-us')
             .then(response => {
                 setTeam(response.data.team || []);
-                // Fusionar defaults con datos de API para asegurar que no haya nulos
                 setContent(prev => ({ ...prev, ...response.data.content }));
             })
             .catch(error => console.error("Error fetching about data:", error))
@@ -94,7 +88,7 @@ export default function AboutPage() {
         <div className="bg-[#f9f8f6] dark:bg-[#120c07] text-[#1c140d] dark:text-gray-100 transition-colors duration-300 min-h-screen">
             <HeaderPublic />
 
-            <main className="max-w-[1200px] mx-auto px-6 py-12 md:py-20">
+            <main className="max-w-300 mx-auto px-6 py-12 md:py-20">
                 {/* HERO */}
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-24">
                     <div className="flex flex-col gap-6">
@@ -109,7 +103,7 @@ export default function AboutPage() {
                         </p>
 
                         <div className="flex flex-wrap gap-4 pt-4">
-                            <Link to="/proyectos" className="px-8 py-4 bg-[#f2780d] text-white font-bold rounded-xl text-lg hover:translate-y-[-2px] transition-all shadow-xl shadow-[#f2780d]/20">
+                            <Link to="/proyectos" className="px-8 py-4 bg-[#f2780d] text-white font-bold rounded-xl text-lg hover:translate-y-0.5 transition-all shadow-xl shadow-[#f2780d]/20">
                                 Explorar campañas
                             </Link>
                             <button
@@ -124,7 +118,7 @@ export default function AboutPage() {
                     <div className="relative group">
                         <div className="absolute -inset-4 bg-[#f2780d]/20 rounded-xl blur-2xl group-hover:bg-[#f2780d]/30 transition-all" />
                         <div
-                            className="relative h-[400px] w-full bg-cover bg-center rounded-xl shadow-2xl border-4 border-white dark:border-gray-800"
+                            className="relative h-100 w-full bg-cover bg-center rounded-xl shadow-2xl border-4 border-white dark:border-gray-800"
                             style={{ backgroundImage: `url('/img/grupo.png')` }}
                         />
                     </div>
@@ -179,7 +173,7 @@ export default function AboutPage() {
                     </div>
                 </section>
 
-                {/* EQUIPO (Admins) */}
+                {/* EQUIPO */}
                 <section className="mb-24">
                     <h2 className="text-3xl font-bold text-center mb-12">Conoce al equipo</h2>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">

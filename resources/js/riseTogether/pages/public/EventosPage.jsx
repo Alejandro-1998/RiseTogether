@@ -7,7 +7,7 @@ import useAuth from "../../hooks/useAuth";
 import axios from 'axios';
 
 const getImagenProyecto = (proyecto) => {
-    let imagen = "/img/default-project.png"; // Imagen por defecto
+    let imagen = "/img/default-project.png";
     if (proyecto?.imagen_portada) {
         if (proyecto.imagen_portada.startsWith('http') || proyecto.imagen_portada.startsWith('blob')) {
             imagen = proyecto.imagen_portada;
@@ -26,10 +26,9 @@ const getImagenProyecto = (proyecto) => {
 
 export default function EventosPage() {
     const { user } = useAuth();
-    // Estado para datos dinámicos
     const [activeEvent, setActiveEvent] = useState(null);
     const [upcomingEvents, setUpcomingEvents] = useState([]);
-    const [featuredEvent, setFeaturedEvent] = useState(null); // The one in the Hero
+    const [featuredEvent, setFeaturedEvent] = useState(null);
     const [leaderboard, setLeaderboard] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('Todas las Categorías');
     const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, isUpcoming: false });
@@ -40,12 +39,11 @@ export default function EventosPage() {
     const [userProjects, setUserProjects] = useState([]);
     const [eventActivities, setEventActivities] = useState([]);
     const [isEnrollModalOpen, setIsEnrollModalOpen] = useState(false);
-    const [targetEvent, setTargetEvent] = useState(null); // The event currently chosen for enrollment
+    const [targetEvent, setTargetEvent] = useState(null);
     const [selectedProjectId, setSelectedProjectId] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [userVote, setUserVote] = useState(null);
 
-    // Modal Helper
     const openEnrollModal = (event) => {
         if (!user) {
             premiumToast.error("Debes iniciar sesión para inscribir un proyecto.");
@@ -54,7 +52,6 @@ export default function EventosPage() {
         setTargetEvent(event);
         setIsEnrollModalOpen(true);
         
-        // RE-FETCH projects on every open for state guarantee
         const api = window.axios;
         if (api) {
             api.get('/api/user/mis-proyectos').then(res => {
@@ -64,31 +61,23 @@ export default function EventosPage() {
         }
     };
 
-    // Fetch Initial Data
     const fetchData = useCallback(async () => {
         try {
-            // Fetch Active Event
             const activeRes = await axios.get('/api/eventos/active');
-            // IMPORTANT: Normalize {} to null if it's an empty object from backend
             const activeData = (activeRes.data && activeRes.data.id) ? activeRes.data : null;
             setActiveEvent(activeData);
 
-            // Fetch Upcoming Events
             const upcomingRes = await axios.get('/api/eventos/upcoming');
             const upcomingData = upcomingRes.data;
             setUpcomingEvents(upcomingData);
 
-            // Fetch Categories for the filter
             const catRes = await axios.get('/api/categorias');
             setCategories(catRes.data);
 
-            // Determine Featured Event (Hero)
-            // If active exists, it's the hero. If not, the first upcoming.
             const hero = activeData || (upcomingData && upcomingData.length > 0 ? upcomingData[0] : null);
             setFeaturedEvent(hero);
 
             if (hero) {
-                // Fetch Event Stats
                 try {
                     const statsRes = await axios.get(`/api/eventos/${hero.id}/stats`);
                     setEventStats(statsRes.data);
@@ -96,7 +85,6 @@ export default function EventosPage() {
                     console.error("Error fetching stats", e);
                 }
 
-                // Fetch Event Activities
                 try {
                     const actRes = await axios.get(`/api/eventos/${hero.id}/actividad`);
                     setEventActivities(actRes.data);
@@ -105,7 +93,6 @@ export default function EventosPage() {
                 }
 
                     if (user) {
-                        // Fetch User Impact and User Projects if logged in
                         try {
                             const impactRes = await axios.get(`/api/eventos/${hero.id}/user-impact`);
                             setUserImpact(impactRes.data);
@@ -113,15 +100,12 @@ export default function EventosPage() {
                             const projectsRes = await axios.get(`/api/user/mis-proyectos`);
                             setUserProjects(projectsRes.data || []);
                             
-                            // Si es evento de votación, intentamos recuperar el voto
                             try {
                                 const voteRes = await axios.get(`/api/eventos/${hero.id}/mivoto`);
                                 if (voteRes.data && voteRes.data.voted_project_id) {
                                     setUserVote(voteRes.data.voted_project_id);
                                 }
-                            } catch (e) {
-                                // Ignoring vote error if endpoint doesn't exist yet or it's not a voting event
-                            }
+                            } catch (e) {}
                         } catch (e) {
                             console.error("Error fetching user data", e);
                         }
@@ -139,7 +123,6 @@ export default function EventosPage() {
         fetchData();
     }, [fetchData]);
 
-    // Fetch Leaderboard for Active Event
     const fetchLeaderboard = useCallback(async (eventId, category) => {
         if (!eventId) return;
         try {
@@ -166,11 +149,10 @@ export default function EventosPage() {
                             trend = 'bajando';
                         } else {
                             const oldProj = Array.isArray(prevLeaderboard) ? prevLeaderboard.find(p => p.id === proj.id) : null;
-                            trend = oldProj && oldProj.trend ? oldProj.trend : 'estable'; // retain trend if same rank
+                            trend = oldProj && oldProj.trend ? oldProj.trend : 'estable';
                         }
                     } else {
                         if (Object.keys(prevRanks).length > 0) {
-                            trend = 'subiendo'; // new entry climbed into leaderboard
                         }
                     }
                     
@@ -187,7 +169,6 @@ export default function EventosPage() {
         }
     }, []);
 
-    // Effect for Leaderboard polling
     useEffect(() => {
         if (featuredEvent?.id) {
             fetchLeaderboard(featuredEvent.id, selectedCategory);
@@ -197,13 +178,12 @@ export default function EventosPage() {
                 axios.get(`/api/eventos/${featuredEvent.id}/actividad`)
                     .then(res => setEventActivities(res.data))
                     .catch(e => console.error("Error polling activities", e));
-            }, 30000); // Polling cada 30 segundos
+            }, 30000);
 
             return () => clearInterval(interval);
         }
     }, [featuredEvent, selectedCategory, fetchLeaderboard]);
 
-    // Countdown Logic based on Featured Event
     useEffect(() => {
         if (!featuredEvent) {
             setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0, isUpcoming: false });
@@ -259,7 +239,6 @@ export default function EventosPage() {
         return () => clearInterval(interval);
     }, [featuredEvent]);
 
-    // Premium Toast Styles
     const premiumToast = {
         success: (msg) => toast.success(msg, {
             style: {
@@ -301,9 +280,7 @@ export default function EventosPage() {
             const res = await axios.post(`/api/eventos/${featuredEvent.id}/votar/${projectId}`);
             premiumToast.success(res.data.message || 'Voto registrado exitosamente');
             setUserVote(projectId);
-            // Refrescar el leaderboard
             fetchLeaderboard(featuredEvent.id, selectedCategory);
-            // Refrescar stats
             const statsRes = await axios.get(`/api/eventos/${featuredEvent.id}/stats`);
             setEventStats(statsRes.data);
         } catch (error) {
@@ -334,7 +311,6 @@ export default function EventosPage() {
                 premiumToast.success('¡Siguiendo proyecto!');
             }
 
-            // Sync with local storage
             const seguidos = JSON.parse(localStorage.getItem("seguidos")) || [];
             const idStr = String(projectId);
             let nuevosSeguidos;
@@ -345,7 +321,6 @@ export default function EventosPage() {
             }
             localStorage.setItem("seguidos", JSON.stringify(nuevosSeguidos));
 
-            // Update local leaderboard state
             setLeaderboard(prev => prev.map(p => {
                 if (p.id === projectId) {
                     return { ...p, is_following: !isCurrentlyFollowing };
@@ -353,7 +328,6 @@ export default function EventosPage() {
                 return p;
             }));
 
-            // Fetch user impact dynamically to update the "Tu Impacto" card in real-time
             if (featuredEvent?.id) {
                 const impactRes = await axios.get(`/api/eventos/${featuredEvent.id}/user-impact`);
                 setUserImpact(impactRes.data);
@@ -381,7 +355,6 @@ export default function EventosPage() {
         const api = window.axios;
         setIsSubmitting(true);
         
-        // Use toast.promise for premium UX
         const enrollmentPromise = api.post(`/api/eventos/${targetEvent.id}/inscribir`, {
             proyecto_id: selectedProjectId
         });
@@ -423,7 +396,7 @@ export default function EventosPage() {
         <div className="bg-[#fcfaf8] dark:bg-[#1c140d] font-sans text-[#1c140d] dark:text-[#fcfaf8] transition-colors duration-200">
             <HeaderPublic />
 
-            <main className="flex-1 w-full max-w-[1400px] mx-auto px-4 md:px-10 pb-20 pt-8">
+            <main className="flex-1 w-full max-w-350 mx-auto px-4 md:px-10 pb-20 pt-8">
                 {/* Admin Toolbar */}
                 {user && user.roles_list && user.roles_list.includes('admin') && (
                     <div className="mb-6 flex justify-end">
@@ -434,7 +407,7 @@ export default function EventosPage() {
                     </div>
                 )}
 
-                {/* Event Timeline Navigation */}
+                {/* Navegación Evento */}
                 <div className="mb-10 flex justify-center">
                     <div className="inline-flex items-center gap-2 p-1 bg-white dark:bg-[#2a221b] rounded-full border border-[#f4ede7] dark:border-[#3a2d22] shadow-sm">
                         <div className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${!activeEvent ? 'bg-orange-500 text-white' : 'text-gray-400'}`}>Inscripción</div>
@@ -447,14 +420,12 @@ export default function EventosPage() {
 
                 {/* Hero Section */}
                 <section className="relative py-12 md:py-20 mb-12 rounded-[2.5rem] overflow-hidden bg-linear-to-br from-[#1c140d] via-[#2a221b] to-[#1c140d] border border-white/5 shadow-2xl">
-                    {/* Decorative Elements */}
                     <div className="absolute top-0 left-0 w-full h-full">
                         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[50%] bg-[#f27f0d]/10 rounded-full blur-[120px]"></div>
                         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[50%] bg-purple-500/10 rounded-full blur-[120px]"></div>
                     </div>
 
                     <div className="relative z-10 flex flex-col lg:flex-row gap-12 items-center px-8 md:px-16 text-center lg:text-left">
-                        {/* Left: Info & Timer */}
                         <div className="flex-1 flex flex-col gap-8 w-full max-w-2xl">
                             {featuredEvent ? (
                                 <>
@@ -486,7 +457,6 @@ export default function EventosPage() {
                                         </p>
                                     </div>
 
-                                    {/* Stats Grid inside Hero */}
                                     <div className={`grid grid-cols-2 ${eventStats.es_votacion ? '' : 'md:grid-cols-3'} gap-4 py-4`}>
                                         <div className="flex flex-col items-center lg:items-start p-4 rounded-2xl bg-white/5 border border-white/5 backdrop-blur-sm">
                                             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
@@ -508,7 +478,6 @@ export default function EventosPage() {
                                         )}
                                     </div>
 
-                                    {/* Countdown */}
                                     <div className="flex flex-col gap-3">
                                         <p className="text-xs font-black tracking-[0.2em] text-gray-500 uppercase flex items-center gap-2 justify-center lg:justify-start">
                                             <span className="material-symbols-outlined text-sm">schedule</span>
@@ -533,7 +502,6 @@ export default function EventosPage() {
                                         </div>
                                     </div>
 
-                                    {/* Enroll Project Button (If authenticated) */}
                                     {user && (
                                         <div className="flex justify-center lg:justify-start mt-4">
                                             <button 
@@ -556,8 +524,7 @@ export default function EventosPage() {
                             )}
                         </div>
 
-                        {/* Right: How it works cards (Modern) */}
-                        <div className="w-full lg:w-[450px] space-y-4">
+                        <div className="w-full lg:w-112.5 space-y-4">
                             <div className="p-6 rounded-3xl bg-white/5 border border-white/5 backdrop-blur-md hover:bg-white/10 transition-colors group">
                                 <div className="flex gap-4">
                                     <div className="size-12 rounded-2xl bg-[#f27f0d]/20 flex items-center justify-center text-[#f27f0d] group-hover:scale-110 transition-transform">
@@ -584,7 +551,6 @@ export default function EventosPage() {
                     </div>
                 </section>
 
-                {/* Podium Section (Top 3) */}
                 {activeEvent && leaderboard.length > 0 && (
                     <section className="mb-20">
                         <div className="text-center mb-12">
@@ -592,7 +558,6 @@ export default function EventosPage() {
                             <p className="text-gray-500">Los proyectos que están marcando el ritmo en este momento.</p>
                         </div>
                         <div className="flex flex-col md:flex-row items-end justify-center gap-6 md:gap-4 lg:gap-8">
-                            {/* 2nd Place */}
                             {leaderboard[1] && (
                                 <div className="w-full md:w-1/3 order-2 md:order-1 group">
                                     <div className="relative p-6 rounded-3xl bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500">
@@ -626,7 +591,6 @@ export default function EventosPage() {
                                 </div>
                             )}
 
-                            {/* 1st Place */}
                             {leaderboard[0] && (
                                 <div className="w-full md:w-[38%] order-1 md:order-2 z-10 scale-105 group">
                                     <div className="relative p-8 rounded-[2.5rem] bg-linear-to-b from-white to-orange-50/50 dark:from-[#3a2d22] dark:to-[#2a221b] border-2 border-orange-500/50 shadow-2xl shadow-orange-500/20 hover:-translate-y-3 transition-all duration-500">
@@ -660,7 +624,6 @@ export default function EventosPage() {
                                 </div>
                             )}
 
-                            {/* 3rd Place */}
                             {leaderboard[2] && (
                                 <div className="w-full md:w-1/3 order-3 group">
                                     <div className="relative p-6 rounded-3xl bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-500">
@@ -697,7 +660,7 @@ export default function EventosPage() {
                     </section>
                 )}
 
-                {/* Upcoming Events Section (Mini Slider) */}
+                {/* Próximos Eventos */}
                 <section className="mb-20">
                     <div className="flex items-center justify-between mb-8">
                         <h2 className="text-2xl font-black tracking-tight">Calendario de Eventos</h2>
@@ -705,14 +668,12 @@ export default function EventosPage() {
                     </div>
                     <div className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide">
                         {upcomingEvents.length > 0 ? upcomingEvents.map((event) => (
-                            <div key={event.id} className="min-w-[300px] md:min-w-[350px] rounded-3xl bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] overflow-hidden flex flex-col hover:border-orange-500/50 hover:shadow-lg transition-all group">
+                            <div key={event.id} className="min-w-75 md:min-w-87.5 rounded-3xl bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22] overflow-hidden flex flex-col hover:border-orange-500/50 hover:shadow-lg transition-all group">
                                 <div className="h-40 bg-linear-to-br from-[#f27f0d] via-[#d96600] to-[#1c140d] relative overflow-hidden flex items-center justify-center">
                                     <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]"></div>
-                                    {/* Large abstract calendar icon in the background */}
                                     <span className="material-symbols-outlined text-[100px] text-white/5 absolute -right-4 -bottom-6 select-none pointer-events-none">
                                         event
                                     </span>
-                                    {/* Abstract circle patterns */}
                                     <div className="absolute -top-12 -left-12 size-32 rounded-full bg-white/5 border border-white/10"></div>
                                     <div className="absolute -bottom-8 -left-8 size-20 rounded-full bg-white/5 border border-white/10"></div>
                                     
@@ -755,9 +716,8 @@ export default function EventosPage() {
                     </div>
                 </section>
 
-                {/* Main Content Grid */}
+                {/* COntenido Principal */}
                 <div id="leaderboard" className="grid grid-cols-1 lg:grid-cols-3 gap-12 mb-20">
-                    {/* Live Leaderboard (Col-span-2) */}
                     <div className="lg:col-span-2 flex flex-col gap-8">
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pb-6 border-b border-[#f4ede7] dark:border-[#3a2d22]">
                             <div>
@@ -772,7 +732,6 @@ export default function EventosPage() {
                             </div>
                         </div>
 
-                        {/* Premium Table */}
                         <div className="overflow-hidden rounded-4xl border border-[#f4ede7] dark:border-[#3a2d22] bg-white dark:bg-[#2a221b] shadow-sm">
                             <table className="w-full text-sm text-left border-collapse">
                                 <thead className="text-[10px] text-gray-400 uppercase bg-gray-50/50 dark:bg-black/20 font-black tracking-widest border-b border-[#f4ede7] dark:border-[#3a2d22]">
@@ -880,9 +839,8 @@ export default function EventosPage() {
                         </div>
                     </div>
 
-                    {/* Sidebar: Premium Components */}
+                    {/* Sidebar */}
                     <div className="flex flex-col gap-10">
-                        {/* Dynamic User Impact Card */}
                         <div className="rounded-[2.5rem] bg-linear-to-br from-orange-600 to-orange-400 text-white p-8 shadow-2xl shadow-orange-500/30 relative overflow-hidden group">
                             <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-3xl -mr-10 -mt-10 group-hover:scale-150 transition-transform duration-700"></div>
                             <h3 className="font-black text-xl mb-6 relative z-10 flex items-center gap-2">
@@ -929,7 +887,7 @@ export default function EventosPage() {
                             )}
                         </div>
 
-                        {/* Recent Activity / Milestones */}
+                        {/* Actividad Reciente */}
                         <div className="p-8 rounded-4xl bg-white dark:bg-[#2a221b] border border-[#f4ede7] dark:border-[#3a2d22]">
                             <h3 className="font-black text-xl mb-6 flex items-center gap-2">
                                 <span className="material-symbols-outlined text-orange-500">history_edu</span>
@@ -958,7 +916,6 @@ export default function EventosPage() {
                     </div>
                 </div>
 
-                {/* FAQ & Terms Section */}
                 <section className="mt-20 py-20 border-t border-[#f4ede7] dark:border-[#3a2d22]">
                     <div className="max-w-4xl mx-auto text-center mb-16">
                         <h2 className="text-4xl font-black mb-4 tracking-tight">Preguntas Frecuentes</h2>
@@ -983,7 +940,6 @@ export default function EventosPage() {
                 </section>
             </main>
 
-            {/* Enroll Modal */}
             {isEnrollModalOpen && (
                 <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
                     <div className="bg-white dark:bg-[#1c140d] rounded-3xl p-8 max-w-md w-full shadow-2xl border border-gray-100 dark:border-white/10 animate-fade-in-up">

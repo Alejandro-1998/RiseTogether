@@ -86,7 +86,7 @@ export default function AdminPagos() {
                                                         <div className="text-xs text-gray-500">{f.cif}</div>
                                                     </td>
                                                     <td className="p-4">
-                                                        <div className="font-medium truncate max-w-[200px]" title={f.proyecto?.titulo}>{f.proyecto?.titulo || 'Proyecto eliminado'}</div>
+                                                        <div className="font-medium truncate max-w-50" title={f.proyecto?.titulo}>{f.proyecto?.titulo || 'Proyecto eliminado'}</div>
                                                         <div className="text-xs text-gray-500">Nº {f.numeroFactura} - {new Date(f.fechaFactura).toLocaleDateString()}</div>
                                                     </td>
                                                     <td className="p-4 font-bold">{f.costo}€</td>

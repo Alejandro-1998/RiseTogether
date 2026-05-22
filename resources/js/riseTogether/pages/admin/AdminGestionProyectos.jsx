@@ -10,13 +10,12 @@ import ConfirmDelete from "../../components/admin/confirm_delete";
 export default function AdminGestionProyectos() {
   const navigate = useNavigate();
   const [q, setQ] = useState("");
-  const [estado, setEstado] = useState("todos"); // todos | pendiente | activo | rechazado | finalizado
+  const [estado, setEstado] = useState("todos");
   const [seleccionado, setSeleccionado] = useState(null);
 
   const [openDelete, setOpenDelete] = useState(false);
   const [aBorrar, setABorrar] = useState(null);
 
-  // ✅ Mock data (luego fetch /api/admin/proyectos)
   const [proyectos, setProyectos] = useState([]);
 
   useEffect(() => {

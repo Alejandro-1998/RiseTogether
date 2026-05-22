@@ -14,12 +14,10 @@ export default function ProyectosPage() {
   const [proyectos, setProyectos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Advanced Filters State
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(categoriaIdParam || "");
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch Categories on Mount
   useEffect(() => {
     let mounted = true;
     import("axios").then((axios) => {
@@ -32,7 +30,6 @@ export default function ProyectosPage() {
     return () => { mounted = false; };
   }, []);
 
-  // Sync state if URL param changes externally (e.g. from header)
   useEffect(() => {
     if (categoriaIdParam && categoriaIdParam !== selectedCategory) {
       setSelectedCategory(categoriaIdParam);
@@ -41,7 +38,6 @@ export default function ProyectosPage() {
 
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
 
-  // Debounce Search Term
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
@@ -49,7 +45,6 @@ export default function ProyectosPage() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Fetch Proyectos
   useEffect(() => {
     let mounted = true;
 
@@ -100,7 +95,6 @@ export default function ProyectosPage() {
     };
   }, [selectedCategory, debouncedSearchTerm]);
 
-  // Update URL params when filters change (UX)
   useEffect(() => {
     const newParams = new URLSearchParams(searchParams);
     if (selectedCategory) {
@@ -114,11 +108,9 @@ export default function ProyectosPage() {
 
   const [showSort, setShowSort] = useState(false);
 
-  // Si quieres filtrar/ordenar en frontend (temporal)
   const proyectosFiltrados = useMemo(() => {
     let arr = [...proyectos];
 
-    // 1. Filtros Rápidos (Priority)
     if (filtro === "novedades") {
       arr.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
     } else if (filtro === "tendencia") {
@@ -126,7 +118,6 @@ export default function ProyectosPage() {
     } else if (filtro === "casi") {
       arr.sort((a, b) => (b.porcentaje_financiado ?? 0) - (a.porcentaje_financiado ?? 0));
     } else {
-      // 2. Orden Dropdown (Solo si no hay filtro rápido)
       switch (orden) {
         case "recaudado_desc":
           arr.sort((a, b) => (b.cantidad_recaudada ?? 0) - (a.cantidad_recaudada ?? 0));
@@ -134,7 +125,7 @@ export default function ProyectosPage() {
         case "recaudado_asc":
           arr.sort((a, b) => (a.cantidad_recaudada ?? 0) - (b.cantidad_recaudada ?? 0));
           break;
-        default: // 'financiados' fallback
+        default:
           arr.sort((a, b) => (b.cantidad_recaudada ?? 0) - (a.cantidad_recaudada ?? 0));
       }
     }
@@ -172,7 +163,7 @@ export default function ProyectosPage() {
               </p>
             </div>
 
-            {/* SEARCH & FILTERS BAR */}
+            {/* BUSCADOR & FILTROS */}
             <div className="flex flex-col md:flex-row gap-4 items-center justify-between py-2">
               <div className="relative w-full md:w-1/3 group">
                 <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[#9c7049] group-focus-within:text-[#f2780d] transition-colors">search</span>
@@ -206,7 +197,7 @@ export default function ProyectosPage() {
 
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-              {/* FILTROS (Frontend Quick Sorts) */}
+              {/* FILTROS */}
               <div className="flex gap-2 flex-wrap">
                 <button
                   type="button"
@@ -233,7 +224,7 @@ export default function ProyectosPage() {
                 </button>
               </div>
 
-              {/* ORDENAR (Dropdown) */}
+              {/* ORDENAR */}
               <div className="relative">
                 <button
                   type="button"
@@ -263,7 +254,7 @@ export default function ProyectosPage() {
                         key={opt.key}
                         onClick={() => {
                           setOrden(opt.key);
-                          setFiltro(""); // Desactiva Novedades/Tendencias/Casi
+                          setFiltro("");
                           setShowSort(false);
                         }}
                         className={`px-4 py-3 text-left text-sm hover:bg-[#f2780d]/10 dark:hover:bg-[#f2780d]/20 transition-colors ${orden === opt.key && !filtro
@@ -288,7 +279,7 @@ export default function ProyectosPage() {
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div
                     key={i}
-                    className="h-[320px] rounded-xl bg-[#f4ede7]/70 dark:bg-[#2a2017]/50 animate-pulse"
+                    className="h-80 rounded-xl bg-[#f4ede7]/70 dark:bg-[#2a2017]/50 animate-pulse"
                   />
                 ))}
               </>
@@ -306,7 +297,7 @@ export default function ProyectosPage() {
             )}
           </section>
 
-          {/* PAGINACIÓN (placeholder) */}
+          {/* PAGINACIÓN */}
           <div className="p-4">
             <div className="flex items-center justify-center gap-2 text-sm text-[#9c7049] dark:text-[#9CA3AF]">
               <button className="rounded-lg px-3 py-2 bg-[#f2780d]/10 text-[#f2780d] hover:bg-[#f2780d]/20">

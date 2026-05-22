@@ -1,4 +1,3 @@
-// resources/js/riseTogether/pages/admin/AdminGestionUsuarios.jsx
 import { useMemo, useState, useEffect } from "react";
 
 import Sidebar from "../../components/admin/sidebar";
@@ -14,21 +13,15 @@ export default function AdminGestionUsuarios() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetch users real
     import("axios").then((axios) => {
       axios.default.get("/api/users")
         .then((res) => {
-          // Mapear campos de BD a lo que espera la tabla si es necesario
-          // BD: nombreUsuario, nombreCompleto, email, created_at, rol? (no rol yet in basic user table usually, assuming 'role' column or similar)
-          // Si no hay rol en BD, default a 'Usuario' o check fields.
           const mapped = res.data.map(u => {
-            // Check roles
             let roleDisplay = "Usuario";
             if (u.roles_list && Array.isArray(u.roles_list)) {
               if (u.roles_list.includes("admin") || u.roles_list.includes("Admin")) {
                 roleDisplay = "Admin";
               }
-              // If not admin, it stays "Usuario"
             }
 
             return {
@@ -50,11 +43,6 @@ export default function AdminGestionUsuarios() {
     });
   }, []);
 
-  // ... (UI state)
-
-
-
-  // UI state
   const [busqueda, setBusqueda] = useState("");
   const [filtroRol, setFiltroRol] = useState("Todos");
   const [filtroEstado, setFiltroEstado] = useState("Todos");
@@ -65,7 +53,6 @@ export default function AdminGestionUsuarios() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [usuarioDelete, setUsuarioDelete] = useState(null);
 
-  // Premium Toast Style
   const premiumToast = {
     success: (msg) => toast.success(msg, {
         style: {
@@ -129,14 +116,13 @@ export default function AdminGestionUsuarios() {
     const dataToSend = {
       nombreUsuario: payload.nombre,
       email: payload.email,
-      role: payload.rol.toLowerCase(), // "Admin" -> "admin", "Usuario" -> "usuario"
+      role: payload.rol.toLowerCase(),
     };
 
     import("axios").then((axios) => {
       if (usuarioEdit) {
         axios.default.put(`/api/users/${usuarioEdit.id}`, dataToSend)
           .then(res => {
-            // Update local state
             setUsuarios((prev) =>
               prev.map((u) => (u.id === usuarioEdit.id ? { ...u, ...payload } : u))
             );
@@ -149,7 +135,6 @@ export default function AdminGestionUsuarios() {
             premiumToast.error("Error al actualizar usuario.");
           });
       } else {
-        // Create Logic (Simulated for now as backend create is not requested yet)
         const nuevo = {
           id: Date.now(),
           ...payload,
@@ -191,7 +176,7 @@ export default function AdminGestionUsuarios() {
         <div className="flex-1 w-full">
 
           <main className="p-6">
-            {/* CABECERA (igual que proyectos) */}
+            {/* CABECERA */}
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
               <div>
                 <p className="text-3xl font-bold leading-tight tracking-tight">
@@ -210,7 +195,7 @@ export default function AdminGestionUsuarios() {
               </button>
             </div>
 
-            {/* FILTROS (buscador + selects) */}
+            {/* FILTROS */}
             <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
               <div className="w-full max-w-xl">
                 <div className="relative">
@@ -267,7 +252,7 @@ export default function AdminGestionUsuarios() {
               onSave={guardarUsuario}
             />
 
-            {/* CONFIRM DELETE (reutiliza tu componente) */}
+            {/* CONFIRMAR DELETE */}
             <ConfirmDelete
               open={confirmOpen}
               onCancel={() => {

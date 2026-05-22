@@ -5,7 +5,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
-    const [isLoading, setIsLoading] = useState(true); // Initial check
+    const [isLoading, setIsLoading] = useState(true);
     const [errors, setErrors] = useState([]);
 
     const csrf = () => axios.get("/sanctum/csrf-cookie");
@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
         setErrors([]);
         try {
             await axios.post("/api/login", { email, password, remember });
-            await getUser(); // Fetch user to update state
+            await getUser();
             return true;
         } catch (e) {
             if (e.response && e.response.status === 422) {
@@ -62,7 +62,7 @@ export const AuthProvider = ({ children }) => {
             console.error("Logout error:", e);
         } finally {
             setUser(null);
-            window.location.href = "/login"; // Force hard redirect/reload to clear state
+            window.location.href = "/login";
         }
     };
 
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }) => {
                 isLoading,
                 errors,
                 getUser,
-                setUser // Exposed to allow manual updates
+                setUser
             }}
         >
             {children}

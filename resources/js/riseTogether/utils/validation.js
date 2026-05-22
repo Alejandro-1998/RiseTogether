@@ -1,4 +1,3 @@
-// Listado exhaustivo y multilingüe de palabras prohibidas/inapropiadas (+200 por idioma)
 const palabrasProhibidas = [
     // === ESPAÑOL ===
     "mierda", "puto", "puta", "cabron", "gilipollas", "coño", "joder",
@@ -376,39 +375,33 @@ const palabrasProhibidas = [
     "zorniger", "zorniges"
 ];
 
-// Instancia única del regex optimizado (se compila una sola vez)
 let regexOptimizado = null;
 
 const obtenerRegexOptimizado = () => {
     if (regexOptimizado) return regexOptimizado;
 
     const patterns = palabrasProhibidas.map(palabra => {
-        // Quitar acentos/tildes
         const palabraNorm = palabra
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
             .toLowerCase();
 
-        // Convertir cada letra a: letra + opcional no-alfanumérico (con escape correcto de caracteres especiales)
         const pattern = palabraNorm
             .split("")
             .map((char, index) => {
                 if (char === " ") return "\\s+";
-                // Escapar caracteres especiales de expresiones regulares como '-' o '*'
                 const escapedChar = char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
                 if (index === palabraNorm.length - 1) return escapedChar;
                 return `${escapedChar}[^a-z0-9]*`;
             })
             .join("");
 
-        // Requerir límites de palabra para términos muy cortos para evitar falsos positivos
         if (palabraNorm.length < 4) {
             return `\\b${pattern}\\b`;
         }
         return pattern;
     });
 
-    // Unir todas las palabras con un operador OR en un solo regex
     regexOptimizado = new RegExp(`(${patterns.join("|")})`, "i");
     return regexOptimizado;
 };
@@ -416,12 +409,10 @@ const obtenerRegexOptimizado = () => {
 export const contienePalabrasInapropiadas = (mensaje) => {
     if (!mensaje) return false;
 
-    // 1. Quitar acentos del mensaje del usuario
     const mensajeLimpio = mensaje
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "");
 
-    // 2. Normalizar Leet Speak (1337-speak) / Números y Símbolos
     const leetMap = {
         "4": "a",
         "@": "a",
@@ -441,7 +432,6 @@ export const contienePalabrasInapropiadas = (mensaje) => {
         mensajeNormalizado = mensajeNormalizado.replaceAll(numero, letra);
     }
 
-    // 3. Ejecutar la validación rápida en un solo paso utilizando la expresión regular compilada
     const regex = obtenerRegexOptimizado();
     return regex.test(mensajeNormalizado);
 };

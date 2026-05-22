@@ -5,7 +5,6 @@ export default function useAuth() {
     if (!context) {
         throw new Error("useAuth must be used within an AuthProvider");
     }
-    // Mapping context to the interface we used before + new methods
     return {
         user: context.user,
         isAuth: !!context.user,

@@ -20,7 +20,7 @@ import ActividadReciente from "../../components/cards/actividad_reciente";
 export default function UsuarioPage() {
   const { id } = useParams();
   const { setUser, user: currentUser, isLoading: authLoading } = useAuth();
-  const [pestana, setPestana] = useState("resumen"); // resumen | creados | apoyados | actividad | ajustes
+  const [pestana, setPestana] = useState("resumen");
   const [usuario, setUsuario] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [soyYo, setSoyYo] = useState(false);
@@ -135,11 +135,9 @@ export default function UsuarioPage() {
           setUsuario(null);
           return;
         }
-        // Utilizar el endpoint del profile para cargar todos los detalles
         const response = await axios.get('/api/user/profile');
         setUsuario(response.data);
       } else {
-        // Viendo un perfil público
         const response = await axios.get(`/api/users/${id}`);
         setUsuario(response.data);
       }
@@ -152,7 +150,7 @@ export default function UsuarioPage() {
   };
 
   const obtenerProyectosCreados = async () => {
-    if (proyectosCreados.length > 0) return; // Ya cargados
+    if (proyectosCreados.length > 0) return;
     setCargandoProyectos(true);
     try {
       const res = await axios.get(`/api/proyectos?user_id=${usuario.id}`);
@@ -209,7 +207,6 @@ export default function UsuarioPage() {
 
   const manejarActualizacionUsuario = (usuarioActualizado) => {
     setUsuario(usuarioActualizado);
-    // Actualizar estado global si es mi propio perfil
     if (soyYo) {
       setUser(usuarioActualizado);
     }
@@ -218,18 +215,15 @@ export default function UsuarioPage() {
   if (cargando || authLoading) return <div className="flex h-screen items-center justify-center">Cargando...</div>;
   if (!usuario) return <div className="flex h-screen items-center justify-center">Usuario no encontrado. <a href="/login" className="ml-2 text-blue-500">Iniciar Sesión</a></div>;
 
-  // Map API data to component expectations
   const usuarioMapeado = {
     ...usuario,
     nombre: usuario.nombreCompleto || usuario.nombreUsuario,
     username: `@${usuario.nombreUsuario}`,
     ubicacion: usuario.direccion || 'Ubicación no disponible',
-    // Use placeholders if no image (can be improved later with real uploads)
     avatarUrl: usuario.profile_photo_url || "https://ui-avatars.com/api/?name=" + encodeURIComponent(usuario.nombreUsuario) + "&color=7F9CF5&background=EBF4FF",
     bannerUrl: usuario.banner_photo_url || "https://lh3.googleusercontent.com/aida-public/AB6AXuBy9Wss6EBRoR7h3QbFmEUvv8yYqAkAHJvQHJolGdmXUU6eXj62XpZQgfUVzCZc_WAkapFJSxbovCIb8D6h1bJuSDKxqfJ4V_yk2h8nqIHtI9nLhgyOcT53RH09ZVWxNLRGtdS2oSMEiBHj80gbB_GA0-YUwB0eHspnjYbceQyZkw4youOQoQbZVoFUDclCl2oYNu4YiR7rSoGVBeJ_qZmW7JTnrRzGW1VoYcG0_ujIk9svn-s5mIUa7t86AR_qaPxqgKf3BmSvolw"
   };
 
-  // Calcular proyectos únicos apoyados
   const proyectosApoyadosUnicos = usuario.donaciones
     ? new Set(usuario.donaciones.map(d => d.idProyecto)).size
     : 0;
@@ -258,10 +252,8 @@ export default function UsuarioPage() {
         />
 
         {/* Estadísticas */}
-        {/* Top Section: Stats Left | Info Right */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
 
-          {/* LEFT: Stats Panel Unified */}
           <div className="rounded-2xl border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] p-8 shadow-sm h-full flex flex-col justify-center">
             <div className="grid grid-cols-2 gap-y-10 gap-x-8">
               {estadisticas.map((s, i) => (
@@ -277,7 +269,6 @@ export default function UsuarioPage() {
             </div>
           </div>
 
-          {/* RIGHT: User Info Panel Unified */}
           <UsuarioSidebar usuario={usuarioMapeado} />
         </div>
 
@@ -290,7 +281,6 @@ export default function UsuarioPage() {
             <section className="pt-8 space-y-8">
               {pestana === "resumen" && (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  {/* Left Column: Featured Project */}
                   {(!soyYo && proyectoDestacado) || (soyYo && proyectosCreados.length > 0) ? (
                     <div>
                       <div className="flex items-center justify-between mb-4">
@@ -319,10 +309,9 @@ export default function UsuarioPage() {
                       )}
                     </div>
                   ) : (
-                    <div></div> // Empty div to preserve grid layout if no featured project
+                    <div></div>
                   )}
 
-                  {/* Right Column: Actividad (Old Proyectos seguidos) */}
                   <section aria-labelledby="actividad-reciente-titulo" className="h-full">
                     <div className="flex items-center justify-between mb-3">
                       <h3 id="actividad-reciente-titulo" className="text-lg font-bold">
@@ -376,7 +365,6 @@ export default function UsuarioPage() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                       {usuario.donaciones.map((donacion) => (
                         <div key={donacion.id} className="rounded-2xl overflow-hidden border border-[#e8dace] dark:border-[#374151] bg-white dark:bg-[#2d2d2d] shadow-sm flex flex-col">
-                          {/* Reusing ProyectoCard if possible, or custom display */}
                           {donacion.proyectos && <ProyectoCard proyecto={donacion.proyectos} />}
 
                           <div className="p-4 border-t border-[#f4ede7] dark:border-[#374151] bg-[#fcfaf8] dark:bg-[#1a120d]">

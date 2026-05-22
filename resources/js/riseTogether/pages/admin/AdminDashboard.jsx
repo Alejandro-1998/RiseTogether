@@ -95,7 +95,7 @@ export default function AdminDashboard() {
               </p>
             </div>
 
-            {/* 4 TARJETAS (stats) */}
+            {/* TARJETAS ESTADÍSTICAS */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <Stats title="Proyectos activos" value={stats.proyectos_activos} trend="En curso" />
               <Stats title="Pendientes de revisión" value={stats.proyectos_pendientes} trend="Requieren acción" />
@@ -108,7 +108,7 @@ export default function AdminDashboard() {
               />
             </div>
 
-            {/* GRID PRINCIPAL (igual que Blade) */}
+            {/* GRID PRINCIPAL */}
             <div className="grid grid-cols-3 gap-8 items-stretch">
               {/* PROYECTOS PENDIENTES */}
               <div className="col-span-3 lg:col-span-3">

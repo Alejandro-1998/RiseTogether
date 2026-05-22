@@ -20,10 +20,9 @@ export default function ProyectoPage() {
   const location = useLocation();
   const [proyecto, setProyecto] = useState(null);
   const [cargando, setCargando] = useState(true);
-  const [pestana, setPestana] = useState("historia"); // historia | actualizaciones | faq | comentarios
-  const { isAuth, user } = useAuth(); // Get auth state
+  const [pestana, setPestana] = useState("historia");
+  const { isAuth, user } = useAuth();
 
-  // Donation form state
   const [donationAmount, setDonationAmount] = useState("");
   const [donationError, setDonationError] = useState("");
 
@@ -33,7 +32,6 @@ export default function ProyectoPage() {
     }
   }, [location.hash]);
 
-  // Premium Toast Style
   const premiumToast = {
     success: (msg) => toast.success(msg, {
         style: {
@@ -78,7 +76,7 @@ export default function ProyectoPage() {
     if (!id) return;
 
     const obtenerProyecto = async () => {
-      console.log("Obteniendo proyecto con ID:", id); // Debug log
+      console.log("Obteniendo proyecto con ID:", id);
       try {
         const res = await fetch(`/api/proyectos/${id}`, {
           headers: { Accept: "application/json" }
@@ -110,8 +108,6 @@ export default function ProyectoPage() {
   if (cargando) return <div className="flex h-screen items-center justify-center text-[#9c7049]">Cargando proyecto...</div>;
   if (!proyecto) return <div className="flex h-screen items-center justify-center text-[#9c7049]">Proyecto no encontrado.</div>;
 
-  // --- DATA MAPPING ---
-  // Images
   const getImagenPrincipal = () => {
     if (!proyecto.imagen_portada) return "/img/default-project.png";
     if (proyecto.imagen_portada.startsWith('http')) return proyecto.imagen_portada;
@@ -120,18 +116,15 @@ export default function ProyectoPage() {
   };
 
   const imagenPrincipal = getImagenPrincipal();
-  const imagenes = [imagenPrincipal]; // Only real images
+  const imagenes = [imagenPrincipal];
 
-  // Author
   const autorNombre = proyecto.user?.nombreUsuario ?? "Autor desconocido";
   const autorInicial = autorNombre.charAt(0).toUpperCase();
 
-  // Financials
   const objetivo = Number(proyecto.objetivo_financiacion);
   const recaudado = Number(proyecto.cantidad_recaudada);
   const porcentaje = objetivo > 0 ? (recaudado / objetivo) * 100 : 0;
 
-  // Days Remaining
   const hoy = new Date();
   const limite = new Date(proyecto.fecha_limite);
   const ms = limite.getTime() - hoy.getTime();
@@ -142,7 +135,7 @@ export default function ProyectoPage() {
     porcentaje: porcentaje,
     recaudado: recaudado,
     objetivo: objetivo,
-    mecenas: 0, // Not in DB yet
+    mecenas: 0,
     diasRestantes: diasRestantes > 0 ? diasRestantes : 0,
     id: proyecto.id,
     isFollowing: proyecto.is_following,
@@ -156,14 +149,11 @@ export default function ProyectoPage() {
 
   const iniciarPago = async (importe, idRecompensa = null) => {
     if (!isAuth) {
-      // Force redirect if not authenticated (though UI should prevent this usually)
       window.location.href = "/login";
       return;
     }
 
     try {
-      // Use axios to ensure cookies (Sanctum) are sent. 
-      // No 'Authorization' header needed for cookie-based auth.
       const response = await axios.post("/api/pagos/iniciar", {
         id_proyecto: proyecto.id,
         importe: importe,
@@ -342,12 +332,10 @@ export default function ProyectoPage() {
                   Sobre el proyecto
                 </h3>
 
-                {/* Render description preserving whitespace */}
                 <div className="whitespace-pre-wrap text-base leading-relaxed text-[#5e4e42] dark:text-[#a18a7a]">
                   {proyecto.descripcion}
                 </div>
 
-                {/* About Author Section */}
                 <div className="mt-12 rounded-3xl border border-[#f4ede7] dark:border-[#f4ede7]/10 p-6 flex flex-col sm:flex-row items-start gap-6 not-prose bg-[#ffffff] dark:bg-[#1a120d]">
                   <div className="h-20 w-20 rounded-full bg-[#f2780d]/10 flex items-center justify-center text-3xl font-black text-[#f2780d] overflow-hidden">
                     {proyecto.user?.profile_photo_url ? (

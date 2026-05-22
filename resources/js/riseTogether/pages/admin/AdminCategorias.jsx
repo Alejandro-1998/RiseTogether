@@ -11,7 +11,6 @@ export default function AdminCategorias() {
     const [categorias, setCategorias] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // UI state
     const [busqueda, setBusqueda] = useState("");
     const [modalOpen, setModalOpen] = useState(false);
     const [categoriaEdit, setCategoriaEdit] = useState(null);
@@ -19,7 +18,6 @@ export default function AdminCategorias() {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [categoriaDelete, setCategoriaDelete] = useState(null);
 
-    // Premium Toast Style
     const premiumToast = {
         success: (msg) => toast.success(msg, {
             style: {
@@ -95,7 +93,6 @@ export default function AdminCategorias() {
 
         import("axios").then((axios) => {
             if (categoriaEdit) {
-                // Editar
                 axios.default
                     .put(`/api/categorias/${categoriaEdit.id}`, dataToSend)
                     .then((res) => {
@@ -111,7 +108,6 @@ export default function AdminCategorias() {
                         premiumToast.error("Error al actualizar la categoría. Revisa duplicados.");
                     });
             } else {
-                // Crear
                 axios.default
                     .post("/api/categorias", dataToSend)
                     .then((res) => {
@@ -175,7 +171,7 @@ export default function AdminCategorias() {
                             </button>
                         </div>
 
-                        {/* FILTROS (Solo buscador) */}
+                        {/* FILTROS */}
                         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                             <div className="w-full max-w-xl">
                                 <div className="relative">

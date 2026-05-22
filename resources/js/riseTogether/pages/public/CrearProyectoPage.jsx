@@ -22,18 +22,17 @@ export default function CrearProyectoPage() {
     const [categoriasdB, setCategoriasdB] = useState([]);
     const [form, setForm] = useState({
         titulo: "",
-        categoria: "", // ID de la categoría
+        categoria: "",
         objetivo: 20000,
         fecha_limite: "",
-        imagen_portada: null, // de momento string url o null
-        descripcion: "", // Antes 'historia', ahora descripción principal
+        imagen_portada: null,
+        descripcion: "",
     });
 
     useEffect(() => {
         axios.get('/api/categorias')
             .then(res => {
                 setCategoriasdB(res.data);
-                // Si hay categorías y no estamos editando, seleccionar la primera por defecto
                 if (res.data.length > 0 && !isEdit) {
                     setForm(f => ({ ...f, categoria: res.data[0].id }));
                 }
@@ -112,7 +111,6 @@ export default function CrearProyectoPage() {
         ]);
     };
 
-    // Premium Toast Style
     const premiumToast = {
         success: (msg) => toast.success(msg, {
             style: {
@@ -148,7 +146,7 @@ export default function CrearProyectoPage() {
         formData.append('categoria_id', form.categoria);
         formData.append('objetivo_financiacion', form.objetivo);
         formData.append('fecha_limite', form.fecha_limite);
-        formData.append('descripcion', form.descripcion); // Usar descripción única
+        formData.append('descripcion', form.descripcion);
         formData.append('estado', type === 'publish' ? 'publicado' : 'borrador');
 
         if (isEdit) {
@@ -181,7 +179,6 @@ export default function CrearProyectoPage() {
                     ? '/administrador/proyectos'
                     : '/proyectos';
 
-                // Pequeño retardo para que se vea el toast antes de redirigir
                 setTimeout(() => {
                     window.location.href = redirectPath;
                 }, 1500);
@@ -198,7 +195,7 @@ export default function CrearProyectoPage() {
     }
 
     if (!isAuth) {
-        return null; // Will redirect in useEffect
+        return null;
     }
 
     return (
@@ -207,7 +204,7 @@ export default function CrearProyectoPage() {
 
             <main className="mx-auto w-full max-w-7xl px-4 sm:px-8 md:px-10 py-10">
                 <div className="flex flex-wrap justify-between gap-3 mb-10">
-                    <div className="min-w-[280px]">
+                    <div className="min-w-70">
                         <p className="text-3xl md:text-4xl font-black tracking-tight">
                             {isEdit ? "Editar proyecto" : "Crear proyecto"}
                         </p>
@@ -218,7 +215,7 @@ export default function CrearProyectoPage() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    {/* COLUMNA IZQUIERDA: FORMULARIO (8 cols) */}
+                    {/* COLUMNA IZQUIERDA: FORMULARIO */}
                     <div className="lg:col-span-8 space-y-8">
 
                         {/* BLOQUE 1: DATOS BÁSICOS */}
@@ -239,8 +236,6 @@ export default function CrearProyectoPage() {
                                         className="mt-2 w-full rounded-2xl border border-[#ead8ce] dark:border-[#3a2d24] bg-[#fffaf7] dark:bg-[#120b07] px-4 py-3 text-sm outline-none focus:border-[#f2780d]"
                                     />
                                 </div>
-
-                                {/* Eliminado campo Resumen */}
 
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
@@ -346,7 +341,7 @@ export default function CrearProyectoPage() {
                             </div>
                         </section>
 
-                        {/* ACCIONES MOBILE (visible solo en pequeñas pantallas) */}
+                        {/* ACCIONES MOBILE */}
                         <div className="flex lg:hidden flex-col sm:flex-row gap-3">
                             <button
                                 onClick={submit("publish")}
@@ -358,7 +353,7 @@ export default function CrearProyectoPage() {
 
                     </div>
 
-                    {/* COLUMNA DERECHA: PREVIEW + ACCIONES (4 cols) */}
+                    {/* COLUMNA DERECHA: PREVIEW + ACCIONES */}
                     <div className="lg:col-span-4">
                         <div className="sticky top-6 space-y-6">
                             <div className="rounded-3xl border border-[#f4ede7] dark:border-[#2a2017] bg-white dark:bg-[#1a120d] p-6 shadow-sm">
@@ -369,7 +364,7 @@ export default function CrearProyectoPage() {
                                 </p>
                             </div>
 
-                            {/* ACCIONES DESKTOP (visible en pantallas grandes) */}
+                            {/* ACCIONES DESKTOP */}
                             <div className="hidden lg:flex flex-col gap-3">
                                 <button
                                     onClick={submit("publish")}

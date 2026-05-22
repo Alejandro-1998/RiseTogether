@@ -11,7 +11,6 @@ export default function AdminEventos() {
     const [eventos, setEventos] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // UI state
     const [busqueda, setBusqueda] = useState("");
     const [modalOpen, setModalOpen] = useState(false);
     const [eventoEdit, setEventoEdit] = useState(null);
@@ -19,7 +18,6 @@ export default function AdminEventos() {
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [eventoDelete, setEventoDelete] = useState(null);
 
-    // Premium Toast Style
     const premiumToast = {
         success: (msg) => toast.success(msg, {
             style: {
@@ -53,18 +51,6 @@ export default function AdminEventos() {
 
     const fetchEventos = () => {
         import("axios").then((axios) => {
-            // Assuming public route exists or creating admin route. Using existing public /api/eventos? Or create new.
-            // The controller has index(), so let's try /api/eventos if mapped, or add mapping. 
-            // I added /admin/eventos in Step 114 to api.php, but controller index is usually public. 
-            // Let's use the standard resource route I likely added or will add.
-            // Wait, I only added POST/PUT/DELETE. I should check if GET is available.
-            // Usually index is public. I will check api.php again internally or just try /api/eventos (public?) or /api/admin/eventos checking previous steps.
-            // In api.php I saw `Route::get('/categorias'...)` and `Route::get('/proyectos'...)`. I didn't see `Route::get('/eventos')` yet.
-            // I should assume I need to fetch them. I will assume /api/eventos exists or I'll add it.
-            // Actually, looking at previous view_file of api.php, there was NO /api/eventos public route. 
-            // I should have added it. I only added admin routes.
-            // I will assume for now I can fetch them via a new route or I will add the GET route in next step if needed.
-            // For now let's try /api/eventos assuming standard naming.
             axios.default
                 .get("/api/eventos")
                 .then((res) => {
@@ -78,7 +64,6 @@ export default function AdminEventos() {
                 })
                 .catch((err) => {
                     console.error(err);
-                    // If 404, maybe I need to add the route.
                     setEventos([]);
                     setLoading(false);
                 });
@@ -110,7 +95,6 @@ export default function AdminEventos() {
     const guardarEvento = (payload) => {
         import("axios").then((axios) => {
             if (eventoEdit) {
-                // Editar
                 axios.default
                     .put(`/api/eventos/${eventoEdit.id}`, payload)
                     .then((res) => {
@@ -126,7 +110,6 @@ export default function AdminEventos() {
                         premiumToast.error("Error al actualizar el evento.");
                     });
             } else {
-                // Crear
                 axios.default
                     .post("/api/eventos", payload)
                     .then((res) => {
@@ -198,7 +181,7 @@ export default function AdminEventos() {
                             </div>
                         </div>
 
-                        {/* FILTROS (Solo buscador) */}
+                        {/* FILTROS */}
                         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
                             <div className="w-full max-w-xl">
                                 <div className="relative">
@@ -233,7 +216,7 @@ export default function AdminEventos() {
                             onSave={guardarEvento}
                         />
 
-                        {/* CONFIRM DELETE */}
+                        {/* CONFIRMAR DELETE */}
                         <ConfirmDelete
                             open={confirmOpen}
                             onCancel={() => {

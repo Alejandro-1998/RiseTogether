@@ -184,7 +184,7 @@ export default function PoliticaPrivacidadPage() {
 
   const [openMap, setOpenMap] = useState(() => {
     const init = {};
-    sections.forEach((s, idx) => (init[s.id] = idx === 0)); // por defecto abre la 01
+    sections.forEach((s, idx) => (init[s.id] = idx === 0));
     return init;
   });
 
@@ -228,7 +228,7 @@ export default function PoliticaPrivacidadPage() {
       <HeaderPublic />
 
       <main className="flex-1 flex flex-col items-center">
-        <div className="w-full max-w-[1100px] px-6 py-10 md:py-16">
+        <div className="w-full max-w-275 px-6 py-10 md:py-16">
           {/* Breadcrumbs */}
           <div className="flex flex-wrap gap-2 mb-8">
             <Link

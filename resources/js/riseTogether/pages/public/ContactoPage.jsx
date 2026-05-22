@@ -29,7 +29,6 @@ function SocialIcon({ icon }) {
 }
 
 function AdminSoporte({ admins = [] }) {
-  // ✅ si aún no tienes API, deja 4 placeholders
   const adminsFinal = admins?.length
     ? admins.slice(0, 4)
     : [
@@ -143,7 +142,6 @@ export default function ContactPage({ admins = [] }) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          {/* LEFT: FORM */}
           <div className="lg:col-span-7">
             <div className="bg-white dark:bg-zinc-900 rounded-2xl p-8 md:p-10 shadow-sm border border-black/5 dark:border-white/5">
               <h2 className="text-2xl font-bold mb-8">Envíanos un mensaje</h2>
@@ -219,7 +217,6 @@ export default function ContactPage({ admins = [] }) {
             </div>
           </div>
 
-          {/* RIGHT: INFO */}
           <div className="lg:col-span-5 space-y-6">
             <InfoCard
               icon="call"
@@ -228,7 +225,6 @@ export default function ContactPage({ admins = [] }) {
               value="+34 900 123 456"
             />
 
-            {/* Map/Location */}
             <div className="bg-white dark:bg-zinc-900 rounded-2xl overflow-hidden shadow-sm border border-black/5 dark:border-white/5">
               <div className="h-48 bg-zinc-200 dark:bg-zinc-800 relative group">
                 <div
@@ -265,7 +261,6 @@ export default function ContactPage({ admins = [] }) {
               </div>
             </div>
 
-            {/* Social */}
             <div className="bg-white dark:bg-zinc-900 rounded-2xl p-6 shadow-sm border border-black/5 dark:border-white/5">
               <h3 className="font-bold text-lg mb-4">Síguenos</h3>
               <div className="flex gap-4">
@@ -275,12 +270,10 @@ export default function ContactPage({ admins = [] }) {
               </div>
             </div>
 
-            {/* ✅ Bloque admins soporte */}
             <AdminSoporte admins={admins} />
           </div>
         </div>
 
-        {/* FAQ */}
         <section className="mt-24">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-extrabold mb-3">Preguntas frecuentes</h2>
@@ -302,7 +295,6 @@ export default function ContactPage({ admins = [] }) {
           </div>
         </section>
 
-        {/* CTA Partners */}
         <section className="mt-24 mb-12">
           <div className="bg-[#f2780d]/10 dark:bg-[#f2780d]/5 border border-[#f2780d]/20 rounded-2xl p-10 md:p-16 text-center relative overflow-hidden">
             <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 size-64 bg-[#f2780d]/10 rounded-full blur-3xl" />
