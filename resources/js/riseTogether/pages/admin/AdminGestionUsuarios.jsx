@@ -11,6 +11,7 @@ import ConfirmDelete from "../../components/admin/confirm_delete";
 export default function AdminGestionUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     import("axios").then((axios) => {
@@ -170,21 +171,29 @@ export default function AdminGestionUsuarios() {
     <div className="min-h-screen flex flex-col bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
       <HeaderPublic />
 
-      <div className="flex flex-1">
-        <Sidebar />
+      <div className="flex flex-1 flex-col md:flex-row">
+        <Sidebar mobileOpen={sidebarOpen} setMobileOpen={setSidebarOpen} />
 
         <div className="flex-1 w-full">
 
           <main className="p-6">
             {/* CABECERA */}
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <div>
-                <p className="text-3xl font-bold leading-tight tracking-tight">
-                  Gestión de usuarios
-                </p>
-                <p className="text-gray-600 dark:text-gray-300 mt-1">
-                  Gestiona usuarios: crear, editar, eliminar y filtrar por rol/estado.
-                </p>
+              <div className="flex items-center gap-3">
+                <button 
+                  className="md:hidden p-2 bg-white dark:bg-[#1a120d] rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+                  onClick={() => setSidebarOpen(true)}
+                >
+                  <span className="material-symbols-outlined">menu</span>
+                </button>
+                <div>
+                  <p className="text-2xl md:text-3xl font-bold leading-tight tracking-tight">
+                    Gestión de usuarios
+                  </p>
+                  <p className="text-gray-600 dark:text-gray-300 mt-1">
+                    Gestiona usuarios: crear, editar, eliminar y filtrar por rol/estado.
+                  </p>
+                </div>
               </div>
 
               <button

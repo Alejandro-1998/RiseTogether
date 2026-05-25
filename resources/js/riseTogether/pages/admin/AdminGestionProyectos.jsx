@@ -12,6 +12,7 @@ export default function AdminGestionProyectos() {
   const [q, setQ] = useState("");
   const [estado, setEstado] = useState("todos");
   const [seleccionado, setSeleccionado] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const [openDelete, setOpenDelete] = useState(false);
   const [aBorrar, setABorrar] = useState(null);
@@ -99,18 +100,26 @@ export default function AdminGestionProyectos() {
     <div className="min-h-screen flex flex-col bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
       <HeaderPublic />
 
-      <div className="flex flex-1">
-        <Sidebar />
+      <div className="flex flex-1 flex-col md:flex-row">
+        <Sidebar mobileOpen={sidebarOpen} setMobileOpen={setSidebarOpen} />
 
         <div className="flex-1 w-full">
 
           <main className="p-6">
             <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <div>
-                <h1 className="text-3xl font-bold">Gestión de proyectos</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  Gestiona proyectos: crear, editar, eliminar y filtrar por estado.
-                </p>
+              <div className="flex items-center gap-3">
+                <button 
+                  className="md:hidden p-2 bg-white dark:bg-[#1a120d] rounded-lg shadow-sm border border-[#e8dace] dark:border-[#374151]"
+                  onClick={() => setSidebarOpen(true)}
+                >
+                  <span className="material-symbols-outlined">menu</span>
+                </button>
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold">Gestión de proyectos</h1>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Gestiona proyectos: crear, editar, eliminar y filtrar por estado.
+                  </p>
+                </div>
               </div>
 
               <button

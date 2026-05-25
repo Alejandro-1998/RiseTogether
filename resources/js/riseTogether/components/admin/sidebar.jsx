@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 
-export default function Sidebar() {
+export default function Sidebar({ mobileOpen, setMobileOpen }) {
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -13,7 +13,16 @@ export default function Sidebar() {
   const isActive = (path) => currentPath === path || currentPath.startsWith(path + "/");
 
   return (
-    <aside className="w-64 shrink-0 bg-white dark:bg-gray-900/50 border-r border-gray-200 dark:border-gray-800 flex flex-col sticky top-18.25 h-[calc(100vh-73px)] overflow-y-auto">
+    <>
+      {/* Backdrop para móviles */}
+      {mobileOpen && (
+        <div 
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm md:hidden transition-opacity"
+          onClick={() => setMobileOpen && setMobileOpen(false)}
+        />
+      )}
+
+      <aside className={`w-64 shrink-0 bg-white dark:bg-[#120b07] border-r border-gray-200 dark:border-gray-800 flex flex-col overflow-y-auto fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out md:sticky md:top-[73px] md:h-[calc(100vh-73px)] md:translate-x-0 md:z-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
 
       {/* Menú 1*/}
       <nav className="flex-1 px-2 py-4 space-y-2 text-sm">
@@ -53,5 +62,6 @@ export default function Sidebar() {
       {/* Footer */}
 
     </aside>
+    </>
   );
 }

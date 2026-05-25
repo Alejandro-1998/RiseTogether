@@ -7,6 +7,7 @@ import ActividadReciente from "../../components/cards/actividad_reciente";
 export default function AdminActividadPage() {
   const [actividades, setActividades] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     axios.get("/api/admin/actividad?limit=50")
@@ -21,16 +22,24 @@ export default function AdminActividadPage() {
     <div className="min-h-screen flex flex-col bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
       <HeaderPublic />
 
-      <div className="flex flex-1">
-        <Sidebar />
+      <div className="flex flex-1 flex-col md:flex-row">
+        <Sidebar mobileOpen={sidebarOpen} setMobileOpen={setSidebarOpen} />
 
         <div className="flex-1 w-full">
           <main className="p-8 max-w-5xl mx-auto">
-            <div className="mb-8">
-              <h1 className="text-4xl font-black text-[#1c140d] dark:text-white">Historial de actividad</h1>
-              <p className="text-[#9c7049] dark:text-gray-400 mt-2 font-medium">
-                Registro completo de las acciones y eventos recientes en la plataforma.
-              </p>
+            <div className="mb-8 flex flex-col sm:flex-row sm:items-center gap-4">
+              <button 
+                className="md:hidden p-2 bg-white dark:bg-[#1a120d] rounded-lg shadow-sm border border-[#e8dace] dark:border-[#374151] self-start"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <span className="material-symbols-outlined">menu</span>
+              </button>
+              <div>
+                <h1 className="text-3xl md:text-4xl font-black text-[#1c140d] dark:text-white">Historial de actividad</h1>
+                <p className="text-[#9c7049] dark:text-gray-400 mt-2 font-medium">
+                  Registro completo de las acciones y eventos recientes en la plataforma.
+                </p>
+              </div>
             </div>
 
             <div className="bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 rounded-3xl p-8 space-y-8 shadow-sm">

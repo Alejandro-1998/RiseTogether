@@ -15,6 +15,8 @@ export default function AdminDashboard() {
     ingresos: 0
   });
 
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const [pendientes, setPendientes] = useState([]);
   const [actividades, setActividades] = useState([]);
   const [comentarios, setComentarios] = useState([]);
@@ -82,21 +84,29 @@ export default function AdminDashboard() {
     <div className="min-h-screen flex flex-col bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
       <HeaderPublic />
 
-      <div className="flex flex-1">
-        <Sidebar />
+      <div className="flex flex-1 flex-col md:flex-row">
+        <Sidebar mobileOpen={sidebarOpen} setMobileOpen={setSidebarOpen} />
 
         <div className="flex-1 w-full">
 
           <main className="p-6">
-            {/* TÍTULO */}
-            <div className="flex flex-wrap justify-between gap-3 mb-6">
-              <p className="text-gray-900 dark:text-white text-3xl font-bold leading-tight tracking-tight">
-                Panel de administración
-              </p>
+            {/* TÍTULO Y BOTÓN MENÚ */}
+            <div className="flex flex-wrap justify-between items-center gap-3 mb-6">
+              <div className="flex items-center gap-3">
+                <button 
+                  className="md:hidden p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+                  onClick={() => setSidebarOpen(true)}
+                >
+                  <span className="material-symbols-outlined">menu</span>
+                </button>
+                <p className="text-gray-900 dark:text-white text-2xl md:text-3xl font-bold leading-tight tracking-tight">
+                  Panel de administración
+                </p>
+              </div>
             </div>
 
             {/* TARJETAS ESTADÍSTICAS */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <Stats title="Proyectos activos" value={stats.proyectos_activos} trend="En curso" />
               <Stats title="Pendientes de revisión" value={stats.proyectos_pendientes} trend="Requieren acción" />
               <Stats title="Usuarios registrados" value={stats.usuarios.toLocaleString('es-ES')} trend="Total histórico" />
@@ -109,7 +119,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* GRID PRINCIPAL */}
-            <div className="grid grid-cols-3 gap-8 items-stretch">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
               {/* PROYECTOS PENDIENTES */}
               <div className="col-span-3 lg:col-span-3">
                 <h2 className="text-gray-800 dark:text-white text-xl font-bold leading-tight tracking-tight mb-4">
@@ -161,8 +171,8 @@ export default function AdminDashboard() {
                     restaurarlo o eliminarlo definitivamente.
                   </p>
 
-                  <div className="overflow-x-auto">
-                    <table className="min-w-full text-sm text-left text-gray-600 dark:text-gray-300">
+                  <div className="overflow-x-auto w-full">
+                    <table className="w-full text-sm text-left text-gray-600 dark:text-gray-300">
                       <thead className="text-xs text-gray-700 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-800">
                         <tr>
                           <th className="px-4 py-3">Proyecto</th>
