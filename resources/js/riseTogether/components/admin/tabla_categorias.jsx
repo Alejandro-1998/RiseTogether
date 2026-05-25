@@ -2,12 +2,12 @@ export default function TablaCategorias({ categorias = [], onEdit, onDelete }) {
     return (
         <div className="rounded-2xl overflow-hidden border border-white/10 bg-white/50 dark:bg-white/5">
             <div className="overflow-x-auto">
-                <table className="w-full min-w-150">
+                <table className="w-full">
                     <thead className="bg-[#f2780d]/20 dark:bg-[#f2780d]/10 text-[#1e293b] dark:text-[#f2780d]">
                         <tr className="text-left">
-                            <th className="px-6 py-4 text-sm font-extrabold">ID</th>
+                            <th className="px-6 py-4 text-sm font-extrabold hidden sm:table-cell">ID</th>
                             <th className="px-6 py-4 text-sm font-extrabold">NOMBRE</th>
-                            <th className="px-6 py-4 text-sm font-extrabold">SLUG</th>
+                            <th className="px-6 py-4 text-sm font-extrabold hidden md:table-cell">SLUG</th>
                             <th className="px-6 py-4 text-sm font-extrabold text-right">ACCIONES</th>
                         </tr>
                     </thead>
@@ -25,9 +25,9 @@ export default function TablaCategorias({ categorias = [], onEdit, onDelete }) {
                                     key={c.id}
                                     className="border-t border-black/10 dark:border-white/10"
                                 >
-                                    <td className="px-6 py-5 opacity-70">#{c.id}</td>
+                                    <td className="px-6 py-5 opacity-70 hidden sm:table-cell">#{c.id}</td>
                                     <td className="px-6 py-5 font-bold">{c.nombre}</td>
-                                    <td className="px-6 py-5 opacity-70 font-mono text-sm">{c.slug}</td>
+                                    <td className="px-6 py-5 opacity-70 font-mono text-sm hidden md:table-cell">{c.slug}</td>
 
                                     <td className="px-6 py-5">
                                         <div className="flex justify-end gap-3">

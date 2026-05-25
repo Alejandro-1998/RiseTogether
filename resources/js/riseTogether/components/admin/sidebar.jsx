@@ -17,12 +17,12 @@ export default function Sidebar({ mobileOpen, setMobileOpen }) {
       {/* Backdrop para móviles */}
       {mobileOpen && (
         <div 
-          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm lg:hidden transition-opacity"
+          className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm xl:hidden transition-opacity"
           onClick={() => setMobileOpen && setMobileOpen(false)}
         />
       )}
 
-      <aside className={`w-64 shrink-0 bg-white dark:bg-[#120b07] border-r border-gray-200 dark:border-gray-800 flex flex-col overflow-y-auto fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out lg:sticky lg:top-[73px] lg:h-[calc(100vh-73px)] lg:translate-x-0 lg:z-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
+      <aside className={`w-64 shrink-0 bg-white dark:bg-[#120b07] border-r border-gray-200 dark:border-gray-800 flex flex-col overflow-y-auto fixed inset-y-0 left-0 z-50 transform transition-transform duration-300 ease-in-out xl:sticky xl:top-[73px] xl:h-[calc(100vh-73px)] xl:translate-x-0 xl:z-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
 
       {/* Menú 1*/}
       <nav className="flex-1 px-2 py-4 space-y-2 text-sm">

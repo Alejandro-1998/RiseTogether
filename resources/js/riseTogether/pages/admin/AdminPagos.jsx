@@ -48,14 +48,14 @@ export default function AdminPagos() {
     return (
         <div className="min-h-screen flex flex-col bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
             <HeaderPublic />
-            <div className="flex flex-1 flex-col lg:flex-row">
+            <div className="flex flex-1 flex-col xl:flex-row">
                 <Sidebar mobileOpen={sidebarOpen} setMobileOpen={setSidebarOpen} />
                 <div className="flex-1 w-full">
                     <main className="p-6 max-w-7xl mx-auto">
                         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                             <div className="flex items-center gap-3">
                                 <button 
-                                    className="lg:hidden p-2 bg-white dark:bg-[#1a120d] rounded-lg shadow-sm border border-[#e8dace] dark:border-[#374151]"
+                                    className="xl:hidden p-2 bg-white dark:bg-[#1a120d] rounded-lg shadow-sm border border-[#e8dace] dark:border-[#374151]"
                                     onClick={() => setSidebarOpen(true)}
                                 >
                                     <span className="material-symbols-outlined">menu</span>
@@ -81,7 +81,7 @@ export default function AdminPagos() {
                                         <thead>
                                             <tr className="bg-gray-50 dark:bg-[#2d2d2d] border-b border-gray-200 dark:border-gray-800">
                                                 <th className="p-4 font-bold text-sm text-gray-500 dark:text-gray-400">Usuario</th>
-                                                <th className="p-4 font-bold text-sm text-gray-500 dark:text-gray-400">Proyecto</th>
+                                                <th className="p-4 font-bold text-sm text-gray-500 dark:text-gray-400 hidden sm:table-cell">Proyecto</th>
                                                 <th className="p-4 font-bold text-sm text-gray-500 dark:text-gray-400">Importe</th>
                                                 <th className="p-4 font-bold text-sm text-gray-500 dark:text-gray-400">Estado</th>
                                                 <th className="p-4 font-bold text-sm text-gray-500 dark:text-gray-400 text-right">Acciones</th>
@@ -94,7 +94,7 @@ export default function AdminPagos() {
                                                         <div className="font-bold">{f.user?.nombreUsuario}</div>
                                                         <div className="text-xs text-gray-500">{f.cif}</div>
                                                     </td>
-                                                    <td className="p-4">
+                                                    <td className="p-4 hidden sm:table-cell">
                                                         <div className="font-medium truncate max-w-50" title={f.proyecto?.titulo}>{f.proyecto?.titulo || 'Proyecto eliminado'}</div>
                                                         <div className="text-xs text-gray-500">Nº {f.numeroFactura} - {new Date(f.fechaFactura).toLocaleDateString()}</div>
                                                     </td>

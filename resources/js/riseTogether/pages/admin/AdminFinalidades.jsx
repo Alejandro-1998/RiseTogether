@@ -197,14 +197,14 @@ export default function AdminFinalidades() {
     return (
         <div className="min-h-screen flex flex-col bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
             <HeaderPublic />
-            <div className="flex flex-1 flex-col lg:flex-row">
+            <div className="flex flex-1 flex-col xl:flex-row">
                 <Sidebar mobileOpen={sidebarOpen} setMobileOpen={setSidebarOpen} />
                 <div className="flex-1 w-full">
                     <main className="p-6">
                         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                             <div className="flex items-center gap-3">
                                 <button 
-                                    className="lg:hidden p-2 bg-white dark:bg-[#1a120d] rounded-lg shadow-sm border border-[#e8dace] dark:border-[#374151]"
+                                    className="xl:hidden p-2 bg-white dark:bg-[#1a120d] rounded-lg shadow-sm border border-[#e8dace] dark:border-[#374151]"
                                     onClick={() => setSidebarOpen(true)}
                                 >
                                     <span className="material-symbols-outlined">menu</span>
@@ -257,7 +257,7 @@ export default function AdminFinalidades() {
                                 <table className="w-full text-left text-sm whitespace-nowrap">
                                     <thead className="border-b border-[#e8dace] dark:border-[#374151] bg-[#f8f7f5] dark:bg-[#1a120d]">
                                         <tr>
-                                            <th className="px-6 py-4 font-bold text-gray-700 dark:text-gray-300">ID</th>
+                                            <th className="px-6 py-4 font-bold text-gray-700 dark:text-gray-300 hidden sm:table-cell">ID</th>
                                             <th className="px-6 py-4 font-bold text-gray-700 dark:text-gray-300">Tipo de Finalidad</th>
                                             <th className="px-6 py-4 font-bold text-gray-700 dark:text-gray-300 w-24">Acciones</th>
                                         </tr>
@@ -272,7 +272,7 @@ export default function AdminFinalidades() {
                                         ) : (
                                             filtradas.map((f) => (
                                                 <tr key={f.id} className="hover:bg-[#f8f7f5] dark:hover:bg-[#2d2d2d] transition">
-                                                    <td className="px-6 py-4 font-medium">#{f.id}</td>
+                                                    <td className="px-6 py-4 font-medium hidden sm:table-cell">#{f.id}</td>
                                                     <td className="px-6 py-4">{f.tipoFinalidad}</td>
                                                     <td className="px-6 py-4 flex gap-2">
                                                         <button

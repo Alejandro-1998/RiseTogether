@@ -8,11 +8,11 @@ export default function TablaProyectos({ proyectos = [], onEdit, onDelete, onCam
           <thead className="bg-[#f2780d]/20 dark:bg-[#f2780d]/10 text-[#1e293b] dark:text-[#f2780d]">
             <tr>
               <Th>Nombre</Th>
-              <Th>Creador</Th>
-              <Th>Categoría</Th>
-              <Th>Cantidad recaudada</Th>
+              <Th className="hidden lg:table-cell">Creador</Th>
+              <Th className="hidden lg:table-cell">Categoría</Th>
+              <Th className="hidden sm:table-cell">Cantidad recaudada</Th>
               <Th>Estado</Th>
-              <Th>Fecha</Th>
+              <Th className="hidden xl:table-cell">Fecha</Th>
               <Th className="text-right pr-6">Acciones</Th>
             </tr>
           </thead>
@@ -35,13 +35,13 @@ export default function TablaProyectos({ proyectos = [], onEdit, onDelete, onCam
                       {p.nombre}
                     </Link>
                   </td>
-                  <td className="p-5">{p.creador}</td>
-                  <td className="p-5">{p.categoria}</td>
-                  <td className="p-5">{formatEUR(p.recaudado)}</td>
+                  <td className="p-5 hidden lg:table-cell">{p.creador}</td>
+                  <td className="p-5 hidden lg:table-cell">{p.categoria}</td>
+                  <td className="p-5 hidden sm:table-cell">{formatEUR(p.recaudado)}</td>
                   <td className="p-5">
                     <BadgeEstado estado={p.estado} />
                   </td>
-                  <td className="p-5">{p.fecha_envio}</td>
+                  <td className="p-5 hidden xl:table-cell">{p.fecha_envio}</td>
                   <td className="p-5 pr-6">
                     <div className="flex justify-end gap-2">
                       {p.estado === "revision" && onCambiarEstado && (

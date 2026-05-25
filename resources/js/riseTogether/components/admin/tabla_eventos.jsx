@@ -2,14 +2,14 @@ export default function TablaEventos({ eventos = [], onEdit, onDelete }) {
     return (
         <div className="rounded-2xl overflow-hidden border border-white/10 bg-white/50 dark:bg-white/5">
             <div className="overflow-x-auto">
-                <table className="w-full min-w-200">
+                <table className="w-full">
                     <thead className="bg-[#f2780d]/20 dark:bg-[#f2780d]/10 text-[#1e293b] dark:text-[#f2780d]">
                         <tr className="text-left">
                             <th className="px-6 py-4 text-sm font-extrabold">NOMBRE</th>
-                            <th className="px-6 py-4 text-sm font-extrabold">FINALIDAD</th>
+                            <th className="px-6 py-4 text-sm font-extrabold hidden lg:table-cell">FINALIDAD</th>
                             <th className="px-6 py-4 text-sm font-extrabold">FECHA INICIO</th>
-                            <th className="px-6 py-4 text-sm font-extrabold">FECHA FINAL</th>
-                            <th className="px-6 py-4 text-sm font-extrabold">PARTICIPANTES</th>
+                            <th className="px-6 py-4 text-sm font-extrabold hidden sm:table-cell">FECHA FINAL</th>
+                            <th className="px-6 py-4 text-sm font-extrabold hidden xl:table-cell">PARTICIPANTES</th>
                             <th className="px-6 py-4 text-sm font-extrabold text-right">ACCIONES</th>
                         </tr>
                     </thead>
@@ -28,10 +28,10 @@ export default function TablaEventos({ eventos = [], onEdit, onDelete }) {
                                     className="border-t border-black/10 dark:border-white/10"
                                 >
                                     <td className="px-6 py-5 font-bold">{e.nombre}</td>
-                                    <td className="px-6 py-5 opacity-80">{e.finalidad?.tipo_finalidad || 'No asignada'}</td>
+                                    <td className="px-6 py-5 opacity-80 hidden lg:table-cell">{e.finalidad?.tipo_finalidad || 'No asignada'}</td>
                                     <td className="px-6 py-5 opacity-80">{e.fechaInicio}</td>
-                                    <td className="px-6 py-5 opacity-80">{e.fechaFinal}</td>
-                                    <td className="px-6 py-5">{e.cantidadMaxParticipantes || 'Ilimitado'}</td>
+                                    <td className="px-6 py-5 opacity-80 hidden sm:table-cell">{e.fechaFinal}</td>
+                                    <td className="px-6 py-5 hidden xl:table-cell">{e.cantidadMaxParticipantes || 'Ilimitado'}</td>
 
                                     <td className="px-6 py-5">
                                         <div className="flex justify-end gap-3">
