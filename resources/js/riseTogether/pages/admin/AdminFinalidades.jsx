@@ -197,14 +197,14 @@ export default function AdminFinalidades() {
     return (
         <div className="min-h-screen flex flex-col bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
             <HeaderPublic />
-            <div className="flex flex-1 flex-col md:flex-row">
+            <div className="flex flex-1 flex-col lg:flex-row">
                 <Sidebar mobileOpen={sidebarOpen} setMobileOpen={setSidebarOpen} />
                 <div className="flex-1 w-full">
                     <main className="p-6">
                         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                             <div className="flex items-center gap-3">
                                 <button 
-                                    className="md:hidden p-2 bg-white dark:bg-[#1a120d] rounded-lg shadow-sm border border-[#e8dace] dark:border-[#374151]"
+                                    className="lg:hidden p-2 bg-white dark:bg-[#1a120d] rounded-lg shadow-sm border border-[#e8dace] dark:border-[#374151]"
                                     onClick={() => setSidebarOpen(true)}
                                 >
                                     <span className="material-symbols-outlined">menu</span>

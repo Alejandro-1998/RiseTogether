@@ -84,7 +84,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen flex flex-col bg-[#f8f7f5] dark:bg-[#120b07] text-gray-900 dark:text-white">
       <HeaderPublic />
 
-      <div className="flex flex-1 flex-col md:flex-row">
+      <div className="flex flex-1 flex-col lg:flex-row">
         <Sidebar mobileOpen={sidebarOpen} setMobileOpen={setSidebarOpen} />
 
         <div className="flex-1 w-full">
@@ -94,7 +94,7 @@ export default function AdminDashboard() {
             <div className="flex flex-wrap justify-between items-center gap-3 mb-6">
               <div className="flex items-center gap-3">
                 <button 
-                  className="md:hidden p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
+                  className="lg:hidden p-2 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700"
                   onClick={() => setSidebarOpen(true)}
                 >
                   <span className="material-symbols-outlined">menu</span>

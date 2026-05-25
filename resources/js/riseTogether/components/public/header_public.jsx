@@ -62,7 +62,7 @@ export default function HeaderPublic({ isAuth }) {
 
           {/* Botones derecha */}
           <div className="flex flex-1 items-center justify-end gap-2">
-            <div className="hidden items-center justify-end gap-3 md:flex">
+            <div className="hidden items-center justify-end gap-3 lg:flex">
               <Link
                 to="/proyectos"
                 className="flex h-10 min-w-32.5 items-center justify-center rounded-lg bg-[#f2780d] px-4 text-sm font-bold text-white transition-opacity hover:opacity-90"
@@ -175,7 +175,7 @@ export default function HeaderPublic({ isAuth }) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(true)}
-              className="md:hidden flex h-10 items-center justify-center gap-2 rounded-lg bg-[#f4ede7] px-2.5 text-sm font-bold text-[#1c140d] dark:bg-[#2a2017] dark:text-[#fcfaf8]"
+              className="lg:hidden flex h-10 items-center justify-center gap-2 rounded-lg bg-[#f4ede7] px-2.5 text-sm font-bold text-[#1c140d] dark:bg-[#2a2017] dark:text-[#fcfaf8]"
             >
               <span className="material-symbols-outlined text-2xl" aria-hidden="true">menu</span>
               <span className="sr-only">Abrir Menú</span>
@@ -186,7 +186,7 @@ export default function HeaderPublic({ isAuth }) {
 
       {/* Menú Móvil */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-100">
+        <div className="lg:hidden fixed inset-0 z-100">
           {/* Overlay oscuro para cerrar al hacer clic fuera */}
           <div 
             className="absolute inset-0 bg-black/60 backdrop-blur-sm" 
