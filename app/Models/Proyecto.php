@@ -29,7 +29,7 @@ class Proyecto extends Model
         'seguidores',
     ];
 
-    protected $appends = ['porcentaje_financiado'];
+    protected $appends = ['porcentaje_financiado', 'mecenas_count'];
 
     function users()
     {
@@ -85,6 +85,14 @@ class Proyecto extends Model
         $porcentaje = ($this->cantidad_recaudada / $this->objetivo_financiacion) * 100;
         
         return $porcentaje;
+    }
+
+    public function getMecenasCountAttribute()
+    {
+        return $this->donaciones()
+            ->where('estadoDonacion', 'pagada')
+            ->distinct('idUsuario')
+            ->count('idUsuario');
     }
 
     public function faqs()

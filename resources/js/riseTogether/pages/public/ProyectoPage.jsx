@@ -135,7 +135,7 @@ export default function ProyectoPage() {
     porcentaje: porcentaje,
     recaudado: recaudado,
     objetivo: objetivo,
-    mecenas: 0,
+    mecenas: proyecto.mecenas_count ?? 0,
     diasRestantes: diasRestantes > 0 ? diasRestantes : 0,
     id: proyecto.id,
     isFollowing: proyecto.is_following,
